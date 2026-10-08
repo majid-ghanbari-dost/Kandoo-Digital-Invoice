@@ -1,6 +1,6 @@
 # KANDOO DIGITAL INVOICE — AGENT HANDOFF
 
-> This file is a mandatory project handoff and operational source for onboarding agents.
+> This file is the mandatory project handoff and operational source for onboarding agents.
 > It must be updated at the end of every meaningful project conversation/change affecting this repository.
 > It is NOT a replacement for authoritative specs/registers; those remain authoritative for technical contracts.
 
@@ -11,7 +11,6 @@ Purpose: dedicated development line for Kandoo Digital Invoice / Holoo capture /
 Parent project: `majid-ghanbari-dost/Kandoo`
 
 This repository must contain only the Digital Invoice project line and its directly required artifacts.
-Do not mix unrelated Kandoo modules into this repository.
 
 Conceptual relationship:
 
@@ -32,6 +31,17 @@ At the end of every meaningful project conversation or implementation change con
 5. Do not claim a change is integrated until the repository state reflects it.
 
 Administrative discussion that causes no project-state change need not create a commit.
+
+### Automatic Project-Sync Policy
+
+For every conversation that produces a real project output/change, the coordinator must:
+- update the actual project artifact in the authoritative repository when the available connector permits it;
+- update this handoff in the same change/commit;
+- update `KANDOO_AGENT_COORDINATION.md` when ownership or execution state changes;
+- report the exact repository commit/HEAD in the final report;
+- never claim source integration when only a local/archive artifact was produced.
+
+If the current tool environment cannot transfer a required local artifact into GitHub, record that limitation here and continue using the verified artifact as the source package; do not fabricate a successful sync.
 
 ## 3. Roles
 
@@ -94,20 +104,24 @@ Latest reported P12 implementation source anchor: `d8dbc29`.
 Latest reported final delivery/hygiene commits in the previous working project: `a73fde5`, `574444f`.
 These commit IDs refer to the previous working project history and are not yet present in this newly-created repository.
 
-Latest reported verification:
+Latest verified transfer package available for bootstrap:
+- File: `kandoo-current-implementation10.zip`
+- ZIP SHA-256: `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`
+- Project files inside ZIP: 281
+- Total ZIP entries: 282 (281 project files + embedded manifest)
+- Manifest reports: 281 files
+- Manifest verification: 281/281 file hashes matched; 0 missing; 0 extra; 0 size mismatches.
+- Project content types verified: 248 Python, 33 Markdown, 1 text manifest.
+- This package is the current authoritative transfer candidate and supersedes the older 277-file delivery package for bootstrap purposes.
+- The package includes source anchor `54211b6` according to its embedded manifest.
+
+Latest reported verification from the working project:
 - WP-12.1 dedicated tests: 90/90, repeated independently ×3.
 - WP-12.2 dedicated tests: 33/33, repeated independently ×3.
 - Smoke: 19/19.
 - Full regression: 1439/1440 passed, with one known pre-existing date-sensitive flake:
   `test_ir_provenance::test_no_raw_pipeline_values_are_stored`.
 - No new regression failure was reported.
-
-Latest reported complete artifact:
-- 277 project files + embedded manifest.
-- ZIP SHA-256: `a25172b1158d3ded0c9fcca53f7fa909a996243b2e31981b1d2e35fbcd0a455f`
-- Manifest SHA-256: `04721e61560900f7a33f352a9e33b0fc2a7797996ca0c689be1a17d295d99b31`
-
-IMPORTANT: The above is historical verified project state. The new GitHub repository is initially empty and must not pretend to contain those files until the actual project tree is transferred.
 
 ## 7. Current Agent Ownership
 
@@ -123,15 +137,22 @@ Agent 2:
 
 1. P12.3: PO/G4 ratification of D-07, D-08 and DEF2.
 2. WP-11.2: required source mapping/authority/sync/conflict/write-back decisions and sufficient contract before Adapter implementation.
+3. Repository bootstrap: actual 281-file project tree must still be transferred from the verified local ZIP into `main`.
 
 ## 9. Repository Bootstrap Status
 
-This repository was newly created empty and is being bootstrapped now.
+The repository contains the collaboration/handoff files, but the actual 281-file implementation tree has not yet been transferred.
 
-Required next bootstrap action:
-- Transfer the actual current Digital Invoice project tree, not a reconstructed approximation.
-- Then regenerate/update the manifest and hashes.
-- Then update this file with the actual repository HEAD and file count.
+Verified transfer candidate:
+`kandoo-current-implementation10.zip` with SHA-256 `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`.
+
+The current GitHub connector has repository write permissions but no bulk local-directory upload/Git-push operation. Therefore the ZIP cannot be truthfully represented as integrated source until the 281 files are actually written to Git.
+
+Next bootstrap action:
+- transfer the exact 281 project files without reconstruction or modification;
+- preserve the embedded manifest;
+- verify repository file count/content against the transfer package;
+- update this handoff with actual repository HEAD and verification results.
 
 ## 10. Handoff Protocol
 
