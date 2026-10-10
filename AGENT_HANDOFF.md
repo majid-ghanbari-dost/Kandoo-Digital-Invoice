@@ -91,68 +91,79 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 - Current Holoo path: Holoo → Print Spooler → Kandoo Agent → Raw Capture → durable local storage → extraction/recognition → Canonicalization Gate.
 - No real production Holoo DB connection is permitted by the current project boundary.
 
-## 6. Current Verified Project State
+## 6. Current Verified Project State (as of Agent 2 Source-of-Truth Recon, 2026-10-08)
 
-P1–P10: completed/frozen.
-WP-11.1: implemented, tested, packaged and accepted at implementation level.
-WP-12.1: implemented and tested.
-WP-12.2: implemented and tested.
-WP-12.3: PO/G4 decision boundary; D-07/D-08/DEF2 require ratification.
-WP-11.2: Adapter must NOT be implemented until its required decisions/contract are resolved; a Decision Package exists.
+GitHub HEAD: `80d7c73fea9c00a1176736b357325d431f1a7abe` — `merge: integrate remote project governance history`.
+Repository working tree: 283 files (248 Python, 35 Markdown). The full implementation tree (P1–P12.2) IS present on `main`; bootstrap transfer is complete.
 
-Latest reported P12 implementation source anchor: `d8dbc29`.
-Latest reported final delivery/hygiene commits in the previous working project: `a73fde5`, `574444f`.
-These commit IDs refer to the previous working project history and are not yet present in this newly-created repository.
+P1 Capture Foundation:
+- WP-1.1: CLOSED — IMPLEMENTED (2026-10-01), 8/8 AC PASS.
+- WP-1.2: IMPLEMENTED (2026-10-09 per register records), 4/4 AC PASS (REG-AR), awaiting formal PO acceptance. All 4 deliverables present:
+  - `specs/WP-1.2-s1-hardening-contract.md`
+  - `specs/WP-1.2-hardening-report.md`
+  - `src/capture/tests/test_s1_hardening.py` (36 edge tests)
+  - `src/run_smoke_s1_hardening.py` (20th smoke, 8 cold-start steps)
+- WP-1.3: DEFINED — policy values BLOCKED per DEF4 (retention/privacy TTL/purge values). Mechanic scope (parametric TTL hooks, full crash/orphan recovery matrix, status reporting) is technically unblocked and does not require PO policy values. No WP-1.3 artifacts (spec, tests, code) exist yet; WP-1.3 has NOT been executed.
 
-Latest verified transfer package available for bootstrap:
+P2–P12.2: all work packages up through WP-12.2 are marked IMPLEMENTED per the authoritative registers, awaiting formal PO acceptance.
+- WP-12.3: DEFERRED — PO/G4 ratification of D-07/D-08/DEF2 required.
+- WP-11.2: DEFERRED — source mapping/authority/sync/conflict/write-back decisions required (DEF6); Decision Package exists at `specs/WP-11.2-decision-package.md`.
+- WP-10.2: DEFERRED — DEF5 (presentation/delivery channel).
+- WP-8.2: PLANNED — fuzzy policy/candidate-approval matrix requires PO decision.
+
+Reference transfer package (historical — bootstrap already integrated at `80d7c73`):
 - File: `kandoo-current-implementation10.zip`
 - ZIP SHA-256: `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`
-- Project files inside ZIP: 281
-- Total ZIP entries: 282 (281 project files + embedded manifest)
-- Manifest reports: 281 files
-- Manifest verification: 281/281 file hashes matched; 0 missing; 0 extra; 0 size mismatches.
-- Project content types verified: 248 Python, 33 Markdown, 1 text manifest.
-- This package is the current authoritative transfer candidate and supersedes the older 277-file delivery package for bootstrap purposes.
-- The package includes source anchor `54211b6` according to its embedded manifest.
+- Manifest: 281 project files; 281/281 hashes matched.
+- Note: The embedded manifest file itself is not present in the repository; project file count (248 .py + 33 .md project + handoff/README/register/spec delta) matches the ZIP payload. The two extra .md files in HEAD (`AGENT_HANDOFF.md`, `KANDOO_AGENT_COORDINATION.md`, `README.md`, plus post-bootstrap register/spec updates from WP-1.2 mission) account for the markdown delta from 33 to 35.
 
-Latest reported verification from the working project:
-- WP-12.1 dedicated tests: 90/90, repeated independently ×3.
-- WP-12.2 dedicated tests: 33/33, repeated independently ×3.
-- Smoke: 19/19.
-- Full regression: 1439/1440 passed, with one known pre-existing date-sensitive flake:
-  `test_ir_provenance::test_no_raw_pipeline_values_are_stored`.
-- No new regression failure was reported.
+Reported verification figures (carried forward from Agent 1 reports, not independently re-run by Agent 2 in this recon):
+- WP-1.2: 36/36 ×3 independent repeats, SMOKE 20/20, full regression 1475/1476 (1 pre-existing date-sensitive flake).
+- WP-12.1: 90/90 ×3; WP-12.2: 33/33 ×3; Smoke 20/20; Regression 1475/1476.
 
 ## 7. Current Agent Ownership
 
-Agent 1:
-- Owns the active P12 execution stream until it reaches its genuine PO/evidence boundary.
-- Must not assume this new repository already contains the working tree.
+Agent 1 (implementation):
+- Previous active mission executed WP-1.2 hardening (registered as IMPLEMENTED, awaiting PO acceptance).
+- Subsequent WP-1.3 execution claim: NOT YET INTEGRATED — Agent 2 Source-of-Truth recon finds no WP-1.3 spec/tests/code in `main`; any Agent 1 report of WP-1.3 completion would be local-only and not represented on GitHub.
+- Must coordinate with Agent 2 / TM before claiming further integration.
 
-Agent 2:
-- Owns independent work only after inspecting this repository and coordination state.
-- Must not modify Agent 1's active WP/files concurrently.
+Agent 2 (independent reviewer / GitHub operator):
+- Completed Source-of-Truth recon on `main` at commit `80d7c73` (2026-10-08).
+- Has no active WP claim beyond governance/handoff correction in this turn.
+- Must not modify production code; must not execute WP-1.3 without explicit mission dispatch.
 
-## 8. Current Real Boundaries
+## 8. Current Real Boundaries (after recon)
 
-1. P12.3: PO/G4 ratification of D-07, D-08 and DEF2.
-2. WP-11.2: required source mapping/authority/sync/conflict/write-back decisions and sufficient contract before Adapter implementation.
-3. Repository bootstrap: actual 281-file project tree must still be transferred from the verified local ZIP into `main`.
+1. WP-1.3 — Retention policy VALUES remain BLOCKED per DEF4 (PO decision required on TTL/purge/privacy values).
+2. WP-1.3 — Mechanics (parametric retention hooks, crash/orphan matrix, status reporting) are technically unblocked and are the next executable WP on the critical path; require decompose + mission dispatch before execution.
+3. WP-12.3: PO/G4 ratification of D-07, D-08 and DEF2 (thresholds).
+4. WP-11.2: required source mapping/authority/sync/conflict/write-back decisions before Adapter implementation (DEF6).
+5. WP-10.2: delivery/presentation decisions (DEF5).
+6. WP-8.2: fuzzy matching / candidate-approval policy (PO).
+
+Repository bootstrap is COMPLETE at `80d7c73`; no file-transfer action is outstanding.
+
+### WP-1.3 Integration Mission (Agent 2, 2026-10-10) — BLOCKED: artifact not delivered
+
+- Mission dispatch: TM/PO directed Agent 2 to receive ZIP+MANIFEST from Agent 1, verify SHA-256, validate additive 10 new + 4 governance files against baseline 281, confirm DEF4 compliance, then integrate into `main`.
+- Actual state: the WP-1.3 delivery artifact (ZIP + embedded MANIFEST) is NOT present in the Agent 2 sandbox. Exhaustive search of `/home/user`, `/tmp`, `/var/tmp`, `/root`, and the repository working tree found zero ZIP files, zero MANIFEST files, and zero files whose name/path matches WP-1.3/retention outside of what already exists in `main` at `80d7c73`. No open PRs, branches, releases, or issues on GitHub carry a WP-1.3 payload either.
+- Handoff channel: there is no filesystem share, connector, or Agent1→Agent2 messaging surface in this environment other than what the user/TM relays through the mission text itself. The mission text does not include a download URL or SHA-256; it only instructs me to coordinate with Agent 1 to obtain the package.
+- Conclusion: per the non-negotiable rule («هیچ‌کدام از این موارد را صرفاً بر اساس گزارش، تکمیل‌شده تلقی نکنید») and my own governance rule (Agent 1 reports are not automatically truth until verified against GitHub main), I CANNOT:
+  - compute SHA-256,
+  - diff the 281 baseline files against the claimed 10 new + 4 governance,
+  - validate DEF4 / Frozen-architecture compliance on real code,
+  - run or audit the dedicated tests/smoke,
+  - or truthfully claim WP-1.3 is integrated.
+- Therefore: NO INTEGRATION COMMIT to `main` in this turn. Branch `arena/7bee5f10-kandoo-digital-invoice` remains one governance commit ahead of `main` (`1fcd25a`) and only records this BLOCK note.
+- Required to unblock: Agent 1 must deliver the WP-1.3 ZIP + MANIFEST (with stated SHA-256) into a location Agent 2 can read, OR publish a PR/branch on GitHub that Agent 2 can `fetch` and verify. Once delivered, Agent 2 will: validate hashes; diff baseline files for byte-identity; inspect every new/changed file against DEF4 (no hardcoded TTL/purge/privacy values; parametric placeholders + "policy values pending DEF4" labeling; additive-only against frozen WP-1.1/WP-1.2); confirm 10 new + 4 governance files align with the report; execute the dedicated WP-1.3 tests (after installing pytest); update registers/handoff/coordination/README; commit with an explicit message; PR to `main`; re-verify HEAD.
+- I did not fabricate, infer, or synthesize any WP-1.3 artifacts on my own, and I did not open the WP-1.2 / Frozen architecture — both are forbidden by mission constraints and by project Frozen rules.
 
 ## 9. Repository Bootstrap Status
 
-The repository contains the collaboration/handoff files, but the actual 281-file implementation tree has not yet been transferred.
+BOOTSTRAP COMPLETE. The full project implementation tree is present in `main` at commit `80d7c73` (283 working-tree files: 248 Python, 35 Markdown). The historical note about a pending 281-file ZIP transfer was stale and has been corrected.
 
-Verified transfer candidate:
-`kandoo-current-implementation10.zip` with SHA-256 `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`.
-
-The current GitHub connector has repository write permissions but no bulk local-directory upload/Git-push operation. Therefore the ZIP cannot be truthfully represented as integrated source until the 281 files are actually written to Git.
-
-Next bootstrap action:
-- transfer the exact 281 project files without reconstruction or modification;
-- preserve the embedded manifest;
-- verify repository file count/content against the transfer package;
-- update this handoff with actual repository HEAD and verification results.
+Note on pytest environment: Agent 2 did not re-run test suites in this recon because `pytest` is not installed in the sandbox image; test figures are carried forward from the authoritative register records and Agent 1 reports. Independent verification re-runs belong to a QA-verification mission, not this Source-of-Truth control pass.
 
 ## 10. Handoff Protocol
 
