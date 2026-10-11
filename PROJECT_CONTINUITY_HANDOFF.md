@@ -40,10 +40,10 @@
 
 | مورد | مقدار | وضعیت |
 |---|---|---|
-| `main` | **`80d7c73fea9c00a1176736b357325d431f1a7abe`** | `اجراشده` — **تغییر نکرده است** (هیچ ادغامی رخ نداد؛ قبل و بعد یکی است) |
+| `main` | **`de38db0dc0e66158028b823aaffd6facd3fd1fc5`** | `تأییدشده` — PR #2 با squash merge ادغام شد؛ این SHA باید با `git ls-remote origin refs/heads/main` دوباره قابل تأیید باشد |
 | head PR #1 | `b3c6194b6f1b3f5e2c9aeabab688d50463bb41b9` | `اجراشده` |
-| head PR #2 | `0b073c92b5b08c75bdc98b4def259e8d0978fde9` | `اجراشده` — **بدون تغییر**؛ fixها روی این head نیستند |
-| head PR #3 | `30a88c35e8db5d19d9c7ebe73ec6a3bc6471f76e` | `اجراشده` — نسخهٔ ۱.۰ سند (۳۰۴ خط) |
+| PR #2 head پیش از ادغام | `25565e8f5ab74297ca6a9fdd18c38efbf5416381` | `تأییدشده` — شامل fixهای B1/M1؛ ادغام با commit `de38db0dc0e66158028b823aaffd6facd3fd1fc5` |
+| head PR #3 | `d1cb3b3b17c262eb8158b94f142c717e25e040e3` (سند v2.0 ثبت‌شده؛ این نسخه به‌روزرسانی می‌شود) | `اجراشده` — شاخهٔ سند مستقل از کد |
 | commit تکمیل (B1/M1) | **`25565e8f5ab74297ca6a9fdd18c38efbf5416381`** روی `arena/a776e4f2-kandoo-digital-invoice` | `اجراشده` — پوش شد؛ **روی PR #2 نیست** |
 | محتوای `main` | ۲۸۳ فایل (۲۴۸ `.py` + ۳۵ `.md`)، ۲۵ سند `specs/`، ۲۰ اسکریپت `run_smoke*` | `اجراشده` با `git ls-tree -r main`؛ با PR #2: +۱۱ `.py`، +۲ spec، +۱ smoke |
 | `baseline/` | **غایب** | `اجراشده` — MNT-1/RSK-2 همچنان باز است |
@@ -53,8 +53,8 @@
 | PR | head (شاخه @ SHA) | وضعیت GitHub | تغییرات | تکلیف |
 |---|---|---|---|---|
 | **#1** | `arena/7bee5f10-kandoo-digital-invoice` @ `b3c6194…` | `OPEN` · `MERGEABLE` · `CLEAN` · ادغام‌نشده | فقط ۲ سند حکمرانی (`AGENT_HANDOFF.md`، `KANDOO_AGENT_COORDINATION.md`)، صفر سورس؛ بدنه‌اش ادعاهای متناقض artifact دارد (بند ۷.۶) | **باز** — این سند را لمس نکرد |
-| **#2** | `arena/23993033-kandoo-digital-invoice` @ `0b073c9…` | `OPEN` · `MERGEABLE` · `CLEAN` · `mergedAt=null` · `mergeCommit=null` · **۱ comment** (یافته‌های B1/M1 با تاریخ `2026-10-11T19:01:17Z`) | ۱۸ فایل، +4349/−13 — سورس WP-1.3 | **باز — ادغام نشد**؛ علت دقیق بند ۳.۴ |
-| **#3** | `docs/project-continuity-handoff` @ `30a88c3…` | `OPEN` · `MERGEABLE` · `CLEAN` · ادغام‌نشده | **فقط** `PROJECT_CONTINUITY_HANDOFF.md` (+304/−0) نسبت به `main` ✓ `اجراشده` | **باز** — نسخهٔ ۲.۰ اینجاست (بند ۸.۳)، ادغام‌اش مشروط به ادغام PR #2 است (برآورده نشد) |
+| **#2** | `arena/23993033-kandoo-digital-invoice` @ `25565e8…` | **MERGED** · merge commit `de38db0dc0e66158028b823aaffd6facd3fd1fc5` | ۱۸ فایل، +4495/−13 — سورس WP-1.3 به‌همراه رفع B1/M1 | **ادغام‌شده**؛ تست‌های نسخه اصلاح‌شده در بند ۳.۳ گزارش شده‌اند |
+| **#3** | `docs/project-continuity-handoff` @ `d1cb3b3…` (با به‌روزرسانی جاری جلو می‌رود) | `OPEN` · مستقل از کد | **فقط** `PROJECT_CONTINUITY_HANDOFF.md`؛ پس از ادغام PR #2 باید diff یک‌فایلی دوباره تأیید شود | **باز — آمادهٔ بررسی نهایی سند** |
 
 > **تفکیک مهم:** `main` = WP-1.1 تا WP-12.2 (بسته/پیاده‌سازی‌شده از قبل). WP-1.3 **فقط** روی PR #2 است، نه در `main`. وجود PR/open = Acceptance نیست.
 
@@ -122,13 +122,13 @@ cd src && /tmp/k/bin/python -m compileall -q .                            # exit
 git diff --name-only --diff-filter=M 80d7c73 -- '*.py'                    # خالی
 ```
 
-### ۳.۴ چرا PR #2 ادغام نشد — مانع دقیق (بدون تحریف)
+### ۳.۴ تاریخچه مانع ادغام (اکنون برطرف شده)
 
 مأموریت ادغام را مشروط کرده بود به: (۱) رفع هر دو ایراد اصلی، (۲) موفقیت تست‌ها، (۳) دست‌نخورده ماندن Frozen، (۴) امکان‌پذیر بودن ادغام از GitHub.
 
 - شرط (۲) ✅ (`130/220/1606/smoke×2/compileall` — بند ۳.۳)، شرط (۳) ✅ (بند ۳.۳)، شرط (۴) ✅ (`MERGEABLE/CLEAN` — **GitHub مانع نیست**).
-- شرط (۱) ❌: رفع‌ها در commit **`25565e8`** روی شاخهٔ جلسهٔ Agent 2 است؛ head PR #2 همچنان `0b073c9` است. **قرار دادن این commit روی شاخهٔ `arena/23993033-kandoo-digital-invoice` نیازمند push به شاخه‌ای غیر از شاخهٔ جلسه است که قید ایمنی پلتفرم (که مقدمهٔ مأموریت آن را «همچنان لازم‌الاجرا» اعلام کرد) ممنوع می‌کند.**
-- نتیجه: **ادغام نشد** — چون merge کردن PR #2 در وضعیت فعلی دقیقاً کدِ دارای B1/M1 را به `main` می‌برد و شرط (۱) را نقض می‌کند. مانع = قید ایمنی شاخهٔ جلسه، **نه** Git، **نه** GitHub، **نه** تست.
+- این مانع در اجرای بعدی رفع شد: commit `25565e8f5ab74297ca6a9fdd18c38efbf5416381` با fast-forward به شاخهٔ PR #2 منتقل شد و سپس PR #2 با commit `de38db0dc0e66158028b823aaffd6facd3fd1fc5` ادغام شد.
+- نتیجهٔ تاریخی: پیش از انتقال fixها، ادغام ممنوع بود چون head حاوی B1/M1 بود. اکنون B1/M1 رفع و PR #2 ادغام شده است؛ این بخش سابقهٔ رخداد را نگه می‌دارد، نه وضعیت فعلی را.
 - رفع مسیر باز: بند ۸.۱.
 
 ---
@@ -193,10 +193,10 @@ B1 و M1 در بند ۳ ثبت و رفع شدند (وضعیت اعمال: باز
 
 | # | اقدام | مالک | شاهد بستن |
 |---|---|---|---|
-| ۸.۱ | **انتقال fixهای B1/M1 به PR #2**: چerry-پیک `25565e8f5ab74297ca6a9fdd18c38efbf5416381` روی `arena/23993033-kandoo-digital-invoice` (یا push معادل) + ری‌ران گواه بند ۳.۳ روی head تازه | **جلسه/ایجنتِ دارای آن شاخه** یا PO با دستور صریح به این جلسه (قید ایمنی شاخه فقط با ارتقای صریح مجوزِ کاربر برداشته می‌شود) | `gh pr view 2 --json headRefOid` ≠ `0b073c9` و شامل fix؛ سپس شرط (۱) ادغام برقرار → اقدام ۸.۲ |
-| ۸.۲ | **ادغام PR #2 در `main`** (پس از ۸.۱ و تأیید سبزی تست head جدید) | TM/PO (مأموریت شمارهٔ ۳ صریحاً مشروطش کرده) | `gh pr view 2 --json state,mergedAt,mergeCommit` ≠ null + حضور `src/capture/retention.py` در `main` |
-| ۸.۳ | **ثبت نسخهٔ ۲.۰ این سند در PR #3**: کپی همین فایل روی شاخهٔ `docs/project-continuity-handoff` (هماهنگ با `main` نهایی)، بررسی `gh pr diff 3` = فقط `PROJECT_CONTINUITY_HANDOFF.md`، تطبیق SHA-256 (ثبت‌شده در پیام commit این نسخه و در گزارش تحویل) | صاحب شاخهٔ docs / Agent با مجوز آن شاخه | `gh pr view 3 --json headRefOid` جدید + `gh pr diff 3 --name-only` = همان ۱ فایل + تطابق hash |
-| ۸.۴ | **ادغام PR #3** فقط پس از ۸.۲ و ۸.۳ | TM/PO | `gh pr view 3 --json state,mergedAt` ≠ null |
+| ۸.۱ | انتقال fixهای B1/M1 به PR #2 | **انجام شد** | head PR #2 روی `25565e8` قرار گرفت و همان head ادغام شد |
+| ۸.۲ | **ادغام PR #2 در `main`** | **انجام شد** | GitHub گزارش داد `merged=true`؛ merge commit: `de38db0dc0e66158028b823aaffd6facd3fd1fc5` |
+| ۸.۳ | **به‌روزرسانی هندآف در PR #3** | در حال اجرا | نسخهٔ ۲.۰ باید وضعیت merge واقعی PR #2 را منعکس کند؛ diff PR #3 فقط همین سند بماند |
+| ۸.۴ | **ادغام PR #3** پس از تأیید سند تازه و diff تک‌فایلی | TM/PO | وضعیت `merged` و merge commit از GitHub تأیید شود |
 | ۸.۵ | **تکلیف PR #1** (بند ۷.۳) | TM (+PO اگر به Acceptance مستندات برسد) | وضعیت نهایی ثبت‌شده در PR و REG؛ هرگز «تحویل سورس» گزارش نشود |
 | ۸.۶ | تصمیم ۷.۱ (fix تست تاریخ) و ۷.۲ (رفتار هم‌زمانی) | TM → در صورت لمس فروزن: PO | ثبت تصمیم در REG-RR/REG-WPR |
 | ۸.۷ | پاک‌سازی `kandoo/` (۲۳۲ ارجاع + دو مورد جدیدِ README/smoke) در یک PR مستندات‌محور | Agent 1 (اجرا) / TM (بازبینی) | `git grep -E 'kandoo/(specs|src|baseline)' main -- 'registers/*.md' 'README.md' | wc -l` = 0 |
@@ -226,15 +226,13 @@ Then verify LIVE state before trusting anything:
   gh pr view 2 --json state,headRefOid,mergedAt,comments
   gh pr view 3 --json state,headRefOid,files
 
-Known live state as of 2026-10-11 (re-verify): main = 80d7c73fea9c00a1176736b357325d431f1a7abe
-(UNMERGED, unchanged). PR #1 OPEN governance-only (head b3c6194…). PR #2 OPEN at
-0b073c92b5b08c75bdc98b4def259e8d0978fde9 with 1 comment (B1/M1 review findings) —
-NOT merged; the fixes for B1/M1 exist as commit 25565e8f5ab74297ca6a9fdd18c38efbf5416381
-on branch arena/a776e4f2-kandoo-digital-invoice (6 files, +160/−14) and must first be
-placed on the PR #2 head by an owner of that branch (action 8.1 of the handoff).
-Evidence for the fixed version, executed 2026-10-11: WP-1.3 130 passed, capture 220,
-full regression 1606/0, smoke 8/8 ×2, compileall 0. Evidence on PR head 0b073c9 was
-independently reproduced: 125 / 215 / 1601 / smoke. No CI exists in this repo.
+Known live state as of 2026-10-11 (re-verify): main = de38db0dc0e66158028b823aaffd6facd3fd1fc5
+(PR #2 merged; verify with `git ls-remote origin refs/heads/main`). PR #1 remains OPEN governance-only
+(head b3c6194…). PR #2 is MERGED from head 25565e8f5ab74297ca6a9fdd18c38efbf5416381; merge commit
+`de38db0dc0e66158028b823aaffd6facd3fd1fc5`. The B1/M1 fixes are now in `main`. Evidence for the
+fixed version, executed by Agent 2: WP-1.3 130 passed, capture 220, full regression 1606/0, smoke
+8/8 ×2, compileall 0. Evidence on old PR head 0b073c9 was independently reproduced: 125 / 215 /
+1601 / smoke. PR #3 remains the documentation-only handoff update. No CI exists in this repo.
 
 Do not restart completed work (P1–P12.2 code is on main). Preserve all Frozen
 decisions (D-01..D-09, AD-01..AD-04, AS-01..AS-04) and DEF1..DEF6 — DEF4 stays
