@@ -2085,3 +2085,71 @@ Locked Decisions:     بدون ratification | بدون تغییر فروزن
 Evidence:             SMOKE OK ×2 + pytest + registerها + git diff صفر روی فایل‌های موجود
 Out of Scope:         push | history rewrite | باز کردن WP-1.3 (DEF4 values) | ratification آستانه‌ها (P12.3)
 ```
+
+---
+
+## T-1.3.1 — WP-1.3 Retention/Recovery Contract (Registered Decompose)
+
+```text
+Task ID:              T-1.3.1
+Phase:                P1 — Capture Foundation
+Work Package:         WP-1.3
+Objective:            تولید SPEC-WP13-RETR (decompose ثبت‌شدهٔ WP-1.3 طبق REG-WPR «DEFINED — decompose after WP-1.1») با ACهای صریح AC-1.3.1..AC-1.3.4، واژگان ثبیت‌شدهٔ decision/refusal، و مرز مطلق DEF4 (صفر مقدار سیاست؛ purge فقط gate)
+Status:               ✅ DONE (2026-10-11)
+Implementation Notes: قرارداد فقط از سوابق برقرار مشتق شد (REG-WPR WP-1.3 Scope/Out-of-Scope/DoD + DEF4 + D-02/D-03/D-09 + چهار سند فروزن WP-1.1) — هیچ نیازمندی محصولی اختراع نشد؛ «gate-only interpretation» برای purge در §6 تثبیت شد؛ ACها به رفتار مشاهده‌پذیر + تست نام‌برده گره خوردند (§9)؛ هیچ عدد سیاستی در قرارداد نیامده
+Locked Decisions:     DEF4 (مقادیر مسدود) | D-02/D-03 (هویت/idempotency فروزن) | AS-03 (بدون state جدید) | D-09 (additive-only)
+Reference Documents:  REG-WPR WP-1.3 | registers/deferred-decision-register.md (DEF4) | specs/WP-1.1-capture-record-contract.md | specs/WP-1.1-durable-capture-store-design.md | specs/WP-1.2-s1-hardening-contract.md
+Evidence:             specs/WP-1.3-retention-recovery-contract.md (SPEC-WP13-RETR v1.0-MVP — §1..§11، OD-RT-A..J)
+Out of Scope:         هر مقدار سیاست | حذف فیزیکی |DEF2 tooling | ارائه (DEF5) | تغییر فایل فروزن
+```
+
+---
+
+## T-1.3.2 — Retention Gate + Decision Journal + Consistency Report (Mechanics Implementation)
+
+```text
+Task ID:              T-1.3.2
+Phase:                P1 — Capture Foundation
+Work Package:         WP-1.3
+Objective:            پیاده‌سازی mechanics خالص: دروازهٔ ارزیابی retention با سیاست کاملاً تزریق‌شده و default-deny؛ journal دائمی append-only با زنجیرهٔ tamper-evident و idempotency سطح تصمیم؛ گزارش consistency فقط-خواندنی و قطعی
+Status:               ✅ DONE (2026-10-11)
+Implementation Notes: سه ماژول تازه در src/capture (retention.py / retention_journal.py / consistency.py) — هیچ فایل فروزنی ویرایش نشد و `capture/__init__.py` عمداً گسترش نیافت (OD-RT-I)؛ policy خود-اعتبارسنج با پنج فیلد اجباری بدون default (OD-RT-B)؛ purge فقط `PURGE_GATE_BLOCKED` با executed=False/rows_affected=0 و بدون هر سطح execute (OD-RT-C)؛ clock-free در gate/report و تنها ساعت لایه در journal (OD-RT-G)؛ anchor به‌صورت جدول append-only تا هیچ UPDATE/DELETE در ماژول وجود نداشته باشد (OD-RT-D)؛ report با SQLite mode=ro (OD-RT-F)؛ JSON canonical + ترتیب (code, subject) + fingerprint (OD-RT-H)
+Locked Decisions:     OD-RT-A..H | D-03 (هیچ dedup سند-سطحی) | AD-03/DEF1 (هیچ اثر Sale/Inventory) | DEF4 (هیچ مقدار)
+Reference Documents:  SPEC-WP13-RETR §3..§8 | DES-WP11-T112-STORE §5/§9.1 (الگوی UAC/settlement) | SPEC-WP22-REC (الگوی زنجیره — بدون import)
+Evidence:             src/capture/retention.py، src/capture/retention_journal.py، src/capture/consistency.py + specs/WP-1.3-implementation-report.md §2
+Out of Scope:         اجرای هر سیاست | حذف داده | اتصال به سرویس بیرونی | UI/ارائه
+```
+
+---
+
+## T-1.3.3 — Focused Test Surface + Smoke Runner (Evidence Production)
+
+```text
+Task ID:              T-1.3.3
+Phase:                P1 — Capture Foundation
+Work Package:         WP-1.3
+Objective:            تولید شواهد قابل‌اجرا: ۵ فایل تست متمرکز (policy gate / journal / purge / consistency / recovery matrix) + runner بیست‌ویکمین smoke با ۸ گام cold-start + probe مکانیکی traceability
+Status:               ✅ DONE (2026-10-11)
+Implementation Notes: 125 تست اختصاصی (35 + 24 + 11 + 26 + 15 + 14) — ×3 تکرار مستقل سبز؛ ماتریس crash W1..W4 روی مسیر فروزنِ تسویه؛ fault injection با monkeypatch در سه مرز پایداری (پس INSERT / پس anchor / COMMIT) و یک استثنای غیر-sqlite → صفر-residue؛ concurrency ریکاوری در برابر ingest زنده با assert های invariant-محور (interleaving-independent)؛ اثبات «هیچ حذفی رخ نداد» با مقایسهٔ بایت‌به‌بایت فایل دیتابیس؛确定性 گزارش با اجرای مجدد در اتصال/فرآیند تازه؛ test_wp13_traceability.py جدول §9 قرارداد را parse می‌کند و وجود هر تست نام‌برده را چک می‌کند (AC↔تست مکانیکی)؛ smoke: `run_smoke_retention_recovery.py` — ۸ گام cold-start، SMOKE OK ×2
+Locked Decisions:     Flake Policy (فایل فروزن WP-7.1 دست‌نخورده) | بدون تغییر fixture های فروزن (conftest.py واپس‌نویسی نشد — helpers تازه در wp13_helpers.py)
+Reference Documents:  SPEC-WP13-RETR §9 (testing obligations) | src/capture/tests/test_recovery.py (الگوی residue) | src/capture/tests/test_concurrency.py (الگوی thread/invariant)
+Evidence:             خروجی pytest (125/125 ×3) + SMOKE OK ×2 + specs/WP-1.3-implementation-report.md §3/§4
+Out of scope:         افزودن وابستگی تستی جدید | تغییر تست‌های فروزن | badge/CI config
+```
+
+---
+
+## T-1.3.4 — WP-1.3 Verification + Governance (Registers, Report, Delivery)
+
+```text
+Task ID:              T-1.3.4
+Phase:                P1 — Capture Foundation
+Work Package:         WP-1.3
+Objective:            رگرسیون کامل، اثبات additive-only، به‌روزرسانی Registerها (REG-WPR/REG-TR/REG-AR/REG-RR)، گزارش پیاده‌سازی، و تحویل روی شاخه/PR مستقل
+Status:               ✅ DONE (2026-10-11) — تحویل روی شاخه؛ ادغام در main مجاز نیست (بدون دستور TM)
+Implementation Notes: رگرسیون کامل 1601 جمع‌کل = 1601 PASSED / 0 FAILED / 0 skipped در 203.37s؛ flake ثبت‌شدهٔ تاریخ‌حساس WP-7.1 در این اجرا رخ نداد — مکانیزم شناخته‌شده: date-collision قطعی با تاریخ fixture (2026-10-08) نه race؛ اجرای این WP در 2026-10-11 بود؛ فایل فروزن طبق Flake Policy دست‌نخورده (تصمیم اصلاح = TM/PO)؛ صفر شکست جدید؛ اثبات additive-only: git diff روی `src/**/*.py` خالی است — صفر تغییر در کد/تست baseline؛ ویرایش‌ها فقط ۴ Register + src/README.md و ۱۳ فایل تازه (3 module + 6 test + 1 helper + 1 smoke + 2 spec)؛ REG-DR و REG-DDR ویرایش نشدند (DEC4 باز)؛ وضعیت WP-1.3 در REG-WPR به IMPLEMENTED (in-branch) تغییر کرد و Acceptance رسمی PO/TM ادعا نشد؛ Deliverable pathها در رکوردهای تازه repo-root-relative نوشته شدند تا resolve شوند (یادداشت: رکوردهای قدیمی هنوز پیشوند kandoo/ دارند — قلم جداگانه، MNT/RSK-2 neighbor)
+Locked Decisions:     بدون ادغام | بدون Acceptance claim | بدون G3 claim | DEF4 مسدود
+Reference Documents:  SPEC-WP13-RETR §9/§11 | AGENT_HANDOFF.md §8 (الزامات گزارش)
+Evidence:             specs/WP-1.3-implementation-report.md (WP13-RPT) + registerها + commit/PR
+Out of Scope:         merge به main | بستن/ادغام PR #1 | changes به AGENT_HANDOFF.md و KANDOO_AGENT_COORDINATION.md (مالکیت PR #1/Agent 2 — اجتناب از تعارض)
+```
