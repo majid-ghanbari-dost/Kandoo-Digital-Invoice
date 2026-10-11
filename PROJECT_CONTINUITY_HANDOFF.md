@@ -7,8 +7,7 @@
 نویسنده:        Agent 2 — بازبین مستقل و مسئول تکمیل (شاخهٔ جلسه: arena/a776e4f2-kandoo-digital-invoice)
 وضعیت:          مستند/حکمرانی؛ هیچ فایل Frozen، Register یا DEF4 در بازسازی تغییر نکرد
 مبنای داده‌ها:   بررسی زندهٔ GitHub + اجرای واقعی تست در همین سندباکس (۲۰۲۶-۱۰-۱۱)
-آدرس‌رسانی:     این نسخه در شاخهٔ arena/a776e4f2-kandoo-digital-invoice ثبت است؛
-                انتقال به شاخهٔ docs/project-continuity-handoff (PR #3) = اقدام باز بند ۸.۳
+آدرس‌رسانی:     نسخهٔ به‌روزشده در شاخهٔ docs/project-continuity-handoff و PR #3 قرار دارد.
 ```
 
 > **برچسب‌های ادعا (الزامی برای همهٔ خوانندگان):**
@@ -44,8 +43,8 @@
 | head PR #1 | `b3c6194b6f1b3f5e2c9aeabab688d50463bb41b9` | `اجراشده` |
 | PR #2 head پیش از ادغام | `25565e8f5ab74297ca6a9fdd18c38efbf5416381` | `تأییدشده` — شامل fixهای B1/M1؛ ادغام با commit `de38db0dc0e66158028b823aaffd6facd3fd1fc5` |
 | head PR #3 | `d1cb3b3b17c262eb8158b94f142c717e25e040e3` (سند v2.0 ثبت‌شده؛ این نسخه به‌روزرسانی می‌شود) | `اجراشده` — شاخهٔ سند مستقل از کد |
-| commit تکمیل (B1/M1) | **`25565e8f5ab74297ca6a9fdd18c38efbf5416381`** روی `arena/a776e4f2-kandoo-digital-invoice` | `اجراشده` — پوش شد؛ **روی PR #2 نیست** |
-| محتوای `main` | ۲۸۳ فایل (۲۴۸ `.py` + ۳۵ `.md`)، ۲۵ سند `specs/`، ۲۰ اسکریپت `run_smoke*` | `اجراشده` با `git ls-tree -r main`؛ با PR #2: +۱۱ `.py`، +۲ spec، +۱ smoke |
+| commit تکمیل (B1/M1) | **`25565e8f5ab74297ca6a9fdd18c38efbf5416381`** | `تأییدشده` — در PR #2 ادغام شد و اکنون در `main` است |
+| محتوای `main` | WP-1.3 اکنون در `main` است؛ شمارش فایل‌ها باید از HEAD جاری استخراج شود | `اجراشده` — PR #2 ادغام شده |
 | `baseline/` | **غایب** | `اجراشده` — MNT-1/RSK-2 همچنان باز است |
 
 ### ۲.۲ PRها — وضعیت قطعی
@@ -54,9 +53,9 @@
 |---|---|---|---|---|
 | **#1** | `arena/7bee5f10-kandoo-digital-invoice` @ `b3c6194…` | `OPEN` · `MERGEABLE` · `CLEAN` · ادغام‌نشده | فقط ۲ سند حکمرانی (`AGENT_HANDOFF.md`، `KANDOO_AGENT_COORDINATION.md`)، صفر سورس؛ بدنه‌اش ادعاهای متناقض artifact دارد (بند ۷.۶) | **باز** — این سند را لمس نکرد |
 | **#2** | `arena/23993033-kandoo-digital-invoice` @ `25565e8…` | **MERGED** · merge commit `de38db0dc0e66158028b823aaffd6facd3fd1fc5` | ۱۸ فایل، +4495/−13 — سورس WP-1.3 به‌همراه رفع B1/M1 | **ادغام‌شده**؛ تست‌های نسخه اصلاح‌شده در بند ۳.۳ گزارش شده‌اند |
-| **#3** | `docs/project-continuity-handoff` @ `d1cb3b3…` (با به‌روزرسانی جاری جلو می‌رود) | `OPEN` · مستقل از کد | **فقط** `PROJECT_CONTINUITY_HANDOFF.md`؛ پس از ادغام PR #2 باید diff یک‌فایلی دوباره تأیید شود | **باز — آمادهٔ بررسی نهایی سند** |
+| **#3** | `docs/project-continuity-handoff` @ `9a2a3d0…` (بازنویسی می‌شود تا بر مبنای main باشد) | `OPEN` · mergeability پس از بازپایه‌گذاری بررسی شود | **فقط** `PROJECT_CONTINUITY_HANDOFF.md` | **باز — هندآف به‌روزشده؛ ادغام پس از تأیید diff** |
 
-> **تفکیک مهم:** `main` = WP-1.1 تا WP-12.2 (بسته/پیاده‌سازی‌شده از قبل). WP-1.3 **فقط** روی PR #2 است، نه در `main`. وجود PR/open = Acceptance نیست.
+ > **تفکیک مهم:** `main` شامل WP-1.3 پس از ادغام PR #2 است. ادغام به‌تنهایی Acceptance رسمی PO/TM یا G3 را اثبات نمی‌کند.
 
 ### ۲.۳ وضعیت پذیرش WP-1.3 (مرز تست ↔ Acceptance)
 
@@ -65,7 +64,7 @@
 | شواهد تست | سبز روی head PR #2 **و** سبز روی نسخهٔ تکمیل‌شده (بند ۳.۳) | `اجراشده` |
 | ردیف REG-AR | `AC-1.3.1..4 = PASS` با ستون تصویب `Pending — TM review` | `ثبت‌شده` |
 | Acceptance رسمی PO/TM | **انجام نشده است** — ستون Accepted خالی است | واقعیت |
-| G3 / ادغام P1 | **اعلام نشده**؛ `main` بدون WP-1.3 | واقعیت |
+| G3 / ادغام P1 | **اعلام رسمی G3 هنوز ثبت نشده است**؛ کد WP-1.3 در `main` است | واقعیت |
 | قاعده | **PASS شدن تست ≠ Acceptance.** سبز شدن suite فقط شرط لازم است؛ Acceptance با ثبت صریح TM/PO و ادغام با دستور صریح انجام می‌شود. | — |
 
 ---
@@ -83,7 +82,7 @@
   `test_read_only_connection_rejects_writes_for_metacharacter_paths` (INSERT/UPDATE/DELETE هر سه رد SQLite + پایداری بایت فایل) ·
   `test_metacharacter_journal_path_is_read_correctly`
 - **گاز زدن تست‌ها (`اجراشده`):** هر۴ تست + تست M1 روی کد `0b073c9` **FAILED** و روی کد رفع‌شده **PASSED** — یعنی تست‌ها واقعاً ایراد را می‌گیرند، تزیینی نیستند.
-- **وضعیت نهایی:** **رفع‌شده در commit `25565e8`، اما اعمال‌نشده روی PR #2 → باز (بند ۳.۴).**
+- **وضعیت نهایی:** **رفع‌شده و در `main` ادغام‌شده** با PR #2 (merge commit `de38db0…`).
 
 ### ۳.۲ یافته M1 (MAJOR) — الگوریتم fingerprint ناشناخته
 
@@ -91,7 +90,7 @@
 - **رفع (`اجراشده`):** در `src/capture/retention.py` — `evaluate_retention` پس از بررسی `integrity FAILED`، اگر `record.s1_algorithm_id` مقداری غیر از `sha256-v1` داشته باشد → **`INTEGRITY_DEFERRED`** (همان وضعیت deferred امنِ موجود؛ بدون هیچ واژگان/state جدید) با detail صریح؛ `age_seconds` هرگز محاسبه نمی‌شود. رکورد با binding فروزن دست‌نخورده از eligibility عبور می‌کند.
 - **هماهنگ‌سازی قرارداد (`اجراشده`):** §3 (ردیف `INTEGRITY_DEFERRED`)، §5 (ترتیب refusal — بند صریح «foreign → INTEGRITY_DEFERRED»)، §9 (نام تست تازه به AC-1.3.1 گره خورد: `test_foreign_algorithm_record_is_deferred_not_eligible`)، شرح header «Amended».
 - **تست‌ها:** تست تازهٔ gate (`test_foreign_algorithm_record_is_deferred_not_eligible`) + بازنویسی تست گزارش (`candidates==0`، `refused==1`، `candidate_capture_ids==[]`، finding پابرجا).
-- **وضعیت نهایی:** **رفع‌شده در commit `25565e8`، اما اعمال‌نشده روی PR #2 → باز (بند ۳.۴).**
+- **وضعیت نهایی:** **رفع‌شده و در `main` ادغام‌شده** با PR #2 (merge commit `de38db0…`).
 
 ### ۳.۳ شواهد تست — نسخهٔ نهایی این سندباکس (`اجراشده`)
 
@@ -163,7 +162,7 @@ git diff --name-only --diff-filter=M 80d7c73 -- '*.py'                    # خا
 
 ## ۶. یافته‌های بازِ بازبینی (B1/M1 که رفع شدند؛ مابقی برای TM)
 
-B1 و M1 در بند ۳ ثبت و رفع شدند (وضعیت اعمال: باز). مابقی یافته‌های بازبینی مستقل PR #2 که **نیاز به تصمیم/کار ندارند ولی ثبت‌شده‌اند** (کلاس MINOR/INFO؛ جزئیات در گزارش بازبینی جلسه):
+B1 و M1 در بند ۳ ثبت، رفع، تست و از طریق PR #2 در `main` ادغام شدند. مابقی یافته‌های بازبینی مستقل PR #2 که **نیاز به تصمیم/کار ندارند ولی ثبت‌شده‌اند** (کلاس MINOR/INFO؛ جزئیات در گزارش بازبینی جلسه):
 
 | یافته | خلاصه | وضعیت |
 |---|---|---|
@@ -181,7 +180,7 @@ B1 و M1 در بند ۳ ثبت و رفع شدند (وضعیت اعمال: باز
 1. **تست تاریخ‌حساس** `identity_resolution/tests/test_ir_provenance.py::test_no_raw_pipeline_values_are_stored` (Frozen — WP-7.1): dump کل جدول‌ها را می‌سنجد و literal `2026-10-08` را قدغن می‌کند در حالی که `created_at` از `datetime.now(UTC)` می‌آید → **شکست قطعی فقط در روزِ ۲۰۲۶-۱۰-۰۸** (`اجراشده` با خواندن کد؛ اجرای امروز ۲۰۲۶-۱۰-۱۱ سبز است). **تصحیح نسبت به نسخهٔ ۱: «هر ۸ اکتبر سالانه» غلط است — fixture مطلق است و تکرار سالانه ندارد؛ روز برخورد گذشته است.** اصلاح test-side نیازمند مجوز TM (فایل Frozen)؛ فوریت ندارد.
 2. **Observation هم‌زمانی recovery↔ingest**: رکورد ACTIVE در-جریان با `IllegalTransition` (زیرمجموعهٔ `CaptureLayerError`) از `ingest` بیرون می‌آید؛ INV-C6 نقض نمی‌شود، خوردگی نیست — رفتار تایپ‌دارِ ناخوشایند، نه defect (تأیید `اجراشده` روی کد فروزن). تغییر = فایل فروزن = مجوز TM.
 3. **PR #1**: متناقض و فقط‌مستندات — تکلیف (merge/close/supersede) با TM/PO.
-4. **B1/M1 روی PR #2** — بند ۸.۱.
+4. **B1/M1 روی PR #2** — رفع و ادغام‌شده؛ دیگر blocker نیست.
 5. **بدهی MNT-1/RSK-2**: `baseline/` غایب؛ deadline «پیش از G3 پ۲» گذشته.
 6. **Python floor**: `src/README.md` می‌گوید 3.12+؛ کل suite روی 3.11.2 سبز است — یا سند اصلاح شود یا اجرا روی 3.12+.
 7. **بدون CI**: هیچ workflow نیست (`اجراشده`: `.github` غایب)؛ شواهد فقط محلی است.
@@ -193,9 +192,9 @@ B1 و M1 در بند ۳ ثبت و رفع شدند (وضعیت اعمال: باز
 
 | # | اقدام | مالک | شاهد بستن |
 |---|---|---|---|
-| ۸.۱ | انتقال fixهای B1/M1 به PR #2 | **انجام شد** | head PR #2 روی `25565e8` قرار گرفت و همان head ادغام شد |
+| ۸.۱ | انتقال fixهای B1/M1 به PR #2 | **انجام شد** | head `25565e8` ادغام شد؛ merge commit `de38db0…` |
 | ۸.۲ | **ادغام PR #2 در `main`** | **انجام شد** | GitHub گزارش داد `merged=true`؛ merge commit: `de38db0dc0e66158028b823aaffd6facd3fd1fc5` |
-| ۸.۳ | **به‌روزرسانی هندآف در PR #3** | در حال اجرا | نسخهٔ ۲.۰ باید وضعیت merge واقعی PR #2 را منعکس کند؛ diff PR #3 فقط همین سند بماند |
+| ۸.۳ | **به‌روزرسانی هندآف در PR #3** | **انجام شد؛ بازپایه‌گذاری و بررسی نهایی باقی است** | سند باید بر مبنای `main` باشد و diff فقط همین سند بماند |
 | ۸.۴ | **ادغام PR #3** پس از تأیید سند تازه و diff تک‌فایلی | TM/PO | وضعیت `merged` و merge commit از GitHub تأیید شود |
 | ۸.۵ | **تکلیف PR #1** (بند ۷.۳) | TM (+PO اگر به Acceptance مستندات برسد) | وضعیت نهایی ثبت‌شده در PR و REG؛ هرگز «تحویل سورس» گزارش نشود |
 | ۸.۶ | تصمیم ۷.۱ (fix تست تاریخ) و ۷.۲ (رفتار هم‌زمانی) | TM → در صورت لمس فروزن: PO | ثبت تصمیم در REG-RR/REG-WPR |
@@ -232,7 +231,7 @@ Known live state as of 2026-10-11 (re-verify): main = de38db0dc0e66158028b823aaf
 `de38db0dc0e66158028b823aaffd6facd3fd1fc5`. The B1/M1 fixes are now in `main`. Evidence for the
 fixed version, executed by Agent 2: WP-1.3 130 passed, capture 220, full regression 1606/0, smoke
 8/8 ×2, compileall 0. Evidence on old PR head 0b073c9 was independently reproduced: 125 / 215 /
-1601 / smoke. PR #3 remains the documentation-only handoff update. No CI exists in this repo.
+1601 / smoke. PR #3 remains the documentation-only handoff update; merge it after rebase and one-file diff verification. No CI exists in this repo.
 
 Do not restart completed work (P1–P12.2 code is on main). Preserve all Frozen
 decisions (D-01..D-09, AD-01..AD-04, AS-01..AS-04) and DEF1..DEF6 — DEF4 stays
@@ -245,7 +244,6 @@ reporting the next three decisions from section 8 of the handoff.
 ---
 
 ```text
-پایان سند — نسخه٠۲.۰. این سند مستندات‌محور است: هیچ کد، تست، Register یا تصمیم Frozen را
-تغییر نمی‌دهد. SHA-256 این فایل پس از نهایی‌سازی در پیام commit و در گزارش تحویل نهایی ثبت شده است.
+پایان سند — نسخه ۲.۰. این سند مستندات‌محور است: هیچ کد، تست، Register یا تصمیم Frozen را تغییر نمی‌دهد. وضعیت GitHub باید پیش از استفاده در جلسه جدید دوباره راستی‌آزمایی شود.
 هر ادعای «اجراشده» با فرمان‌های بند ۳.۳ روی همین شاخه قابل بازتولید است؛ بقیه برچسب دارند.
 ```
