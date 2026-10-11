@@ -128,7 +128,7 @@ git diff --name-only --diff-filter=M 80d7c73 -- '*.py'                    # خا
 - شرط (۲) ✅ (`130/220/1606/smoke×2/compileall` — بند ۳.۳)، شرط (۳) ✅ (بند ۳.۳)، شرط (۴) ✅ (`MERGEABLE/CLEAN` — **GitHub مانع نیست**).
 - این مانع در اجرای بعدی رفع شد: commit `25565e8f5ab74297ca6a9fdd18c38efbf5416381` با fast-forward به شاخهٔ PR #2 منتقل شد و سپس PR #2 با commit `de38db0dc0e66158028b823aaffd6facd3fd1fc5` ادغام شد.
 - نتیجهٔ تاریخی: پیش از انتقال fixها، ادغام ممنوع بود چون head حاوی B1/M1 بود. اکنون B1/M1 رفع و PR #2 ادغام شده است؛ این بخش سابقهٔ رخداد را نگه می‌دارد، نه وضعیت فعلی را.
-- رفع مسیر باز: بند ۸.۱.
+- رفع مسیر باز انجام شد؛ PR #2 با موفقیت ادغام شده است.
 
 ---
 
@@ -231,7 +231,7 @@ Known live state as of 2026-10-11 (re-verify): main = de38db0dc0e66158028b823aaf
 `de38db0dc0e66158028b823aaffd6facd3fd1fc5`. The B1/M1 fixes are now in `main`. Evidence for the
 fixed version, executed by Agent 2: WP-1.3 130 passed, capture 220, full regression 1606/0, smoke
 8/8 ×2, compileall 0. Evidence on old PR head 0b073c9 was independently reproduced: 125 / 215 /
-1601 / smoke. PR #3 remains the documentation-only handoff update; merge it after rebase and one-file diff verification. No CI exists in this repo.
+1601 / smoke. PR #3 remains the documentation-only handoff update; verify its one-file diff and mergeability before merge. No CI exists in this repo.
 
 Do not restart completed work (P1–P12.2 code is on main). Preserve all Frozen
 decisions (D-01..D-09, AD-01..AD-04, AS-01..AS-04) and DEF1..DEF6 — DEF4 stays
