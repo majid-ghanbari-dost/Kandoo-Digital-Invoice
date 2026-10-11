@@ -13,7 +13,7 @@ Packaging Note: طبق Bootstrap §5، WP-1.1 پکیج یکپارچه Foundation
 | Phase | عنوان | وضعیت | WP Plan |
 |---|---|---|---|
 | P0 | Architecture Freeze | ✅ DONE | Baseline + MRR + این Bootstrap |
-| P1 | Capture Foundation | ✅ G3 PASS (2026-10-01) — WP-1.1 CLOSED؛ WP-1.2 **IMPLEMENTED** (2026-10-09 — Mission dispatch «CONTINUE FORWARD BEYOND BLOCKED P12 DECISIONS»: 4/4 AC PASS + hardening 36/36 ×3 independent repeats + رگرسیون کامل 1475/1476 سبز + ۱ flake ثبت‌شدهٔ از پیش موجود — SMOKE 20/20؛ در انتظار Acceptance رسمی PO)؛ WP-1.3 معوق (policy values طبق DEF4 مسدود؛ mechanics قابل decompose) | WP-1.1، WP-1.2، WP-1.3 (زیر — کامل) |
+| P1 | Capture Foundation | ✅ G3 PASS (2026-10-01) — WP-1.1 CLOSED؛ WP-1.2 **IMPLEMENTED** (2026-10-09 — 4/4 AC PASS + hardening 36/36 ×3 + رگرسیون 1475/1476 سبز + ۱ flake ثبت‌شدهٔ از پیش موجود — SMOKE 20/20؛ در انتظار Acceptance رسمی PO)؛ WP-1.3 **IMPLEMENTED — IN-BRANCH** (2026-10-11 — Mission dispatch «WP-1.3 Formal Decomposition + Mechanics-Only Implementation»: 4/4 AC PASS با شواهد + dedicated 125/125 ×3 + SMOKE 21/21؛ صفر مقدار DEF4؛ حذف فیزیکی مسدود؛ ادغام در main در انتظار دستور TM — PR dedicated) | WP-1.1، WP-1.2، WP-1.3 (زیر — کامل) |
 | P2 | Reconstruction | ✅ WP-2.1 IMPLEMENTED (2026-10-01 — 6/6 AC PASS)؛ WP-2.2 IMPLEMENTED (2026-10-01 — 6/6 AC PASS)؛ هر دو WP فاز P2 بسته‌اند (Gate فاز P2 هنوز اعلام نشده) | WP-2.1 Page Ordering & Artifact Reconstruction (پایین — کامل)؛ WP-2.2 Reconstruction Evidence (پایین — کامل) |
 | P3 | Extraction | ✅ WP-3.1 IMPLEMENTED (2026-10-01 — 6/6 AC PASS)؛ WP-3.2 IMPLEMENTED (2026-10-01 — 4/4 AC PASS)؛ هر دو WP فاز P3 بسته‌اند (Gate فاز P3 هنوز اعلام نشده) | WP-3.1 Engine-Agnostic Extraction Pipeline (پایین — کامل)؛ WP-3.2 Evidence Binding (پایین — کامل) |
 | P4 | Normalization | ❄️ WP-4.1 **FROZEN** (2026-10-05 — freeze dispatch PO/TM؛ correction pass 92/92 + رگرسیون 292/292 + SMOKE 6/6؛ اولین Freeze رسمی WP در پروژه)؛ WP-4.2 **IMPLEMENTED** (2026-10-06 — 4/4 AC PASS + P4.2 101/101 + رگرسیون 393/393 + SMOKE 7/7؛ در انتظار Acceptance رسمی PO) | WP-4.1 Normalization Rules (پایین — کامل، FROZEN)؛ WP-4.2 DERIVED Provenance & Exact Derivation Mechanism (پایین — کامل، IMPLEMENTED) |
@@ -137,19 +137,53 @@ Agent Type:   implementation agents + QA-verification agent
 ## WP-1.3 — Retention & Recovery (Completion)
 
 ```text
-WP ID: WP-1.3 | Phase: P1 | Status: DEFINED — decompose after WP-1.1; policy values BLOCKED per DEF4
-Owner Role: Backend Dev + QA | Agent Type: implementation + QA-verification
+WP ID:        WP-1.3
+Phase:        P1 — Capture Foundation
+Status:       IMPLEMENTED — IN-BRANCH (2026-10-11) | Acceptance: 4/4 AC PASS (REG-AR — در انتظار Acceptance رسمی TM/PO) | Tasks: 4/4 DONE (T-1.3.1..T-1.3.4 ✅) | ادغام در main انجام نشده (بدون دستور TM) — این ادعا PR-based است، نه main-based
+Owner Role:   Backend Dev (implementation) + QA (verification) + Technical Manager (review)
+Agent Type:   implementation agent + QA-verification agent
 ```
 
-**Goal:** تکمیل mechanics نگهداری و recovery بدون وارد کردن مقادیر سیاست.
-**Scope:** mechanics retention (قلاب‌های TTL/پاک‌سازی به‌صورت پارامتریک) | سخت‌سازی recovery (ماتریس crash، رکوردهای orphan) | گزارش‌گیری وضعیت.
-**Out of Scope:** مقادیر retention/privacy (Blocked: DEF4 — PO) | حذف فیزیکی داده بدون سیاست مصوب | هر تغییر معماری ذخیره‌سازی.
-**Inputs:** WP-1.1 deliverables | DEF4 | Decision Register.
-**Dependencies:** WP-1.1 (DoD کامل).
-**Deliverables:** mechanics retention پارامتریک + ماتریس recovery + شواهد تست.
-**Acceptance Criteria:** (در زمان decompose) mechanics با مقادیر placeholder پارامتریک کار می‌کند؛ هیچ مقدار سیاست hardcoded نیست.
-**Tests:** crash matrix + purge-parameter tests (بدون اجرای سیاست واقعی).
-**DoD:** بسته‌شدن ACها با شواهد + ثبت صریح «policy values pending DEF4».
+**Goal:** تکمیل mechanics نگهداری و recovery بدون وارد کردن مقادیر سیاست (REG-WPR original goal، عیناً حفظ‌شده) — و ثبت صریح اینکه حذف فیزیکی همچنان مسدود است.
+
+**Scope (delivered):**
+- دروازهٔ ارزیابی retention با سیاست **کاملاً تزریق‌شده**: `RetentionPolicy` با پنج فیلد اجباری و بدون هیچ default؛ هر مقدار غایب = refusal تایپ‌دار (`POLICY_UNDECLARED` / `RetentionPolicyIncomplete`)
+- evaluate قطعی و clock-free: verdict فقط از (رکورد دائمی، سیاست تزریق‌شده، `evaluation_time` تزریق‌شده)؛ باند cutoff شامل equality؛ anomaly ها → `DATA_ANOMALY`؛ هدف غیر COMPLETED → `STATE_REFUSED`؛ تعارض شواهد → `INTEGRITY_DEFERRED`
+- **gate-only purge**: `request_purge` زیر هر ورودی فقط `PURGE_GATE_BLOCKED` (executed=False، rows_affected=0)؛ credential ساختگی رد می‌شود چون هیچ issuer تأییدشده‌ای نیست؛ هیچ سطح execute/حذف وجود ندارد
+- decision journal دائمی: append-only با زنجیرهٔ sha256-v1 + anchor جدولی (OD-RT-D)، verified read، refusal روی زنجیر شکسته، idempotency سطح تصمیم (UNIQUE backstop)
+- گزارش consistency فقط-خواندنی (`mode=ro`): orphan content/record، residue تسویه‌نشده، INV-C1/INV-C9، UNVERIFIED-on-COMPLETED، timestamp خراب، algorithm خارجی، duplicate COMPLETED key، orphan/broken journal — قطعی (canonical JSON + fingerprint) و بدون هیچ ترمیمی
+- سخت‌سازی recovery: ماتریس crash W1..W4 روی مسیر تسویهٔ فروزن + idempotence + concurrency ریکاوری/ingest + rollback صفر-residue در سه مرز پایداری
+
+**Out of Scope (unchanged + confirmed):** مقادیر retention/privacy/TTL/purge (DEF4 — Blocked) | **حذف فیزیکی — پیاده‌سازی نشد و مسدود است** | سیاست اشتراک‌گذاری | ماتریس عملیاتی REVIEW (DEF2) | ارائه (DEF5) | هر اثر Sale/Inventory/Customer (AD-03/DEF1/DEF3) | تغییر هر فایل فروزن | انتخاب موتور/DB
+
+**Inputs:** خروجی‌های WP-1.1 (src/capture: model/s1/store/service/recovery) | WP-1.2 hardening (test surface idiom) | DEF4 | Decision Register D-02/D-03/D-09 | Mission dispatch «WP-1.3 Formal Decomposition + Mechanics-Only Implementation» (TM، 2026-10-11)
+
+**Dependencies:** WP-1.1 (CLOSED + G3 PASS) | WP-1.2 (IMPLEMENTED) — هیچ‌کدام برای این WP تغییر نکردند
+
+**Deliverables (delivered on branch `arena/23993033-kandoo-digital-invoice`):**
+1. `specs/WP-1.3-retention-recovery-contract.md` — SPEC-WP13-RETR v1.0-MVP (§1..§11؛ OD-RT-A..J)
+2. `src/capture/retention.py` — gate + policy injection + purge gate (pure, no I/O)
+3. `src/capture/retention_journal.py` — durable append-only decision journal (chain + anchor)
+4. `src/capture/consistency.py` — read-only deterministic consistency/orphan report
+5. `src/capture/tests/test_wp13_retention.py` / `test_wp13_journal.py` / `test_wp13_purge_gate.py` / `test_wp13_consistency.py` / `test_wp13_recovery_matrix.py` / `test_wp13_traceability.py` + `wp13_helpers.py` — 125 dedicated tests
+6. `src/run_smoke_retention_recovery.py` — بیست‌ویکمین smoke (۸ گام cold-start)
+7. `specs/WP-1.3-implementation-report.md` — WP13-RPT (نتایج، محدودیت‌ها، delegated decisions)
+8. به‌روزرسانی Registerها (REG-WPR / REG-TR / REG-AR / REG-RR) — بدون تغییر در REG-DR و REG-DDR
+
+**Acceptance Criteria:** (جزئیات و Evidence در REG-AR)
+- AC-1.3.1 — سیاست فقط تزریق‌شده، default-deny، fail-closed روی داده نامعتبر؛ هیچ مقدار سیاستی در لایه نیست
+- AC-1.3.2 — recovery/tamper evidence: تسویهٔ residue از مسیر فروزن، کشف truncation/rewrite، refusal append روی زنجیر شکسته، withheld read، بدون لمس journal implementations فروزن
+- AC-1.3.3 — purge gate-only و بی‌اثر (بایت‌به‌بایت) + idempotency تصمیم/ثبت و rollback صفر-residue
+- AC-1.3.4 — گزارش قطعی فقط-خواندنی + برچسب DEF4-PENDING + مرزهای additive-only + traceability مکانیکی AC↔تست
+
+**Tests:** 125 dedicated (35 retention + 24 journal + 11 purge + 26 consistency + 15 recovery + 14 traceability) | SMOKE `run_smoke_retention_recovery.py` ۸ گام cold-start ×2 | رگرسیون کامل 1601 جمع‌کل = 1601 PASSED / 0 FAILED (flake تاریخ‌حساس ثبت‌شده در این اجرا رخ نداد — date-collision با 2026-10-08؛ اجرای WP در 2026-10-11) | AST/byte-level probes (clock-free، no mutation SQL، no numeric policy constant، storage byte-stability) | ×3 تکرار مستقل
+
+**Implementation Record (2026-10-11 — T-1.3.1..T-1.3.4):**
+- Decompose و اجرا در همان WP انجام شد (قرارداد → پیاده‌سازی → شواهد → حکمرانی). قرارداد فقط از REG-WPR/DEF4/D-02/D-03/D-09 و چهار سند فروزن WP-1.1 مشتق شد — هیچ تصمیم معماری تازه‌ای ساخته نشد.
+- **DEF4 باز است:** صفر مقدار سیاست؛ `DEF4-PENDING` روی هر decision/journal entry/report؛ حذف فیزیکی وجود ندارد (AST + probe «no numeric policy constant» + بایت‌مقایسهٔ دیتابیس).
+- **additive-only:** `git diff` روی `src/**/*.py` خالی — صفر تغییر در کد و تست baseline (ویرایش‌ها فقط ۴ Register + `src/README.md` + ۱۳ فایل تازه)؛ `capture/__init__.py` واپس‌نویسی نشد (OD-RT-I)؛ هیچ ماژول فروزنی WP-1.3 را import نمی‌کند (تست‌شده).
+- Observation ثبت‌شده برای TM (نه وصله): در حالت concurrency، اگر ریکاوری رکورد ACTIVE در-flight را تسویه کند، ingest همان رکورد با `CaptureLayerError` تایپ‌دار (IllegalTransition) رد می‌شود — سازگار با INV-C6 (ریکاوری همهٔ ACTIVE را تسویه می‌کند) و هیچ خوردگی/نیمه‌حالت ایجاد نمی‌کند؛ چون `service.py`/`recovery.py` فروزند هستند، در این WP additive وصله‌ای اعمال نشد (هر تغییر = تصمیم TM/PO).
+- وضعیت: IMPLEMENTED in-branch + 4/4 AC با شواهد PASS؛ Acceptance رسمی PO/TM و ادغام در main **انجام نشده** (طبق حکمرانی، فقط با دستور صریح TM).
 
 ---
 

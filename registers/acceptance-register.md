@@ -762,3 +762,42 @@ Boundary declaration (WP-1.2): هیچ تعریف S1 تغییر نکرد (D-02)؛
 dedup جدید (D-03/P7)؛ هیچ مقدار retention (DEF4/WP-1.3)؛ هیچ ratification
 آستانه (WP-12.3 — PO/G4)؛ additive-only — فایل‌های فروزن P1–P12.2
 byte-untouched.
+
+---
+
+## P1 — WP-1.3 (Retention & Recovery — Mechanics-Only) — Mission «WP-1.3 Formal Decomposition + Mechanics-Only Implementation» (2026-10-11)
+
+| AC ID | WP | پذیرش (Acceptance Criterion) | Evidence Type | Output Artifact | Tasks | محل تعریف | Tests | نتیجه | تصویب |
+|---|---|---|---|---|---|---|---|---|---|
+| AC-1.3.1 | WP-1.3 | سیاست فقط تزریق‌شده و هر مقدار سیاست غایب = refusal تایپ‌دار: `RetentionPolicy` پنج فیلد الزامی بدون هیچ default قابل‌استفاده (OD-RT-B) — ساخت ناقص → `RetentionPolicyIncomplete` با نام فیلدهای گم‌شده؛ policy غایب → `POLICY_UNDECLARED`؛ `evaluation_time` غایب → `DATA_ANOMALY` (لایه ساعت ندارد، OD-RT-G)؛ timestamp naive/خراب/age منفی → `DATA_ANOMALY` (هرگز UTC فرض نمی‌شود)؛ هدف غیر COMPLETED → `STATE_REFUSED`؛ COMPLETED با integrity=FAILED → `INTEGRITY_DEFERRED` (REVIEW بر حدس)؛ باند cutoff شامل نقطهٔ equality؛ هیچ عدد/TTL/marketing سیاستی در ماژول‌ها وجود ندارد | test_wp13_retention.py (۳۵ تست) + AST probe + خروجی pytest | `src/capture/retention.py` + dedicated suite | T-1.3.1, T-1.3.2, T-1.3.4 | SPEC-WP13-RETR §4/§5/§3 | `test_policy_has_no_usable_defaults`, `test_each_missing_field_alone_is_refused`, `test_evaluate_with_no_policy_object_is_a_typed_refusal`, `test_unusable_timestamps_are_data_anomalies`, `test_active_record_is_state_refused_not_assessed`, `test_completed_but_integrity_failed_is_deferred_to_review`, `test_module_reads_no_clock` | PASS | Pending — TM review (delivered by Agent 1 / 2026-10-11) |
+| AC-1.3.2 | WP-1.3 | Recovery و اثبات دستکاری: هر crash residue (W1..W4) از مسیر فروزن تسویه می‌شود و لایهٔ WP-1.3 در میان آن هیچ state نیمه‌ساخته نمی‌گذارد؛ recovery idempotent است (×۳ اجرا → صفر نوشتن اضافه)؛ بریدگی tail و بازنویسی رکورد میانی و حذف anchor همگی کشف می‌شوند؛ append روی زنجیر شکسته **رد** می‌شود و هیچ رکورد/seq جدیدی ساخته نمی‌شود؛ read بالای زنجیر ناسالم withheld است (نه «پیدا نشد»، نه خواندن ساکت)؛ هیچ پیاده‌سازی journal فروزن (WP-2.2 evidence) تغییر نکرد — journal جدید مستقل است | test_wp13_recovery_matrix.py + test_wp13_journal.py | `src/capture/retention_journal.py` + suites | T-1.3.2, T-1.3.3, T-1.3.4 | SPEC-WP13-RETR §7/§9 | `test_w1_record_only_residue_is_refused_by_retention_then_settled`, `test_all_crash_windows_end_terminal_with_the_retention_layer_attached`, `test_recovery_is_idempotent_across_restarts_with_journal`, `test_truncated_tail_is_detected`, `test_append_is_refused_on_a_broken_chain_and_extends_nothing`, `test_middle_rewrite_is_withheld_on_read`, `test_deleted_anchor_alone_is_detected`, `test_recovery_concurrent_with_ingest_preserves_every_invariant` | PASS | Pending — TM review (delivered by Agent 1 / 2026-10-11) |
+| AC-1.3.3 | WP-1.3 | Purge gate-only و idempotency: `request_purge` زیر هر ترکیب ورودی (policy غایب، policy کامل، policy صفر-ثانیه‌ای، credential ساختگی) فقط `PURGE_GATE_BLOCKED` با `executed=False`/`rows_affected=0` برمی‌گرداند؛ **هیچ حذف فیزیکی وجود ندارد و پیاده‌سازی نشده است** (AST: بدون execute/open/DELETE؛ no setter؛ `PURGE_EXECUTION_ALLOWED=False` ثابت ساختاری است نه مقدار سیاست)؛ پایداری ذخیره‌گاه با مقایسهٔ بایت‌به‌بایت فایل دیتابیس اثبات می‌شود؛ آرتیفکت پس از درخواست‌های مکرر purge still readable است؛ duplicate تصمیم در journal idempotent رد می‌شود (بدون مصرف seq، با backstop UNIQUE که پس از reopen هم برقرار است)؛ rollback در هر مرز پایداری (پس INSERT، پس anchor، در COMMIT، و استثناهای غیر-sqlite) صفر-residue می‌گذارد | test_wp13_purge_gate.py (۱۱) + test_wp13_journal.py | `src/capture/retention.py` + `src/capture/retention_journal.py` | T-1.3.2, T-1.3.3 | SPEC-WP13-RETR §6/§7 | `test_purge_is_blocked_with_no_policy_at_all`, `test_purge_is_blocked_under_every_policy_shape_the_caller_can_invent`, `test_fabricated_authorization_is_refused_not_trusted`, `test_purge_request_leaves_the_capture_database_bytes_untouched`, `test_duplicate_decision_is_idempotent`, `test_duplicate_refusal_survives_reopen_as_a_storage_backstop`, `test_injected_failure_after_row_insert_leaves_zero_residue`, `test_injected_commit_failure_leaves_zero_residue`, `test_unknown_exception_leaves_no_open_transaction` | PASS | Pending — TM review (delivered by Agent 1 / 2026-10-11) |
+| AC-1.3.4 | WP-1.3 | گزارش قطعی، فقط-خواندنی، و مرزهای additive: `build_consistency_report` با `mode=ro` باز می‌شود (عدم‌تغییر در سطح ذخیره‌گاه، نه تعهد کد)؛ orphan content / orphan record / ACTIVE leftover / INV-C1 / INV-C9 / UNVERIFIED-on-COMPLETED / timestamp خراب / algorithm خارجی / duplicate COMPLETED key / orphan journal decision / chain شکسته گزارش می‌شوند و هیچ‌کدام ترمیم نمی‌شوند؛ دو اجرای مستقل و اجرای پس از restart بایت‌یکسان‌اند (fingerprint یکسان)؛ بدون path/clock/content در خروجی؛ سیاست غایب = `NOT_EVALUATED` (نه صفر)؛ برچسب `DEF4-PENDING` روی هر decision/entry/report؛ ماژول‌های فروزن P1 و لایه‌های P2–P12 byte-untouched و هیچ import جدیدی به سمت WP-1.3 ندارند؛ AC↔تست به‌صورت مکانیکی در suite بازبینی می‌شود | test_wp13_consistency.py (۲۶) + test_wp13_traceability.py (۱۴) + SMOKE + git diff | `src/capture/consistency.py` + report suites | T-1.3.2, T-1.3.3, T-1.3.4 | SPEC-WP13-RETR §8/§9/§10 | `test_two_independent_reports_are_byte_identical`, `test_report_never_mutates_the_capture_or_journal_storage`, `test_missing_policy_is_not_reported_as_zero_candidates`, `test_report_carries_no_paths_no_clock_and_no_content`, `test_every_decision_carries_the_def4_pending_label`, `test_frozen_capture_modules_do_not_import_wp13`, `test_no_wp13_symbol_is_exported_from_the_frozen_package_entrypoint`, `test_ac_is_bound_to_named_tests_that_exist`, `test_wp13_modules_declare_no_numeric_policy_constant` | PASS | Pending — TM review (delivered by Agent 1 / 2026-10-11) |
+
+Evidence note (WP-1.3 — 2026-10-11, Agent 1 implementation delivery): dedicated suite =
+125 tests (35 retention + 24 journal + 11 purge-gate + 26 consistency + 15 recovery-matrix +
+14 traceability) — 125/125 PASSED ×3 independent repeats (2.44s / 2.46s / 2.58s)؛
+SMOKE 8-گام cold-start (`run_smoke_retention_recovery.py` — بیست‌ویکمین smoke) OK ×2 (exit 0)؛
+رگرسیون کامل **1601 passed, 0 failed, 0 error, 0 skipped** در 203.37s. حساب additive:
+1476 (baseline HEAD 80d7c73، مستقل بازتولید شد) + 125 جدید = 1601 ✓.
+**flake ثبت‌شدهٔ از پیش موجود در این اجرا رخ نداد** و دلیلش شناخته شده است:
+`test_ir_provenance::test_no_raw_pipeline_values_are_stored` (فrozen WP-7.1) یک
+**date-collision قطعی** است نه race — assert می‌کند literal تاریخ fixture (`2026-10-08`)
+در dump دیتابیس نباشد، ولی `created_at` از `datetime.now(UTC)` ساخته می‌شود؛ پس فقط در
+روزی می‌شکند که تاریخ UTC اجرا با تاریخ fixture برابر باشد (اثبات: با فورس ساعت روی
+2026-10-08 تست FAILED و با ساعت واقعی PASS شد). اجرای این WP در 2026-10-11 انجام شد →
+۱۶۰۱/۱۶۰۱ سبز. فایل فروزن طبق Flake Policy دست‌نخورده (تصمیم اصلاح = TM/PO). محیط: Python 3.11.2 +
+pytest 9.1.1 (stdlib-only؛ هیچ وابستگی تازه‌ای به مخزن اضافه نشد). اثبات additive-only:
+هیچ‌یک از ۲۴۸ فایل .py و هیچ تست موجودی در baseline تغییر نکرد (`git diff` روی `src/**/*.py`
+= خالی)؛ ویرایش‌ها فقط ۴ Register + `src/README.md` (اسنادی که خود این WP مکلف به به‌روزرسانی‌شان است)
+و ۱۳ فایل تازه است.
+
+Policy boundary declaration (WP-1.3): DEF4 باز remains DEFERRED — هیچ مقدار retention/TTL/
+privacy/sharing ساخته نشد؛ حذف فیزیکی پیاده‌سازی نشد و مسدود است؛ `DEF4-PENDING` روی همهٔ
+خروجی‌ها. DEF1/DEF2/DEF3/DEF5/DEF6 دست‌نخورده. Decision Register و Deferred Register در این
+WP ویرایش نشدند.
+
+Boundary declaration (WP-1.3): هیچ حالت lifecycle/وضعیت integrity جدید (AS-03)؛ هیچ تعریف
+idempotency/dedup جدید در سطح سند (D-03) — idempotency فقط برای رکوردهای تصمیم journal است؛
+هیچ اثر Sale/Inventory/Customer/Canonical (AD-02/AD-03/DEF1/DEF3)؛ هیچ موتور/DB انتخاب
+نشده (D-09)؛ no content read در gate/report (INV-C7/INV-C8).

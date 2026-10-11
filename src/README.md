@@ -975,3 +975,57 @@ python3 run_smoke_s1_hardening.py /tmp/kandoo-smoke-s1h
 - OD-SH-D 20th smoke, cold-start, stdlib-only
 - OD-SH-E report at `specs/WP-1.2-hardening-report.md`
 - OD-SH-F zero production-code change — proof, not patch
+
+
+---
+
+# kandoo/src/capture — WP-1.3 Retention & Recovery (mechanics-only, IN-BRANCH)
+
+WP-1.3 adds the *mechanics* the frozen capture layer deliberately left open, and **no
+policy values**: DEF4 (retention duration, privacy marking, sharing, physical purge) is
+still DEFERRED, so every value must arrive from the caller and absence is a typed
+refusal. Bound by SPEC-WP13-RETR v1.0-MVP (`specs/WP-13`… see
+`specs/WP-1.3-retention-recovery-contract.md`).
+
+| Component | File | Implements |
+|---|---|---|
+| Retention gate (pure) | `capture/retention.py` | SPEC §3–§6 — `RetentionPolicy` (5 mandatory fields, zero defaults), `evaluate_retention` (clock-free, fail-closed), `request_purge` (gate-only: always `PURGE_GATE_BLOCKED`) |
+| Decision journal | `capture/retention_journal.py` | SPEC §7 — append-only SQLite log, sha256-v1 record fingerprints, hash chain + append-only anchor table, pre-append chain verification, verified reads, `decision_key` idempotency (UNIQUE backstop) |
+| Consistency report | `capture/consistency.py` | SPEC §8 — read-only (`mode=ro`) deterministic audit: orphans, INV-C1/INV-C9 breaches, unresolved residue, timestamp/algorithm anomalies, duplicate COMPLETED keys, journal cross-checks; canonical JSON + report fingerprint |
+| Tests (125) | `capture/tests/test_wp13_*.py` + `wp13_helpers.py` | SPEC §9 — AC-1.3.1..4 evidence, crash matrix, rollback under injected failures, thread concurrency, byte-stability proofs, mechanical AC↔test traceability |
+| Smoke (21st) | `run_smoke_retention_recovery.py` | 8-step cold start: policy absence → injected eligibility → purge blockage → journal chain/idempotency → truncation refusal → restart determinism → boundary recap |
+
+```bash
+cd kandoo/src
+python3 -m pytest capture/tests/test_wp13_retention.py capture/tests/test_wp13_journal.py \
+  capture/tests/test_wp13_purge_gate.py capture/tests/test_wp13_consistency.py \
+  capture/tests/test_wp13_recovery_matrix.py capture/tests/test_wp13_traceability.py -v
+python3 run_smoke_retention_recovery.py /tmp/kandoo-smoke-wp13     # SMOKE OK
+```
+
+## Delegated implementation decisions (WP-1.3, declared per D-09)
+
+- OD-RT-A ISO-8601-with-offset only; naive/malformed → `DATA_ANOMALY` (never assume UTC)
+- OD-RT-B policy self-validates at construction — a partial policy is not representable
+- OD-RT-C purge gate closed by constant (`PURGE_EXECUTION_ALLOWED=False`, no setter, no
+  execute surface); a supplied credential is refused because no PO-ratified issuer exists
+- OD-RT-D append-only anchor table (one row per decision) instead of a head upsert → the
+  journal contains no UPDATE and no DELETE statement at all; anchor loss is detectable
+- OD-RT-E verified reads withhold (`JournalTamperWithheld`); a missing tail over a
+  disagreeing anchor is reported as tampering, never as a benign "not found"
+- OD-RT-F report opens `mode=ro` URIs — non-mutation is storage-enforced, not promised
+- OD-RT-G frozen `capture.model.utc_now_iso` is the only clock (journal `created_at` only);
+  gate and report own no clock at all
+- OD-RT-H canonical JSON + `(code, subject)` ordering + fingerprint over report bytes
+- OD-RT-I `capture/__init__.py` NOT extended (frozen surface) — submodule import only
+- OD-RT-J fault injection via test-side monkeypatch (`_insert_entry` / `_write_anchor`),
+  no production fault flags
+- Zero-residue by construction: row + anchor commit in ONE transaction → no pending state
+  exists, so `recovery_status()` is a verification, never a sweep
+- No artifact content is ever read or quoted by the gate/journal/report (INV-C7/INV-C8)
+
+Observation for TM/PO (not patched here — frozen files): under concurrency the frozen
+recovery may settle an in-flight ACTIVE record, and that ingest then surfaces a typed
+`CaptureLayerError` (IllegalTransition). This is consistent with INV-C6 ("recovery settles
+ALL ACTIVE") and never corrupts state, but it is an ingest-side behaviour change decision
+outside WP-1.3's additive scope.
