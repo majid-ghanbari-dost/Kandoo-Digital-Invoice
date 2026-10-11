@@ -8,8 +8,9 @@
 نویسنده:        Agent 2 — governance/handoff/review (مأموریت رسمی: Issue #5)
 مبنای داده‌ها:   فقط بررسی زندهٔ GitHub (gh/git در همین سندباکس) + اجرای واقعی تست؛
                 هیچ ادعای «گزارش‌شده» بدون برچسب «قطعی» نشده است.
-آدرس‌رسانی:     شاخهٔ اختصاصی arena/a776e4f2-kandoo-digital-invoice؛ PR این تحویل
-                (لینک نهایی در گزارش Issue #5 و تایم‌لاین PR ثبت می‌شود).
+آدرس‌رسانی:     شاخهٔ اختصاصی arena/a776e4f2-kandoo-digital-invoice →
+                PR #6 (https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/6)
+                شواهد نهایی/SHAها: گزارش همین PR و Issue #5
 پروتکل اجباری:  PUBLICATION_PROTOCOL.md (GOV-PP-01) — الزام‌آور برای همهٔ تحویل‌ها
 ```
 
@@ -58,6 +59,7 @@
 | **PR #3** | **`MERGED`** @ `2026-10-11T19:30:20Z` توسط `majid-ghanbari-dost` · merge commit (API) `77edafa…` (= `main` فعلی) | ۱ فایل `PROJECT_CONTINUITY_HANDOFF.md` از head `b6a2ecc…` | **ادغام‌شده** — نسخهٔ ۲.۰ سند بود؛ همین نسخه ۲.۱ جایگزین آن می‌شود |
 | **Issue #4** | `OPEN` @ `2026-10-11T20:06:31Z` | مأموریت Agent 1: MVP Reality Audit + اولین شکاف بحرانی | **باز — مالک: Agent 1** |
 | **Issue #5** | `OPEN` @ `2026-10-11T20:06:48Z` | مأموریت این نسخه: GitHub Truth + Governance Repair + Continuous Handoff | **باز — مالک: Agent 2** (این سند با اجرای آن ساخته شد) |
+| **PR #6** | `OPEN` · این تحویل (شاخهٔ `arena/a776e4f2-…` → `main`) | هندآف ۲.۱ + GOV-PP-01 + reconciliation ثبت‌ها + `deliveries/issue-5/` | **باز — فقط PO می‌تواند merge کند**؛ گزارش کامل در Issue #5 |
 
 > **تفکیک حیاتی:** ادغام PR ≠ Acceptance رسمی ≠ G3. `main` اکنون حاوی WP-1.3 است؛ این هیچ ستون Acceptance را پر نمی‌کند (بند ۲.۴).
 
