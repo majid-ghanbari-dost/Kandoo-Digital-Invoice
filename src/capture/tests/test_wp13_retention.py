@@ -250,6 +250,30 @@ def test_completed_but_integrity_failed_is_deferred_to_review(capture):
     assert "review" in decision.detail
 
 
+def test_foreign_algorithm_record_is_deferred_not_eligible(capture):
+    """Contract §2.8: a fingerprint algorithm foreign to the frozen binding is the
+    NO-VERDICT class — it is deferred to review and can never be a candidate."""
+    from types import SimpleNamespace
+    store, service = capture
+    cid = ingest_completed(service, content=b"invoice.number=WP13-FOREIGN-ALG\n")
+    foreign = SimpleNamespace(
+        capture_id=cid, capture_state="COMPLETED", integrity_status="VALID",
+        received_at=RECEIVED_AT, created_at=RECEIVED_AT,
+        s1_algorithm_id="legacy-md5-v0",
+    )
+    decision = evaluate_retention(foreign, policy=policy(cutoff_seconds=1),
+                                  evaluation_time=EVAL_TIME)
+    assert decision.outcome == RETENTION_OUTCOME_INTEGRITY_DEFERRED
+    assert decision.age_seconds is None and decision.remaining_seconds is None
+    assert "legacy-md5-v0" in decision.detail and "deferred" in decision.detail
+    # the frozen binding itself keeps passing through unchanged as eligible
+    healthy = store.get_record(cid)
+    assert healthy.s1_algorithm_id == "sha256-v1"
+    ok = evaluate_retention(healthy, policy=policy(cutoff_seconds=1),
+                            evaluation_time=EVAL_TIME)
+    assert ok.outcome == RETENTION_OUTCOME_ELIGIBLE
+
+
 @pytest.mark.parametrize("bad_time", [
     "2026-09-01",             # naive — no offset to trust
     "not-a-date", "", "   ",
@@ -318,7 +342,7 @@ def test_gate_module_contains_no_mutation_or_execution_surface():
             imported.update(a.name.split(".")[0] for a in node.names)
         elif isinstance(node, ast.ImportFrom) and node.module:
             imported.add(node.module.split(".")[0])
-    assert imported <= {"__future__", "dataclasses", "datetime", "typing", "inspect"}
+    assert imported <= {"__future__", "dataclasses", "datetime", "typing", "inspect", "s1"}
     # Stronger than a keyword sweep: the module cannot touch storage or the filesystem
     # at all, because it holds no database/file handles and issues no execute call.
     assert "sqlite3" not in imported and "os" not in imported and "pathlib" not in imported

@@ -26,6 +26,9 @@ WHAT IT NEVER DOES
 Delegated implementation details (SPEC-WP13-RETR §10):
     OD-RT-F  access via a read-only SQLite URI over the frozen schema; zero DDL, zero
              DML, no schema coupling beyond column names the frozen store declares.
+             The path is percent-encoded (holoo_spike ``read_only_uri`` idiom), so
+             ``?``/``#``/``%`` inside a legal path can neither redirect the URI to
+             another file nor omit ``mode=ro``.
     OD-RT-H  findings are ordered by (code, capture_id) and serialized as canonical
              JSON; volatile values (uuids, absolute paths, wall clock) never appear —
              determinism is therefore testable by re-running in fresh processes.
@@ -35,7 +38,9 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import List, Optional
+from urllib.parse import quote
 
 from .retention import (
     DEF4_PENDING_LABEL,
@@ -110,10 +115,18 @@ class ConsistencyReport:
 
 
 def _open_read_only(db_path: str) -> sqlite3.Connection:
-    """OD-RT-F: a read-only connection. Any write attempt through it is a storage
-    error, so the report's non-mutation property does not rest on convention."""
+    """OD-RT-F: a read-only connection over a URI-ENCODED path.
+
+    The path is percent-encoded exactly like the established read-only idiom in
+    ``src/holoo_spike/store.py`` (``read_only_uri``), so URI metacharacters in a
+    legal filesystem path (``?``, ``#``, ``%``) can neither redirect the URI to a
+    different file nor be parsed as a query string — which would silently omit
+    ``mode=ro``. Any write attempt through the returned connection is a storage
+    error, so the report's non-mutation property does not rest on convention.
+    """
     try:
-        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=30.0)
+        uri = "file:" + quote(str(Path(db_path).resolve().as_posix()), safe="/") + "?mode=ro"
+        conn = sqlite3.connect(uri, uri=True, timeout=30.0)
         conn.row_factory = sqlite3.Row
         return conn
     except sqlite3.Error as exc:

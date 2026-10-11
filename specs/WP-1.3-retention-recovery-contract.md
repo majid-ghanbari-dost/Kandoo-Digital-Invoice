@@ -4,6 +4,10 @@
 Spec ID:     SPEC-WP13-RETR
 Version:     1.0-MVP
 Date:        2026-10-11
+Amended:     2026-10-11 (PR #2 re-review B1/M1): §3/§5 — foreign `s1_algorithm_id`
+             is explicitly `INTEGRITY_DEFERRED` (never a candidate); §10 OD-RT-F —
+             read-only URI paths are percent-encoded (holoo_spike idiom); §9 — new
+             named test bound to AC-1.3.1.
 Status:      ACTIVE — binding for the WP-1.3 mechanics implementation
              (the registered decompose step: WP-1.3 "DEFINED — decompose after
              WP-1.1; policy values BLOCKED per DEF4")
@@ -73,7 +77,7 @@ in this WP deletes a row, a file, or an artifact.
 | `ELIGIBLE_CANDIDATE` | age ≥ injected cutoff, reporting permitted — **a report, not an action** | gate |
 | `NOT_ELIGIBLE` | age < injected cutoff (also: candidate reporting disabled by policy) | gate |
 | `STATE_REFUSED` | target is not COMPLETED (recovery owns unresolved state) | gate |
-| `INTEGRITY_DEFERRED` | COMPLETED but integrity FAILED → review, not candidacy | gate |
+| `INTEGRITY_DEFERRED` | COMPLETED but integrity FAILED, or a foreign `s1_algorithm_id` (NO-VERDICT class) → review, not candidacy | gate |
 | `DATA_ANOMALY` | timestamp/operand unusable (naive, malformed, negative age, no injected instant) | gate, report |
 | `PURGE_GATE_BLOCKED` | the only possible answer to a purge request | gate |
 | `DEF4-PENDING` | carried by every decision, journal entry and report | all |
@@ -100,7 +104,9 @@ it can only be expressed by not calling, which the gate answers with
 `evaluate_retention(record, *, policy, evaluation_time)` is a pure function. Refusal
 order is fixed: policy absent → `POLICY_UNDECLARED`; no injected instant →
 `DATA_ANOMALY` (the module owns no clock and never substitutes one); non-COMPLETED →
-`STATE_REFUSED`; integrity FAILED → `INTEGRITY_DEFERRED`; unusable timestamp or negative
+`STATE_REFUSED`; integrity FAILED → `INTEGRITY_DEFERRED`; **`s1_algorithm_id` foreign
+to the frozen binding → `INTEGRITY_DEFERRED`** (the NO-VERDICT class of §2.8 — no
+candidate, no age verdict, review only); unusable timestamp or negative
 age → `DATA_ANOMALY`; else `ELIGIBLE_CANDIDATE` iff `age_seconds >= cutoff_seconds`
 (boundary inclusive), else `NOT_ELIGIBLE` with `remaining_seconds`.
 
@@ -183,7 +189,7 @@ traceability probe test re-checks this table mechanically.
 
 | AC | Observable behaviour proven | Named tests (excerpt) |
 |---|---|---|
-| AC-1.3.1 | policy injection only; default-deny; fail-closed on unusable data | `test_policy_has_no_usable_defaults`, `test_each_missing_field_alone_is_refused`, `test_evaluate_with_no_policy_object_is_a_typed_refusal`, `test_unusable_timestamps_are_data_anomalies`, `test_active_record_is_state_refused_not_assessed`, `test_completed_but_integrity_failed_is_deferred_to_review` |
+| AC-1.3.1 | policy injection only; default-deny; fail-closed on unusable data | `test_policy_has_no_usable_defaults`, `test_each_missing_field_alone_is_refused`, `test_evaluate_with_no_policy_object_is_a_typed_refusal`, `test_unusable_timestamps_are_data_anomalies`, `test_active_record_is_state_refused_not_assessed`, `test_completed_but_integrity_failed_is_deferred_to_review`, `test_foreign_algorithm_record_is_deferred_not_eligible` |
 | AC-1.3.2 | crash residues settle via the frozen path; broken chain detected and append refused; read withheld | `test_w1_record_only_residue_is_refused_by_retention_then_settled`, `test_all_crash_windows_end_terminal_with_the_retention_layer_attached`, `test_recovery_is_idempotent_across_restarts_with_journal`, `test_truncated_tail_is_detected`, `test_append_is_refused_on_a_broken_chain_and_extends_nothing`, `test_middle_rewrite_is_withheld_on_read`, `test_deleted_anchor_alone_is_detected` |
 | AC-1.3.3 | purge blocked and inert (bytes stable); journal durable, idempotent, rollback-clean | `test_purge_is_blocked_with_no_policy_at_all`, `test_fabricated_authorization_is_refused_not_trusted`, `test_purge_request_leaves_the_capture_database_bytes_untouched`, `test_duplicate_decision_is_idempotent`, `test_duplicate_refusal_survives_reopen_as_a_storage_backstop`, `test_injected_failure_after_row_insert_leaves_zero_residue`, `test_injected_commit_failure_leaves_zero_residue`, `test_unknown_exception_leaves_no_open_transaction` |
 | AC-1.3.4 | deterministic read-only report; DEF4 labels; additive-only boundaries | `test_two_independent_reports_are_byte_identical`, `test_report_never_mutates_the_capture_or_journal_storage`, `test_missing_policy_is_not_reported_as_zero_candidates`, `test_report_carries_no_paths_no_clock_and_no_content`, `test_every_decision_carries_the_def4_pending_label`, `test_frozen_capture_modules_do_not_import_wp13`, `test_no_wp13_symbol_is_exported_from_the_frozen_package_entrypoint`, `test_module_reads_no_clock` |
@@ -202,7 +208,7 @@ suites untouched.
 | OD-RT-C | purge gate closed by constant, no setter, credentials unverifiable | DEF4 has no ratified authorization scheme; a WP must not create one |
 | OD-RT-D | append-only anchor table (one row per decision) instead of a head upsert | yields a strictly append-only store with **no** UPDATE/DELETE statement; anchor loss detectable |
 | OD-RT-E | verified reads raise typed `JournalTamperWithheld` (withhold, not deliver) | VOR pattern applied to the journal: no silent broken read |
-| OD-RT-F | report opens `mode=ro` SQLite URIs | non-mutation becomes a storage-enforced property, not convention |
+| OD-RT-F | report opens `mode=ro` SQLite URIs with the path percent-encoded (holoo_spike `read_only_uri` idiom) | non-mutation becomes a storage-enforced property, and `?`/`#`/`%` in a legal path can neither redirect the URI nor drop `mode=ro` |
 | OD-RT-G | reuse the frozen `capture.model.utc_now_iso` as the only clock (journal `created_at` only); gate/report own no clock | one layer clock (OD-8 precedent); determinism where determinism is required |
 | OD-RT-H | canonical JSON + `(code, subject)` ordering + fingerprint over report bytes | byte-level determinism is then testable, not asserted |
 | OD-RT-I | WP-1.3 not re-exported from `capture/__init__.py` | editing that file would touch a frozen module; submodule import is sufficient |

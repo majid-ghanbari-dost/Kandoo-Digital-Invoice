@@ -340,8 +340,8 @@ def test_wp13_modules_import_only_stdlib_and_capture_siblings():
                 elif node.level > 0:
                     imported.add(f".{node.module}")
         assert imported <= {"__future__", "json", "sqlite3", "dataclasses", "datetime",
-                            "typing", "inspect", "re", ".model", ".s1", ".retention",
-                            ".retention_journal", ".consistency"}, (name, imported)
+                            "typing", "inspect", "re", "pathlib", "urllib", ".model", ".s1",
+                            ".retention", ".retention_journal", ".consistency"}, (name, imported)
         forbidden = {"sale", "inventory", "customer_linking", "digital_invoice",
                      "canonical_assembly", "canonicalization", "extraction",
                      "reconstruction", "validation", "validation_domain", "derivation",

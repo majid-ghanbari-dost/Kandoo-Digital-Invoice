@@ -44,6 +44,8 @@ from dataclasses import dataclass, fields
 from datetime import datetime
 from typing import Optional
 
+from .s1 import S1_ALGORITHM_ID
+
 # ---------------------------------------------------------------------------
 # Fixed vocabulary (SPEC-WP13-RETR §3) — the only outcomes this gate can produce
 # ---------------------------------------------------------------------------
@@ -282,6 +284,8 @@ def evaluate_retention(record, *, policy=None, evaluation_time=None) -> Retentio
       R2 evaluation instant absent/bad   → DATA_ANOMALY (a clock is never read here)
       R3 record not COMPLETED            → STATE_REFUSED  (recovery owns unresolved state)
       R4 COMPLETED but integrity FAILED  → INTEGRITY_DEFERRED (evidence conflict → review)
+      R4b foreign s1_algorithm_id        → INTEGRITY_DEFERRED (untrusted fingerprint
+                                            binding → review; never a candidate — §2.8)
       R5 basis timestamp unparseable     → DATA_ANOMALY
       otherwise                          → ELIGIBLE_CANDIDATE | NOT_ELIGIBLE
     """
@@ -331,6 +335,22 @@ def evaluate_retention(record, *, policy=None, evaluation_time=None) -> Retentio
             detail="integrity_status=FAILED on a COMPLETED record is an evidence "
                    "conflict: it is surfaced for review, not converted into a "
                    "retention candidate (REVIEW beats guessing)",
+        )
+
+    # Contract §2.8: a fingerprint algorithm foreign to the frozen binding is the
+    # NO-VERDICT class — no trustworthy age/eligibility verdict can rest on such a
+    # record, so it is deferred to review and can never become a candidate.
+    algorithm_id = getattr(record, "s1_algorithm_id", None)
+    if algorithm_id is not None and algorithm_id != S1_ALGORITHM_ID:
+        return RetentionDecision(
+            outcome=RETENTION_OUTCOME_INTEGRITY_DEFERRED,
+            capture_id=capture_id,
+            policy_id=policy.policy_id,
+            evaluation_time=evaluation_time,
+            detail=f"s1_algorithm_id={algorithm_id!r} is foreign to the frozen "
+                   f"{S1_ALGORITHM_ID} binding: no verdict is computed for it and it "
+                   f"is deferred to review instead of becoming a retention candidate "
+                   f"(REVIEW beats guessing, Contract §2.8)",
         )
 
     basis_text = getattr(record, policy.basis, None)

@@ -37,7 +37,7 @@ from capture.consistency import (
     ConsistencyReport,
     build_consistency_report,
 )
-from capture.consistency import ConsistencyStorageUnavailable
+from capture.consistency import ConsistencyStorageUnavailable, _open_read_only
 
 from wp13_helpers import (EVAL_TIME, PRIVACY_MARKING, RECEIVED_AT, ingest_completed,
                           insert_relaxed_row, policy, relaxed_capture_db)
@@ -170,14 +170,18 @@ def test_unparseable_timestamps_are_detected(tmp_path, bad):
 
 
 def test_foreign_fingerprint_algorithm_is_surfaced_not_resolved(tmp_path):
-    """A foreign id is a NO-VERDICT class: it is reported for review, never re-hashed."""
+    """A foreign id is a NO-VERDICT class: reported for review, never re-hashed,
+    and never counted as a retention candidate (Contract §2.8 / §5 — fail closed)."""
     db = relaxed_capture_db(tmp_path / "capture.db")
     conn = sqlite3.connect(str(db))
     insert_relaxed_row(conn, capture_id="foreign-alg", s1_algorithm_id="legacy-md5-v0")
     conn.close()
     report = build_consistency_report(db, policy=policy(), evaluation_time=EVAL_TIME)
     assert F_FOREIGN_FINGERPRINT_ALGORITHM in report.codes()
-    assert report.summary["retention"]["candidates"] == 1   # still reported as a candidate
+    retention = report.summary["retention"]
+    assert retention["candidates"] == 0                     # deferred, NOT eligible
+    assert retention["candidate_capture_ids"] == []
+    assert retention["refused"] == 1                        # INTEGRITY_DEFERRED bucket
 
 
 def test_duplicate_completed_key_is_detected(tmp_path):
@@ -339,7 +343,7 @@ def test_broken_journal_is_reported_as_inconsistent(capture, tmp_path):
 def test_unreachable_storage_fails_explicitly(tmp_path):
     with pytest.raises(ConsistencyStorageUnavailable):
         build_consistency_report(tmp_path / "does-not-exist.db", policy=policy(),
-                                  evaluation_time=EVAL_TIME)
+                                 evaluation_time=EVAL_TIME)
 
 
 def test_foreign_schema_fails_explicitly(tmp_path):
@@ -350,3 +354,82 @@ def test_foreign_schema_fails_explicitly(tmp_path):
     with pytest.raises(ConsistencyStorageUnavailable):
         build_consistency_report(tmp_path / "capture.db", policy=policy(),
                                  evaluation_time=EVAL_TIME)
+
+
+# -----------------------------------------------------------------------
+# B1 regression — URI metacharacters (?, #, %) in the path: the report must
+# open the INTENDED database and the connection must stay storage-read-only
+# -----------------------------------------------------------------------
+
+def _metachar_capture_env(tmp_path, *, filename="cap?main#1%db.sqlite"):
+    """A capture DB under a path full of URI metacharacters, plus a decoy file at
+    the URI prefix a naive f-string connection would open instead."""
+    weird_dir = tmp_path / "dir?with#chars%20"
+    weird_dir.mkdir()
+    cap = weird_dir / filename
+    store = CaptureStore(cap)
+    service = CaptureService(store, S1Service())
+    cid = ingest_completed(service, content=b"invoice.number=URI-PATH-1\n")
+    store.close()
+    prefix = weird_dir / filename.split("?")[0]      # e.g. .../cap — the wrong file
+    return cap, prefix, cid
+
+
+def test_metacharacter_path_reads_the_intended_database(tmp_path):
+    """The naive URI `file:{path}?mode=ro` splits at the first '?', silently
+    analyzing the wrong file; the encoded path must read the real capture DB."""
+    cap, prefix, cid = _metachar_capture_env(tmp_path)
+    assert not prefix.exists()
+    report = build_consistency_report(cap, policy=policy(), evaluation_time=EVAL_TIME)
+    # the decoy prefix would report 0 records — the intended DB has exactly 1
+    assert report.summary["counts"] == {"records_total": 1, "COMPLETED": 1,
+                                        "ACTIVE": 0, "FAILED_INCOMPLETE": 0}
+    assert report.findings == []
+    assert not prefix.exists()
+
+
+def test_metacharacter_path_never_creates_the_parsed_away_prefix_file(tmp_path):
+    """Read-only means read-only: the opener must not create the misparsed prefix
+    file (the old f-string URI did exactly that in rw mode)."""
+    cap, prefix, _ = _metachar_capture_env(tmp_path, filename="app?x.db")
+    report = build_consistency_report(cap, policy=policy(), evaluation_time=EVAL_TIME)
+    assert report.summary["counts"]["records_total"] == 1
+    assert not prefix.exists()
+
+
+def test_read_only_connection_rejects_writes_for_metacharacter_paths(tmp_path):
+    """mode=ro survives the URI encoding: SQLite itself refuses any write."""
+    cap, _, _ = _metachar_capture_env(tmp_path, filename="write?block%db.sqlite")
+    conn = _open_read_only(str(cap))
+    try:
+        with pytest.raises(sqlite3.OperationalError):
+            conn.execute("INSERT INTO capture_records (capture_id) VALUES ('x')")
+        with pytest.raises(sqlite3.OperationalError):
+            conn.execute("DELETE FROM capture_records")
+        with pytest.raises(sqlite3.OperationalError):
+            conn.execute("UPDATE capture_records SET source_label = 'x'")
+    finally:
+        conn.close()
+    # and the report itself leaves the metacharacter-path DB byte-identical
+    before = cap.read_bytes()
+    build_consistency_report(cap, policy=policy(), evaluation_time=EVAL_TIME)
+    assert cap.read_bytes() == before
+
+
+def test_metacharacter_journal_path_is_read_correctly(tmp_path):
+    """The journal cross-check uses the same opener — decisions must be counted
+    from the intended journal file even when its path contains '?'/#'%/'."""
+    weird_dir = tmp_path / "j?dir#1%2"
+    weird_dir.mkdir()
+    cap, _, cid = _metachar_capture_env(tmp_path)
+    journal_path = weird_dir / "j?ournal#1%db.sqlite"
+    journal = RetentionJournal(journal_path)
+    try:
+        _append_decision(journal, cid)
+    finally:
+        journal.close()
+    report = build_consistency_report(cap, policy=policy(), evaluation_time=EVAL_TIME,
+                                      journal_db_path=journal_path)
+    assert report.summary["journal"]["status"] == "OK"
+    assert report.summary["journal"]["decisions"] == 1
+    assert report.summary["journal"]["chain_ok"] is True
