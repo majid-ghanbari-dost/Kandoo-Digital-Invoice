@@ -13,7 +13,7 @@ Packaging Note: طبق Bootstrap §5، WP-1.1 پکیج یکپارچه Foundation
 | Phase | عنوان | وضعیت | WP Plan |
 |---|---|---|---|
 | P0 | Architecture Freeze | ✅ DONE | Baseline + MRR + این Bootstrap |
-| P1 | Capture Foundation | ✅ G3 PASS (2026-10-01) — WP-1.1 CLOSED؛ WP-1.2 **IMPLEMENTED** (2026-10-09 — 4/4 AC PASS + hardening 36/36 ×3 + رگرسیون 1475/1476 سبز + ۱ flake ثبت‌شدهٔ از پیش موجود — SMOKE 20/20؛ در انتظار Acceptance رسمی PO)؛ WP-1.3 **IMPLEMENTED — IN-BRANCH** (2026-10-11 — Mission dispatch «WP-1.3 Formal Decomposition + Mechanics-Only Implementation»: 4/4 AC PASS با شواهد + dedicated 125/125 ×3 + SMOKE 21/21؛ صفر مقدار DEF4؛ حذف فیزیکی مسدود؛ ادغام در main در انتظار دستور TM — PR dedicated) | WP-1.1، WP-1.2، WP-1.3 (زیر — کامل) |
+| P1 | Capture Foundation | ✅ G3 PASS (2026-10-01) — WP-1.1 CLOSED؛ WP-1.2 **IMPLEMENTED** (2026-10-09 — 4/4 AC PASS + hardening 36/36 ×3 + رگرسیون 1475/1476 سبز + ۱ flake ثبت‌شدهٔ از پیش موجود — SMOKE 20/20؛ در انتظار Acceptance رسمی PO)؛ WP-1.3 **IMPLEMENTED — IN main** (2026-10-11 — Mission dispatch «WP-1.3 Formal Decomposition + Mechanics-Only Implementation»: 4/4 AC PASS با شواهد؛ dedicated 125 تحویل + 5 رفع B1/M1 = **130/130** و رگرسیون کامل **1606/0** و SMOKE 8/8 ×2 (اجراشده Agent 2 — بازتولید: هندآف §۳.۳)؛ **ادغام‌شده با PR #2** (head `25565e8f5ab7…` شامل رفع B1/M1، merge commit `de38db0dc0e6…` @2026-10-11T19:28:01Z؛ main فعلی `77edafa8b474…`)؛ صفر مقدار DEF4؛ حذف فیزیکی مسدود؛ **Acceptance رسمی PO ثبت نشده — ادغام ≠ Acceptance**) | WP-1.1، WP-1.2، WP-1.3 (زیر — کامل) |
 | P2 | Reconstruction | ✅ WP-2.1 IMPLEMENTED (2026-10-01 — 6/6 AC PASS)؛ WP-2.2 IMPLEMENTED (2026-10-01 — 6/6 AC PASS)؛ هر دو WP فاز P2 بسته‌اند (Gate فاز P2 هنوز اعلام نشده) | WP-2.1 Page Ordering & Artifact Reconstruction (پایین — کامل)؛ WP-2.2 Reconstruction Evidence (پایین — کامل) |
 | P3 | Extraction | ✅ WP-3.1 IMPLEMENTED (2026-10-01 — 6/6 AC PASS)؛ WP-3.2 IMPLEMENTED (2026-10-01 — 4/4 AC PASS)؛ هر دو WP فاز P3 بسته‌اند (Gate فاز P3 هنوز اعلام نشده) | WP-3.1 Engine-Agnostic Extraction Pipeline (پایین — کامل)؛ WP-3.2 Evidence Binding (پایین — کامل) |
 | P4 | Normalization | ❄️ WP-4.1 **FROZEN** (2026-10-05 — freeze dispatch PO/TM؛ correction pass 92/92 + رگرسیون 292/292 + SMOKE 6/6؛ اولین Freeze رسمی WP در پروژه)؛ WP-4.2 **IMPLEMENTED** (2026-10-06 — 4/4 AC PASS + P4.2 101/101 + رگرسیون 393/393 + SMOKE 7/7؛ در انتظار Acceptance رسمی PO) | WP-4.1 Normalization Rules (پایین — کامل، FROZEN)؛ WP-4.2 DERIVED Provenance & Exact Derivation Mechanism (پایین — کامل، IMPLEMENTED) |
@@ -139,10 +139,12 @@ Agent Type:   implementation agents + QA-verification agent
 ```text
 WP ID:        WP-1.3
 Phase:        P1 — Capture Foundation
-Status:       IMPLEMENTED — IN-BRANCH (2026-10-11) | Acceptance: 4/4 AC PASS (REG-AR — در انتظار Acceptance رسمی TM/PO) | Tasks: 4/4 DONE (T-1.3.1..T-1.3.4 ✅) | ادغام در main انجام نشده (بدون دستور TM) — این ادعا PR-based است، نه main-based
+Status:       IMPLEMENTED — IN main (2026-10-11 — PR #2 MERGED @2026-10-11T19:28:01Z؛ head `25565e8f5ab7…` شامل رفع B1/M1؛ حضور محتوا در `main` @ `77edafa8b474…` با خواندن فایل تأیید شد) | Acceptance: 4/4 AC PASS (REG-AR — در انتظار Acceptance رسمی TM/PO؛ ادغام ≠ Acceptance) | Tasks: 4/4 DONE (T-1.3.1..T-1.3.4 ✅) | Dedicated: 125 تحویل + 5 رفع = 130؛ رگرسیون 1606/0 (اجراشده — بازتولید: هندآف §۳.۳)
 Owner Role:   Backend Dev (implementation) + QA (verification) + Technical Manager (review)
 Agent Type:   implementation agent + QA-verification agent
 ```
+
+> **Reconciliation — 2026-10-11 (Issue #5):** ادعاهای پیشین این بخش («IMPLEMENTED — IN-BRANCH»، «ادغام در main انجام نشده») تا `2026-10-11T19:28:01Z` معتبر بودند و اکنون با حقیقت GitHub جایگزین شدند؛ تاریخچهٔ رخداد حذف نشده، فقط وضعیتِ زندهٔ سطرها اصلاح شد. نکتهٔ تاریخچه‌ای برای مرجعیت SHA: پس از ادغام PR #3، `main` به `77edafa8b474cf8037a9152593fcad5056e86b57` (تک‌commit بدون والد) بازنویسی شد و `de38db0dc0e66158028b823aaffd6facd3fd1fc5` (merge commit ثبت‌شدهٔ GitHub برای PR #2) دیگر در تاریخچهٔ `main` نیست — اثبات: `git merge-base --is-ancestor de38db0… origin/main` ناموفق؛ تاریخچهٔ قدیم روی شاخهٔ `integration/wp-1.3-retention-recovery` @ `80d7c73fea9c…` محفوظ است.
 
 **Goal:** تکمیل mechanics نگهداری و recovery بدون وارد کردن مقادیر سیاست (REG-WPR original goal، عیناً حفظ‌شده) — و ثبت صریح اینکه حذف فیزیکی همچنان مسدود است.
 
@@ -176,14 +178,14 @@ Agent Type:   implementation agent + QA-verification agent
 - AC-1.3.3 — purge gate-only و بی‌اثر (بایت‌به‌بایت) + idempotency تصمیم/ثبت و rollback صفر-residue
 - AC-1.3.4 — گزارش قطعی فقط-خواندنی + برچسب DEF4-PENDING + مرزهای additive-only + traceability مکانیکی AC↔تست
 
-**Tests:** 125 dedicated (35 retention + 24 journal + 11 purge + 26 consistency + 15 recovery + 14 traceability) | SMOKE `run_smoke_retention_recovery.py` ۸ گام cold-start ×2 | رگرسیون کامل 1601 جمع‌کل = 1601 PASSED / 0 FAILED (flake تاریخ‌حساس ثبت‌شده در این اجرا رخ نداد — date-collision با 2026-10-08؛ اجرای WP در 2026-10-11) | AST/byte-level probes (clock-free، no mutation SQL، no numeric policy constant، storage byte-stability) | ×3 تکرار مستقل
+**Tests:** 125 dedicated تحویل اولیه @ `0b073c9` (35 retention + 24 journal + 11 purge + 26 consistency + 15 recovery + 14 traceability) + **۵ تست رفع B1/M1 = 130/130** @ `25565e8`/`main` | SMOKE `run_smoke_retention_recovery.py` ۸ گام cold-start ×2 (SMOKE OK) | رگرسیون کامل: **1601/0** @ `0b073c9` (اجراشده — بازتولید مستقل Agent 2) و **1606 PASSED / 0 FAILED** پس از رفع B1/M1 (اجراشده Agent 2 @2026-10-11 — فرمان‌ها و خروجی: هندآف §۳.۳ + گزارش Issue #5؛ flake تاریخ‌حساس در این اجرا رخ نداد — date-collision با 2026-10-08؛ اجرای WP در 2026-10-11) | AST/byte-level probes (clock-free، no mutation SQL، no numeric policy constant، storage byte-stability)
 
 **Implementation Record (2026-10-11 — T-1.3.1..T-1.3.4):**
 - Decompose و اجرا در همان WP انجام شد (قرارداد → پیاده‌سازی → شواهد → حکمرانی). قرارداد فقط از REG-WPR/DEF4/D-02/D-03/D-09 و چهار سند فروزن WP-1.1 مشتق شد — هیچ تصمیم معماری تازه‌ای ساخته نشد.
 - **DEF4 باز است:** صفر مقدار سیاست؛ `DEF4-PENDING` روی هر decision/journal entry/report؛ حذف فیزیکی وجود ندارد (AST + probe «no numeric policy constant» + بایت‌مقایسهٔ دیتابیس).
 - **additive-only:** `git diff` روی `src/**/*.py` خالی — صفر تغییر در کد و تست baseline (ویرایش‌ها فقط ۴ Register + `src/README.md` + ۱۳ فایل تازه)؛ `capture/__init__.py` واپس‌نویسی نشد (OD-RT-I)؛ هیچ ماژول فروزنی WP-1.3 را import نمی‌کند (تست‌شده).
 - Observation ثبت‌شده برای TM (نه وصله): در حالت concurrency، اگر ریکاوری رکورد ACTIVE در-flight را تسویه کند، ingest همان رکورد با `CaptureLayerError` تایپ‌دار (IllegalTransition) رد می‌شود — سازگار با INV-C6 (ریکاوری همهٔ ACTIVE را تسویه می‌کند) و هیچ خوردگی/نیمه‌حالت ایجاد نمی‌کند؛ چون `service.py`/`recovery.py` فروزند هستند، در این WP additive وصله‌ای اعمال نشد (هر تغییر = تصمیم TM/PO).
-- وضعیت: IMPLEMENTED in-branch + 4/4 AC با شواهد PASS؛ Acceptance رسمی PO/TM و ادغام در main **انجام نشده** (طبق حکمرانی، فقط با دستور صریح TM).
+- وضعیت: IMPLEMENTED و **ادغام‌شده در `main`** (PR #2: head `25565e8f5ab7…` شامل رفع B1/M1، merge commit `de38db0dc0e6…` @2026-10-11T19:28:01Z؛ محتوای `main` فعلی `77edafa8b474…` حاوی سورس+تست+رفع‌ها تأیید شد)؛ 4/4 AC با شواهد PASS؛ **Acceptance رسمی PO/TM انجام نشده** (ادغام ≠ Acceptance — طبق حکمرانی فقط با ثبت صریح PO/TM).
 
 ---
 
