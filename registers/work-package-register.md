@@ -1786,3 +1786,30 @@ Owner Role: Product Owner (Gate G4)
 **Goal (index-level):** Ratification رسمی آستانه‌های دقت (D-07: 99.9% / 99% / 50–70%) و پارامتر tolerance (D-08) و ماتریس عملیاتی REVIEW (DEF2) بر اساس شواهد Pilot.
 
 **چرا اجرا نشد (Stop-2 — تصمیم PO):** خودِ نام WP در Phase Index «(PO/G4)» است — ratification یک تصمیم محصولی صریح است که فقط PO می‌تواند انجام دهد؛ هیچ Agent/WP مجاز نیست مقدار آستانه‌ای را ratify کند (D-07: «هیچ WP قبل از P12 مجاز نیست این اعداد را به‌عنوان target مهندسی بنویسد» — و پس از P12 نیز ratification در G4 است). ورودی‌های اندازه‌گیریِ لازم توسط WP-12.2 فراهم شد (report فقط شمارش)؛ نکتهٔ تصمیم‌سازی برای PO: شواهد فعلی SYNTHETIC است (corpus برچسب‌خورده) — ratification نهایی روی corpus واقعی طبق D-07 («با Corpus واقعی و Pilot») تصمیم PO است؛ دو مسیر: (الف) ratification آزمایشی/مشروط روی شواهد synthetic، (ب) تهیهٔ corpus واقعی توسط اپراتور/PO و سپس ratification. هیچ policy جایگزینی ساخته نشد.
+
+---
+
+## APP-ISS — Digital Issuance composition (application-level increment; NOT a Work Package; Issue #4 continuation, 2026-10-12)
+
+```text
+Increment ID: APP-ISS (Task T-APP-1)
+Type:         Application-level composition — additive; NOT a new WP and NOT a WP scope change
+Status:       IMPLEMENTED — در PR باز؛ NOT merged · NOT accepted
+Tested commit: 93e1c6e8b3e225f4351cf87214307ec98431d673
+```
+
+**Goal:** یک workspace دائمیِ تحت مالکیت برنامه که کل جریان فروزن AS-01 را از صفحات
+خام تا Digital Invoice با وضعیت ISSUED حمل کند — بدون خودکارسازی، بدون واژه/سیاست
+جدید، و با اتصال ساختاریِ لایهٔ WP-10.1 به همان سرویس Canonical Assembly که
+pipeline در آن می‌نویسد.
+
+**Scope:** `src/issuance/{__init__,model,service,workspace}.py` + `src/issuance/tests/`
+(۲۹ تست) + `src/run_smoke_issuance.py` (بیست‌ودومین smoke) + گزارش/شواهد/تحویل.
+
+**Out of Scope / مرزها:** هیچ AC رسمی WP تغییر نمی‌کند؛ WP-10.2 (ارائه/تحویل) همچنان
+**DEFERRED — DEF5** و WP-11.2 همچنان **DEFERRED — DEF6**؛ WP-12.3 **DEFERRED — PO/G4**؛
+DEF1/DEF2/DEF3/DEF4 بازنشده و مسدود؛ هیچ WP جدیدی Instantiate نشد و Phase Index
+بدون تغییر است (این افزایش در سطح کاربرد/کاربر است، نه Roadmap).
+
+**Evidence:** `specs/ISSUE-4-issuance-composition-report.md` +
+`deliveries/issue-4-issuance/` (شواهد ۲۹/۲۹ focused، ۱۶۸۳/۱۶۸۳ رگرسیون، ۲۲ smoke).

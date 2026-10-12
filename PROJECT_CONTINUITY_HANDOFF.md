@@ -240,3 +240,50 @@ SHA-256 نسخهٔ نهایی این فایل در پیام commit این به�
 ثبت در Issue #5 طبق GOV-PP-01 v1.1 بند ۱/الف فقط با انتقالِ واقعیِ PO/TM برقرار می‌شود.
 هر ادعای «اجراشده» با فرمان‌های بند ۳.۳ قابل بازتولید است؛ باقی برچسب دارند.
 ```
+
+---
+
+## پیوست ۲۰۲۶-۱۰-۱۲ (UTC) — به‌روزرسانی از جلسهٔ پیاده‌سازی Issue #4 (اتصال GitHub فعال)
+
+> این پیوست **الحاقی** است و متن نسخهٔ ۲.۴ بالا را بازنویسی نمی‌کند؛ اظهارهای
+> پایان سند بالا مربوط به همان نسخه/تاریخ خودش است. نویسندهٔ این پیوست: جلسهٔ
+> پیاده‌سازی Agent 1 (مأموریت Issue #4 — مالکیت `src/**` + تست محصول). فایل‌های
+> تحت مالکیت PR #1 (`AGENT_HANDOFF.md`, `KANDOO_AGENT_COORDINATION.md`) دست‌نخورده‌اند.
+
+برچسب‌ها طبق قاعدهٔ همین سند: `اجراشده` = خروجی واقعی همین سندباکس.
+
+**۱) حقیقت زندهٔ GitHub (`اجراشده`، همین جلسه):** `main` =
+`2d61b4dd61837810134cfcd97df8e7d4c0eba9b0` (سرِ `main` با merge commit مربوط به PR #9
+یکسان است — بررسی‌شده). PR #9 (`feat(pipeline): PO-authorized verified
+capture-to-canonical composition`) **MERGED** در `2026-10-12T09:00:59Z`؛ Issue #4
+**OPEN** (آخرین به‌روزرسانی `2026-10-12T09:07:13Z`). تنها PR باز: **PR #1**
+(حکمرانی؛ فقط `AGENT_HANDOFF.md` + `KANDOO_AGENT_COORDINATION.md`).
+
+**۲) تحویل جدید این جلسه (`اجراشده`):** شکاف انتخابی = **Digital Issuance
+composition** (اتصال دو نیمهٔ موجود: `pipeline` → `digital_invoice`). بستهٔ افزودنی
+`src/issuance/` + `src/run_smoke_issuance.py` (بیست‌ودومین smoke) ساخته و تست شد:
+
+- سورسِ تست‌شده: `93e1c6e8b3e225f4351cf87214307ec98431d673` (tree
+  `6707f9eb165d63bb5b3058198715e9e55f90ec1f`)، شاخه
+  `arena/5fbd6749-kandoo-digital-invoice` (پایه = `main` تأییدشده).
+- focused: `pytest src/issuance/tests` → **29 passed** (7.27s)؛ رگرسیون کامل →
+  **1683 passed** (183.96s؛ حساب additive: 1654 + 29 = 1683، صفر شکست جدید)؛
+  **همهٔ 22 smoke runner** → `EXIT_CODE=0` (شامل smoke جدید با ۸ گام).
+- گزارش: `specs/ISSUE-4-issuance-composition-report.md`؛ شواهد خام و archive/manifest
+  زیر `deliveries/issue-4-issuance/` در همان PR.
+- مرزها: هیچ حالت/واژه/سیاست/CLI/purge/presentation جدید؛ DEF1–DEF6 بازنشده؛ هیچ
+  فایل سورس/تست موجودی تغییر نکرد (ویرایش‌ها فقط مستندات/رجیستری/هندآف).
+
+**۳) وضعیت ثبت‌ها (`اجراشده`):** `registers/task-register.md` (T-APP-1)،
+`registers/acceptance-register.md` (بلوک checks مشتق‌شده — **ثبت Acceptance نیست**)،
+`registers/work-package-register.md` (APP-ISS — افزایش سطح کاربرد، نه WP جدید)،
+`src/README.md` (بخش لایهٔ جدید) و همین پیوست به‌روز شدند. Decision Register و
+Deferred Decision Register **تغییر نکردند**.
+
+**۴) اقدام بعدی:** بازبینی TM روی PR (شواهد، مرزها، archive/manifest/SHA)؛
+**merge/Acceptance فقط با دستور صریح PO** و تا آن زمان این تحویل «IMPLEMENTED — در
+PR باز» است. شکاف‌های باقی‌ماندهٔ MVP که به تصمیم PO/TM نیاز دارند (نه افزایش
+Agent): اپ‌های Windows/Android، نقش‌ها/onboarding (DEF2)، ثبت کالا/موجودی روی جریان
+Native (AS-02 بدون قرارداد پیاده‌سازی → STOP)، ارائه/تحویل رسید (DEF5)، adapter
+POS/Holoo/Modian (DEF6/WP-11.2)، سیاست نگهداری (DEF4)، محدودهٔ CLI (D-09)،
+ratification آستانه‌ها (WP-12.3).

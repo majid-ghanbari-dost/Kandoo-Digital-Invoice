@@ -1,0 +1,6 @@
+# Focused suite — Digital Issuance composition
+# Tested source commit: 93e1c6e8b3e225f4351cf87214307ec98431d673
+
+$ cd <repository root> && PYTHONDONTWRITEBYTECODE=1 /home/user/.venv/bin/python -m pytest src/issuance/tests -q -p no:cacheprovider
+.............................                                            [100%]
+29 passed in 7.27s

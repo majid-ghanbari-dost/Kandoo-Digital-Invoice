@@ -1029,3 +1029,52 @@ recovery may settle an in-flight ACTIVE record, and that ingest then surfaces a 
 `CaptureLayerError` (IllegalTransition). This is consistent with INV-C6 ("recovery settles
 ALL ACTIVE") and never corrupts state, but it is an ingest-side behaviour change decision
 outside WP-1.3's additive scope.
+
+---
+
+# kandoo/src/issuance — Digital Issuance composition (Issue #4 continuation, application-level increment)
+
+Additive composition of the two existing production layers into ONE durable, owned
+workspace that carries the frozen AS-01 external flow from raw ordered pages to an
+ISSUED Digital Invoice. It opens no new Work Package and re-implements nothing: the
+`pipeline` composition (PR #9) and the WP-10.1 `digital_invoice` service are consumed
+VERBATIM, and the lifecycle service is bound to the SAME `CanonicalAssemblyService`
+the pipeline assembles into.
+
+| Component | File | Implements |
+|---|---|---|
+| Result shapes | `issuance/model.py` | `IssuanceSubmission` (verbatim pipeline outcome + identity helpers), `DigitalInvoiceStatus` (projection of ONE verified read; `current_state=None` = "no state delivered", never a new state) |
+| Caller surface | `issuance/service.py` | `submit` (verbatim delegation), the six frozen WP-10.1 acts, `read`/`trace` (frozen verified read + whole-chain trace), `status`, and read-only discovery `issued_canonical_invoices`/`opened_digital_invoices`/`awaiting_digital_invoice` |
+| Ownership | `issuance/workspace.py` | `DigitalIssuanceWorkspace(directory, *, validation_rules)` — mandatory caller-declared rules; ExitStack ownership of the eleven pipeline stores + `digital-invoice.db`; idempotent `close()`; constructor failure closes opened stores |
+| Tests (29) | `issuance/tests/` | product path, explicit-act boundary, replay/restart/resume, zero-residue refusals, tamper withholding, whole-chain trace + AST/declaration/ownership/no-deferred-surface probes |
+| Smoke (22nd) | `run_smoke_issuance.py` | 8-step cold-start: pages → verified Canonical Invoice → explicit acts → ISSUED → restart → resume → refusals → supersede/revoke → tamper withholding → boundary recap |
+
+**Layer status: APPLICATION COMPOSITION — additive, no policy, nothing automatic.**
+A successful submission performs NO Digital Invoice action: every lifecycle movement
+is one explicit caller act. No presentation/receipt surface (DEF5/WP-10.2), no
+customer/product semantics (D-06/DEF3/WP-8.1/WP-9.1), no Sale (DEF1), no inventory
+effect (AD-03), no adapter mapping (DEF6/WP-11.2), no retention/purge surface (DEF4 —
+physical purge stays blocked and unreachable), no access matrix (DEF2), no threshold
+value (WP-12.3), no CLI product scope (D-09 — referred to PO/TM).
+
+```bash
+cd kandoo/src
+python3 -m pytest issuance/tests -q
+python3 run_smoke_issuance.py /tmp/kandoo-issuance-smoke     # SMOKE OK — 8 steps
+```
+
+## Delegated implementation decisions (declared per D-09 — OD-IX-A..D)
+
+- OD-IX-A module shape: `model.py` (result shapes only) + `service.py` (verbatim
+  delegation) + `workspace.py` (ownership) + `__init__.py`; no new lifecycle or
+  vocabulary module.
+- OD-IX-B no policy default: `validation_rules` mandatory and passed through verbatim;
+  no tolerance/precision/mode/threshold literal exists in the layer (AST-proven).
+- OD-IX-C one assembly binding: the Digital Invoice service is constructed over the
+  workspace's own assembly service — the provenance guarantee is structural
+  (identity-checked in tests), not a promise.
+- OD-IX-D discovery only: the listing helpers are read-only projections of existing
+  listing surfaces; they decide and advance nothing.
+
+Report + executed evidence: `specs/ISSUE-4-issuance-composition-report.md` and
+`deliveries/issue-4-issuance/`.
