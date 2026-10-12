@@ -2,9 +2,9 @@
 
 ```text
 نوع سند:        Handoff تداوم پروژه — نسخه ۲.۱ (بازسازی‌کامل بر اساس حقیقت زندهٔ GitHub)
-نسخه:           2.2 (پیشین: ۲.۱ — جایگزین ۲.۰ منتشرشده در main؛ نسخهٔ ۱.۰ تاریخی است)
-تاریخ:          2026-10-11 · ویرایش: 2026-10-12 (تعیین تکلیف F1..F4 پس از TM review)
-زمان ثبت (UTC): 2026-10-11T20:28:02Z → به‌روزرسانی: 2026-10-12T06:26:18Z
+نسخه:           2.3 (پیشین: 2.2 — ثبت وضعیت پس از ادغام PR #6؛ نسخه‌های پیشین تاریخی‌اند)
+تاریخ:          2026-10-12 · ویرایش: پس از ادغام PR #6 و ثبت SHA ادغام
+زمان ثبت (UTC): 2026-10-12T06:47:37Z (ادغام PR #6)
 نویسنده:        Agent 2 — governance/handoff/review (مأموریت رسمی: Issue #5)
 مبنای داده‌ها:   فقط بررسی زندهٔ GitHub (gh/git در همین سندباکس) + اجرای واقعی تست؛
                 هیچ ادعای «گزارش‌شده» بدون برچسب «قطعی» نشده است.
@@ -61,7 +61,7 @@
 | **PR #3** | **`MERGED`** @ `2026-10-11T19:30:20Z` توسط `majid-ghanbari-dost` · merge commit (API) `77edafa…` (= `main` فعلی) | ۱ فایل `PROJECT_CONTINUITY_HANDOFF.md` از head `b6a2ecc…` | **ادغام‌شده** — نسخهٔ ۲.۰ سند بود؛ همین نسخه ۲.۱ جایگزین آن می‌شود |
 | **Issue #4** | `OPEN` @ `2026-10-11T20:06:31Z` | مأموریت Agent 1: MVP Reality Audit + اولین شکاف بحرانی | **باز — مالک: Agent 1** |
 | **Issue #5** | `OPEN` @ `2026-10-11T20:06:48Z` | مأموریت این نسخه: GitHub Truth + Governance Repair + Continuous Handoff | **باز — مالک: Agent 2** (این سند با اجرای آن ساخته شد) |
-| **PR #6** | `OPEN` · این تحویل (شاخهٔ `arena/a776e4f2-…` → `main`) | هندآف ۲.۲ + GOV-PP-01 v1.1 + reconciliation ثبت‌ها + `deliveries/issue-5/` | **باز — فقط PO می‌تواند merge کند**؛ بازبینی: `REQUEST CHANGES` (F1..F4) → در همین PR تعیین تکلیف شد (2026-10-12)؛ re-review باز. گزارش‌ها: commentهای همین PR (ثبت در Issue #5 به‌دلیل 403 انجام **نشده** — ۱/الف) |
+| **PR #6** | **MERGED** در `2026-10-12T06:47:37Z` · squash merge commit `23ee54392fcc35be9d2cef94a5af7ba15741c4c6` · head پیش از merge `948d5782569063468f95143671fef956838fb27a` | هندآف v2.2 + GOV-PP-01 v1.1 + اصلاح شواهد REG-AR + آرشیو/مانیفست | **ادغام شد**؛ F1/F3/F4 اصلاح شدند، CLI (F2) صرفاً به PO ارجاع شده و تصمیم محصولی/مجوزی جداگانه می‌خواهد. Issue #5 همچنان باز است؛ ثبت گزارش در آن با 403 انجام نشده است.
 
 > **تفکیک حیاتی:** ادغام PR ≠ Acceptance رسمی ≠ G3. `main` اکنون حاوی WP-1.3 است؛ این هیچ ستون Acceptance را پر نمی‌کند (بند ۲.۴).
 
@@ -214,20 +214,15 @@ Then verify LIVE state before trusting anything:
   gh issue view 4 --json state
   gh issue view 5 --json state
 
-Known live state as of 2026-10-11T20:2xZ (RE-VERIFY — main was rewritten once):
-  main = 77edafa8b474cf8037a9152593fcad5056e86b57 (single root commit; old
-  history 80d7c73 / de38db0 are NOT ancestors; integration/wp-1.3-retention-recovery
-  preserves 80d7c73).
-  PR #1 OPEN (governance docs only, head b3c6194…; review recommendation in
-  handoff §7.9 — do not merge/close without PO order).
-  PR #2 MERGED 2026-10-11T19:28:01Z from head 25565e8… (includes B1/M1 fixes —
-  verified present in main's consistency.py/retention.py).
-  PR #3 MERGED 2026-10-11T19:30:20Z (handoff v2.0; superseded by v2.1).
-  Issue #4 OPEN (Agent 1 — source/tests owner). Issue #5 OPEN (Agent 2 —
-  governance; close only after TM/PO accepts its delivery report).
-  Tests executed by Agent 2 on a tree byte-identical to main: WP-1.3 130 passed,
-  capture 220 passed, full regression see handoff §3.3, smoke OK, compileall 0.
-  No CI exists in this repo; local evidence only.
+Known live state after PR #6 merge — recorded 2026-10-12T06:47:37Z (re-verify before next release):
+  main = 23ee54392fcc35be9d2cef94a5af7ba15741c4c6 (squash merge of Agent 2 PR #6).
+  PR #6 MERGED; governance delivery is on main. No product source files changed by PR #6.
+  PR #1 OPEN (governance docs only, head b3c6194…; overlaps no files with PR #6; do not merge/close until its own review and explicit disposition).
+  PR #2 MERGED 2026-10-11T19:28:01Z; WP-1.3 source/fixes present in main.
+  PR #3 MERGED 2026-10-11T19:30:20Z; prior handoff superseded.
+  Issue #4 OPEN (Agent 1 — source/tests owner). Agent 1's MVP pipeline is NOT yet on GitHub in a reviewable PR; latest delivery is textual/local only, based on the agent's report. The 19-file package and tests are reported, not independently verified here.
+  Issue #5 OPEN (Agent 2 — governance); report comment exists on PR #6, but Issue #5 comment posting failed with HTTP 403.
+  Reported test evidence from Agent 2 on the prior main tree: WP-1.3 130 passed, capture 220 passed, full regression 1606 passed, smoke OK, compileall 0. No CI/check-runs are configured on the PR; these are agent-local execution results.
 
 Preserve Frozen decisions (D-01..D-09, AD-*, AS-*) and DEF1..DEF6 — DEF4 stays
 DEFERRED, no policy values, physical deletion stays blocked. Never edit frozen
@@ -239,9 +234,9 @@ reporting the next three actions from handoff section 8.
 ---
 
 ```text
-پایان سند — نسخه ۲.۲. این سند مستندات‌محور است: هیچ کد/تست/Frozen/DEF تغییر نکرده؛
+پایان سند — نسخه ۲.۳. این سند مستندات‌محور است: هیچ کد/تست/Frozen/DEF تغییر نکرده؛
 REGISTER فقط سطرهای وضعیتِ زنده را با reconciliation تاریخی اصلاح کرده (بند ۷).
-SHA-256 نسخهٔ نهایی این فایل در پیام commit آن نسخه و commentهای همین PR ثبت می‌شود؛
+SHA-256 نسخهٔ نهایی این فایل در پیام commit این به‌روزرسانی ثبت می‌شود؛
 ثبت در Issue #5 طبق GOV-PP-01 v1.1 بند ۱/الف فقط با انتقالِ واقعیِ PO/TM برقرار می‌شود.
 هر ادعای «اجراشده» با فرمان‌های بند ۳.۳ قابل بازتولید است؛ باقی برچسب دارند.
 ```
