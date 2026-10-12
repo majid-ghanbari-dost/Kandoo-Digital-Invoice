@@ -1,0 +1,14 @@
+# Environment — Digital Issuance composition (Issue #4 continuation)
+# Tested source commit: 93e1c6e8b3e225f4351cf87214307ec98431d673
+
+$ /home/user/.venv/bin/python -V
+Python 3.11.2
+
+$ /home/user/.venv/bin/python -m pytest --version
+pytest 9.1.1
+
+$ uname -a
+Linux e2b.local 6.1.158+ #1 SMP PREEMPT_DYNAMIC Mon May 11 18:48:24 UTC 2026 x86_64 GNU/Linux
+
+# Production dependencies remain stdlib + repository packages; pytest was
+# installed in an isolated venv (/home/user/.venv) for test execution only.

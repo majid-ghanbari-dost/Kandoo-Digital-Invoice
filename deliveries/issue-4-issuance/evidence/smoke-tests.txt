@@ -1,0 +1,243 @@
+# All smoke runners in fresh temporary paths — tested source commit 93e1c6e8b3e225f4351cf87214307ec98431d673
+# Loop executed with /home/user/.venv/bin/python; every run report is followed by its EXIT_CODE.
+
+smoke runners: 22
+$ /home/user/.venv/bin/python src/run_smoke.py /home/user/kandoo-smokes-z_1nef89/run_smoke
+1. ingest      -> COMPLETED capture_id=262da0a8d0d9… s1=d49c63388e450a47… state=COMPLETED
+2. read        -> verdict=VALID bytes=34 (byte-exact)
+3. duplicate   -> existing capture_id=262da0a8d0d9… (dedup, no new record)
+4. restart     -> recovery complete, remaining_active=0
+5. tamper      -> read verdict=FAILED reason=mismatch; record integrity=FAILED, state=COMPLETED
+SMOKE OK — full MVP path works end-to-end
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_binding.py /home/user/kandoo-smokes-z_1nef89/run_smoke_binding
+1. extract     -> ExtractionCompleted: 4 verbatim fields (extraction_id=f4a74443bdb4…, document COMPLETED + verified)
+2. bind        -> BindingCompleted: whole chain verified at bind time (binding_id=e1f1e942ad38…, evidence anchor seq=1)
+3. walk        -> field 0 ('invoice.number' = 'SMOKE-2026-77') proven to page 0 bytes [15,28) → artifact span → capture S1 — all 4 entries machine-checked
+4. idempotency -> replay returns the SAME binding_id (INV-B-1:1); unbound extraction reads back refused; enumeration exact
+5. restart     -> binding durable; verified read re-verifies ALL five links (verified_at=2026-10-12T09:54:57…)
+6. forgery     -> coherently forged page passes the frozen verified read, binding read fails at the SPAN link, nothing delivered
+7. tamper(a)   -> binding entry mutated, read fails at the BINDING link (fingerprint mismatch recomputed inside the read)
+8. tamper(b)   -> bound extraction value mutated AFTER binding, read fails at the EXTRACTION link (the binding makes the tamper provable)
+SMOKE OK — Extraction → Evidence Binding is real, durable, tamper-evident, and per-field traceable to Document/Page + source span + Capture + Evidence
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_calibration.py /home/user/kandoo-smokes-z_1nef89/run_smoke_calibration
+1. corpora     -> 3 SYNTHETIC corpora assembled (clean=3, rounding=6, review=2 entries; marked SYNTHETIC_PILOT_FIXTURE)
+2. clean run   -> gate ACCEPTED x3; all labels MATCH; 4 reference rules VALID
+3. D-08 sweep  -> 0.00: all beyond | 0.01: split | 0.02: all within (counts only — nothing ratified)
+4. review run  -> gate REVIEW x2 (upstream uncertainty held); ABSENT label matched
+5. determinism -> fresh workspace: byte-identical report JSON
+6. re-run      -> CalibrationRunRefused (one run per workspace)
+7. corpus safe -> corpus store unchanged (11 entries)
+8. fail-closed -> used workspace refused; report-only output
+SMOKE OK — calibration run path works end-to-end (cold start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_canonical_assembly.py /home/user/kandoo-smokes-z_1nef89/run_smoke_canonical_assembly
+  step 1: frozen pipeline + gate ACCEPTED → WP-6.2 assembles the Canonical Invoice with the Kandoo-issued invoice_id (verbatim) + full-chain trace — OK
+  step 2: gate REVIEW (ambiguous identity) → NO invoice, assemble refused — OK
+  step 3: idempotent replay: same admission + same declaration → the same invoice, no second row — OK
+  step 4: restart recovery: reopen, re-verify, issued invoice survives — OK
+  step 5: tamper detection: forged line value → content withheld — OK
+  step 6: frozen-layer survival sweep: P1..P6.1 verified reads intact + assembly vocabulary sweep — OK
+SMOKE OK — Canonical Assembly is real, durable, deterministic, provenance-complete, boundary-safe (WP-6.2).
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_canonicalization.py /home/user/kandoo-smokes-z_1nef89/run_smoke_canonicalization
+  step 1: frozen pipeline + VALID/CLEAR state → gate ACCEPTED → canonical invoice + full-chain trace — OK
+  step 2: D-03 identity ambiguity (two candidates) → REVIEW + gate queue item — OK
+  step 3: D-03 duplicate: same S2 from a different capture → decisive REJECTED, exactly one canonical invoice — OK
+  step 4: idempotency: state replay → AlreadyDecided; capture replay via re-projection → ALREADY_CANONICALIZED — OK
+  step 5: gate REVIEW lifecycle: annotate → close (terminal) → post-close refused — OK
+  step 6: restart recovery: reopen, re-verify, admission survives — OK
+  step 7: tamper detection: forged invoice row → content withheld — OK
+  step 8: frozen-layer survival sweep: P1..P5.2 verified reads intact + gate vocabulary sweep — OK
+SMOKE OK — Canonicalization Gate is real, durable, deterministic, provenance-complete, boundary-safe (WP-6.1).
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_corpus.py /home/user/kandoo-smokes-z_1nef89/run_smoke_corpus
+1. assemble    -> CorpusAssembled version=ca8a1ced58d49963… entries=4
+2. replay      -> CorpusReplay verbatim; store rows=4 (zero new)
+3. read        -> CorpusReadSuccess verified; marking contract OK on 4 entries
+4. declarations -> distinct content addresses per declaration
+5. determinism -> independent store reproduces the SAME corpus
+6. tamper      -> CorpusReadIntegrityFailure (corpus withheld)
+7. restart     -> reopened store verifies the intact version
+8. fail-closed -> bad declarations refused (typed)
+SMOKE OK — corpus assembly path works end-to-end (cold start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_customer_linking.py /home/user/kandoo-smokes-z_1nef89/run_smoke_customer_linking
+WP-9.1 smoke — base: /home/user/kandoo-smokes-z_1nef89/run_smoke_customer_linking
+  step 1: OK — explicit registration of an EXISTING customer + frozen pipeline → issued invoice → deterministic byte-exact LINKED (D-06)
+  step 2: OK — replay: same declaration → CustomerLinkReplay verbatim, ZERO new rows anywhere
+  step 3: OK — customer-looking data with NO existing customer → durable UNRESOLVED and the register stays EMPTY (D-06/DEF3 — no auto-create, structurally); a later registration never rewrites the fact
+  step 4: OK — declared-field refusals: unknown field / empty declaration → refused with ZERO durable residue
+  step 5: OK — restart: durable links survive and re-verify; replay verbatim
+  step 6: OK — tamper detection: a forged link row is withheld — never served
+  step 7: OK — byte-identity discipline: a case-different identifier is a DIFFERENT identifier (no folding, no tolerance, OD-CL3)
+  step 8: OK — frozen-layer survival + vocabulary sweep: linking grew NO frozen store and NO customer beyond explicit registration; the durable vocabulary knows exactly two outcomes
+SMOKE OK — 8 steps (deterministic customer linking, cold-start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_derivation.py /home/user/kandoo-smokes-z_1nef89/run_smoke_derivation
+1. frozen path   -> Capture → Document → Extraction → WP-3.2 Binding OK
+2. normalize     -> 4 NORMALIZED (total.net=1000.00, tax.amount=80) — WP-4.1 FROZEN grammar
+3. derive        -> DERIVED total.gross=1080 (= 1000.00 + 80, exact; formula kandoo-der-total-gross-from-net-tax/1, fp daed14f14a8b…)
+4. trace         -> derivation → formula → inputs → normalization → extraction → binding → Document/Page/span → Capture S1: ALL LINKS OK
+5. refusals      -> replay=AlreadyExists (INV-D-1:1); unknown formula refused; missing input → NOT_DERIVABLE (no value, no UNRESOLVED, nothing persisted)
+6. restart       -> derivation durable; verified read VALID; whole chain re-verifies; replay idempotent
+7. tamper        -> mutated DERIVED value caught (fingerprint mismatch); content withheld; outcome explicit
+8. vocabulary    -> stored provenance sweep: exactly one label — DERIVED (UNRESOLVED structurally impossible; P5 territory)
+SMOKE OK — Exact Derivation is real, durable, deterministic, evidence-bound, and traceable end-to-end (ready for Canonicalization Gate consumers)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_digital_invoice.py /home/user/kandoo-smokes-z_1nef89/run_smoke_digital_invoice
+WP-10.1 smoke — base: /home/user/kandoo-smokes-z_1nef89/run_smoke_digital_invoice
+  step 1: OK — frozen pipeline → issued invoice → open Digital Invoice → DRAFT (entry ONLY through the P6.2 verified read + whole-chain trace)
+  step 2: OK — explicit lifecycle acts DRAFT → EXTRACTED → VALIDATED → ISSUED (frozen vocabulary verbatim; each act re-verifies the LIVE P6.2 chain)
+  step 3: OK — idempotent replays: open replay + act replays return the durable fact verbatim with ZERO new rows (D-03)
+  step 4: OK — transition refusals: skips and terminal-exit attempts are refused with zero durable residue — NOTHING is automatic
+  step 5: OK — supersede: an ISSUED replacement verified at act time → source SUPERSEDED (terminal), pointer durable; unknown/not-ISSUED/self replacements refused
+  step 6: OK — revoke: the second invoice (after full progression) → REVOKED; terminal discipline holds
+  step 7: OK — restart: durable lifecycle survives and re-verifies; replay verbatim; the P6.2 chain still verifies
+  step 8: OK — tamper withholding + vocabulary sweep: a forged row is never served; the frozen stores grew nothing; the vocabulary is exactly the frozen six states
+SMOKE OK — 8 steps (digital invoice lifecycle, cold-start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_duplicate_flows.py /home/user/kandoo-smokes-z_1nef89/run_smoke_duplicate_flows
+WP-7.2 smoke — base: /home/user/kandoo-smokes-z_1nef89/run_smoke_duplicate_flows
+  step 1: OK — frozen pipeline + VALID/CLEAR state → first flow sighting → IDENTITY_ESTABLISHED (S2) + verified flow read
+  step 2: OK — reprint recognition: same state + re-projection → FlowReprintRecognized verbatim, zero new rows anywhere
+  step 3: OK — D-03 definite duplicates: twin + third-order captures → DUPLICATE_RECOGNIZED pointing at the ONE original + the durable duplicate register
+  step 4: OK — CAPTURE_SCOPED capture → IDENTITY_ESTABLISHED with NO document identity — never a duplicate, never guessed (D-03)
+  step 5: OK — declaration drift on reprint → FlowRequestRefused propagated verbatim, zero durable residue
+  step 6: OK — restart: the durable dispositions survive and re-verify — reprints recognized, the duplicate register coherent
+  step 7: OK — tamper detection: a forged disposition row is withheld — never served, never recognized
+  step 8: OK — frozen-layer survival + vocabulary sweep: frozen stores untouched by reprints; REPRINT_RECOGNIZED never durable; upstream rows stable
+SMOKE OK — 8 steps (reprint & duplicate flows, cold-start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_evidence.py /home/user/kandoo-smokes-z_1nef89/run_smoke_evidence
+1. reconstruct  -> COMPLETED document_id=a69ebaf2a8b3… evidence=DOCUMENT_COMPLETED (3 page spans, capture-bound)
+2. verified read -> VALID; evidence chain [DOCUMENT_COMPLETED → VERIFIED_READ/VALID]; verify_chain OK (records=2)
+3. span fidelity -> artifact[start:end] == durable page bytes (byte-exact), page fingerprints match
+4. restart      -> recovery complete; evidence durable; chain valid up to seq=3; post-restart read VALID evidenced
+5. page tamper  -> read FAILED; evidence VERIFIED_READ/FAILED recorded (audit trail of the integrity failure)
+6. evidence tamper -> explicit IntegrityFailure at seq=1 (no silent broken evidence read)
+SMOKE OK — Capture → Reconstruction → verified Read with durable, tamper-evident, structural Evidence works end-to-end
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_extraction.py /home/user/kandoo-smokes-z_1nef89/run_smoke_extraction
+1. reconstruct  -> COMPLETED document_id=1df81affac96… (2 pages)
+2. extract      -> ExtractionCompleted: 4 verbatim fields ['invoice.number', 'invoice.date', 'seller.name', 'total.gross'] (each bound to page_index + byte span + page_fingerprint)
+3. span fidelity -> page bytes[start:end] decoded == value_verbatim (byte-exact, EXTRACTED-only provenance)
+4. idempotency  -> same document+engine replay returns the SAME extraction_id (INV-X-1:1, no second record)
+5. restart      -> record + fields durable; verified read VALID (verified_at=2026-10-12T09:55:08…)
+6. explicit outcomes -> unknown engine / tampered record (read FAILED, content withheld) / undecodable page (engine failed) / unknown document (refused) — all explicit, nothing silent
+SMOKE OK — Document/Page → Extraction-ready input → Extracted structured data works end-to-end (durable, traceable, verbatim, engine-agnostic)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_holoo_spike.py /home/user/kandoo-smokes-z_1nef89/run_smoke_holoo_spike
+WP-11.1 smoke — base: /home/user/kandoo-smokes-z_1nef89/run_smoke_holoo_spike
+  step 1: OK — SYNTHETIC Holoo-shaped fixture built (deterministic)
+  step 2: OK — READ-ONLY spike run — discovery + declared-mapping extraction report
+  step 3: OK — Determinism — second run byte-identical (replay/duplicate semantics)
+  step 4: OK — No-mutation byte proofs — source + directory untouched, no side files
+  step 5: OK — Engine-level write refusals through the production connection (L1)
+  step 6: OK — Guard-level refusals for every mutating statement class (L3)
+  step 7: OK — Fail-closed mapping refusal — recorded honestly, no fabricated rows
+  step 8: OK — Report JSON written by the RUNNER — package stays disk-clean (L/OD-HS-J)
+SMOKE OK — 8 steps (holoo db spike, read-only, cold-start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_identity_resolution.py /home/user/kandoo-smokes-z_1nef89/run_smoke_identity_resolution
+  step 1: frozen pipeline + VALID/CLEAR state → S2 resolution recorded + verified read + role evidence — OK
+  step 2: S1 replay: same state + re-projection → Replay verbatim, exactly one resolution — OK
+  step 3: D-03 definite duplicate: same S2 from a different capture → observation referencing the original, ONE document identity — OK
+  step 4: CAPTURE_SCOPED fail-closed: ambiguity preserved, never selected; incomplete → explicit — OK
+  step 5: declaration drift on replay → refused, no second identity, no silent reshape — OK
+  step 6: restart recovery: reopen, re-verify, replay survives — OK
+  step 7: tamper detection: forged resolution row → content withheld — OK
+  step 8: frozen-layer survival sweep: P1..P5.2 verified reads intact + identity vocabulary sweep — OK
+SMOKE OK — Identity Resolution is real, durable, deterministic, provenance-complete, boundary-safe (WP-7.1).
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_issuance.py /home/user/kandoo-smokes-z_1nef89/run_smoke_issuance
+Digital issuance smoke — base: /home/user/kandoo-smokes-z_1nef89/run_smoke_issuance
+  step 1: OK — cold start: raw pages → verified Canonical Invoice (fields, lines, provenance) through the frozen capture-to-canonical composition
+  step 2: OK — the submission opened nothing: the verified read and all five lifecycle acts are refused before an explicit open (explicit acts)
+  step 3: OK — explicit acts: open → DRAFT → EXTRACTED → VALIDATED → ISSUED on the frozen vocabulary (AS-03), each act re-verifying the LIVE P6.2 chain
+  step 4: OK — idempotent replays: submit replay, open replay and act replay return the durable facts with ZERO new rows (D-03)
+  step 5: OK — after a restart the composed path still serves the verified ISSUED fact and the whole-chain trace down to Capture S1
+  step 6: OK — resume: an invoice submitted before a stop stays outstanding after restart until an explicit act opens it (no automatic behaviour)
+  step 7: OK — refusals stay honest: skips/backward/terminal-exit/unknown invoices and a REVIEW stop never produce a Digital Invoice (zero residue)
+  step 8: OK — supersede/revoke reach their terminal states, a tampered row is withheld, and the composition boundary holds (no purge/CLI/SQL)
+SMOKE OK — 8 steps
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_normalization.py /home/user/kandoo-smokes-z_1nef89/run_smoke_normalization
+1. extract      -> frozen P3 path OK: document=bdadcca528a1…, 7 verbatim fields
+2. bind         -> frozen WP-3.2 binding OK (five-link whole-chain verification)
+3. normalize    -> 7 fields: 5 NORMALIZED, 2 DEFERRED, 0 REJECTED (total mapping — nothing invented, nothing lost)
+4. provenance   -> walk verified: normalized field → (extraction_id, field_seq) → verbatim span → Document/Page → Capture S1
+5. idempotency  -> replay = explicit AlreadyExists (INV-N-1:1); unknown ruleset refused explicitly; zero residue
+6. rejection    -> control-character value → REJECTED with reason (never 'fixed', never silent)
+7. restart      -> record + fields durable; verified read VALID; frozen binding intact; replay idempotent
+8. tamper       -> mutated normalized value caught (fingerprint mismatch); content withheld; outcome explicit
+SMOKE OK — Extraction → Normalization is real, durable, deterministic, engine-independent, and traceable end-to-end (ready for the Canonicalization Gate)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_product_matching.py /home/user/kandoo-smokes-z_1nef89/run_smoke_product_matching
+WP-8.1 smoke — base: /home/user/kandoo-smokes-z_1nef89/run_smoke_product_matching
+  step 1: OK — explicit catalog registration + frozen pipeline → issued invoice → byte-exact D-05 EXACT_MATCHED pointing at the catalog identity
+  step 2: OK — replay: same declaration → ProductMatchReplay verbatim, ZERO new rows; second declared reference appends (append-only facts)
+  step 3: OK — unregistered identifier → durable UNRESOLVED (ambiguity remains ambiguity); a later registration never rewrites the fact
+  step 4: OK — declared-field refusals: unknown field / empty declaration → refused with ZERO durable residue
+  step 5: OK — restart: durable matches survive and re-verify; replay verbatim
+  step 6: OK — tamper detection: a forged match row AND a tampered invoice both withhold content — never served
+  step 7: OK — byte-identity discipline: a case-different identifier is a DIFFERENT identifier (no folding, no tolerance, OD-PM3)
+  step 8: OK — frozen-layer survival + vocabulary sweep: matching grew NO frozen store; the durable vocabulary knows exactly two outcomes
+SMOKE OK — 8 steps (product exact match, cold-start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_reconstruction.py /home/user/kandoo-smokes-z_1nef89/run_smoke_reconstruction
+1. capture     -> COMPLETED capture_id=c6d69790dddc… s1=4d895c039e13041f… bytes=96
+2. reconstruct -> COMPLETED document_id=13ad32d3a0fe… pages=4 capture_link=c6d69790dddc…
+3. verified read -> verdict=VALID pages=4 ordered byte-exact (framing join == capture artifact)
+4. re-reconstruct -> explicit AlreadyExists document_id=13ad32d3a0fe… (INV-R-1:1)
+5. restart      -> recovery complete, remaining_active=0; document durable and VALID after restart
+6. tamper       -> read verdict=FAILED reason=page content mismatch; document integrity=FAILED, state=COMPLETED (no silent broken read)
+7. boundaries   -> durable doc independent of corrupted source (AlreadyExists); new build on corrupted source explicit-failed; unknown-id read refused
+SMOKE OK — full Reconstruction MVP path works end-to-end
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_retention_recovery.py /home/user/kandoo-smokes-z_1nef89/run_smoke_retention_recovery
+  ok  1. cold start     -> COMPLETED b15500bc… + verified read byte-exact
+  ok  2. no policy      -> POLICY_UNDECLARED; every partial policy refused (5 shapes, each naming what is missing)
+  ok  3. injected policy -> eligible at cutoff, 1s inside window, ACTIVE refused, no injected instant → refused
+  ok  4. purge gate     -> PURGE_GATE_BLOCKED (even with a forged credential); capture.db bytes identical; artifact readable
+  ok  5. journal        -> 3 chained decisions, duplicate refused at seq 1, recovery status complete
+  ok  6. tamper evidence -> tail truncation detected, append refused, read withheld (no silent extension, no silent read)
+  ok  7. restart        -> report byte-identical ×2 (fingerprint f534768b941d…), residue settled, no-policy = NOT_EVALUATED, broken journal surfaced
+  ok  8. boundary recap -> zero mutation SQL in WP-1.3 modules; no clock in the gate/report; purge gate closed by construction; frozen capture modules carry no WP-1.3 hook
+SMOKE OK — WP-1.3 retention/recovery mechanics hold end-to-end (cold start; DEF4 policy values remain un-set; no physical deletion)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_s1_hardening.py /home/user/kandoo-smokes-z_1nef89/run_smoke_s1_hardening
+1. determinism  -> x2 identical (S1,id) on all 6 declared classes
+2. sensitivity  -> every declared mutation changes S1; framing unambiguous
+3. type/hostile  -> bytes-only compute typed; wrong digest FAILED; unknown id NO_VERDICT
+4. roundtrips   -> empty/persian/4MiB ingest+read VALID; duplicates explicit
+5. fail-closed   -> compute outage: IngestSettledFailure, pinned, zero COMPLETED residue
+6. store defects -> tamper ReadIntegrityFailure; forged unknown id ReadVerificationUnavailable + issue; CHECK refuses impossible state
+7. agility       -> cross-id NO_VERDICT; uniqueness keyed on (s1, s1_algorithm_id) pairs
+8. binding recap-> S1_ALGORITHM_ID == sha256-v1 (FROZEN); 6 COMPLETED records; E1..E11 executed; zero code patched
+SMOKE OK — S1 hardening edge matrix holds end-to-end (cold start)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_validation.py /home/user/kandoo-smokes-z_1nef89/run_smoke_validation
+1. frozen path   -> Capture → Document → Extraction → WP-3.2 Binding → WP-4.1 Normalization OK
+2. derive        -> DERIVED total.gross=1080 (WP-4.2 exact mechanism)
+3. R1            -> presence=VALID; exact-consistency=VALID (total.gross == 1000.00 + 80 EXACTLY — no rounding anywhere in R1)
+4. R2            -> tolerated-equality=VALID (exact-match, tolerance not consumed); rounded-equality=VALID (exact value preserved — no rounding applied)
+5. trace         -> validation → rule → inputs → WP-4.2 sub-chain → normalization → extraction → binding → Document/Page/span → Capture S1: ALL LINKS OK
+6. verdicts      -> literal-total document: consistency=DEFERRED (insufficient-input — no DERIVED value possible, no guess); absent field probe: presence=INVALID (absent); replay=AlreadyExists (INV-V-1:1); unknown rule refused
+7. restart       -> validation durable; verified read VALID; whole chain (incl. WP-4.2 sub-chain) re-verifies; replay idempotent
+8. vocabulary    -> tamper caught (content withheld); stored outcome sweep {'DEFERRED': 1, 'INVALID': 1, 'VALID': 4} — exactly the declared vocabulary; UNRESOLVED structurally impossible (P5 domain layer territory)
+SMOKE OK — R1/R2 Validation is real, durable, deterministic, evidence-bound, and traceable end-to-end (ready for the WP-5.2 Validation State Machine)
+EXIT_CODE=0
+$ /home/user/.venv/bin/python src/run_smoke_validation_domain.py /home/user/kandoo-smokes-z_1nef89/run_smoke_validation_domain
+  step 1: frozen pipeline + WP-5.1 evaluation + VALID/CLEAR projection + trace — OK
+  step 2: D-01 field-level UNRESOLVED creation → UNRESOLVED/REVIEW + queue item — OK
+  step 3: idempotent replay — no second record, no duplicate queue item — OK
+  step 4: REVIEW lifecycle: annotate → close (terminal) → post-close refused — OK
+  step 5: determinism: D-03-honoring content equality via distinct corpus — OK
+  step 6: restart recovery: reopen, re-verify, derived status survives — OK
+  step 7: tamper detection: forged state row → content withheld, queue frozen — OK
+  step 8: frozen-layer survival sweep: P1..P5.1 replay + verified reads intact — OK
+SMOKE OK — Validation State Machine + REVIEW Queue are real, durable, deterministic, provenance-complete, boundary-safe (WP-5.2).
+EXIT_CODE=0
+ALL 22 SMOKE RUNNERS PASSED

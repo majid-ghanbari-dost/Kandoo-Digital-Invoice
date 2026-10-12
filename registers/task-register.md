@@ -2153,3 +2153,31 @@ Reference Documents:  SPEC-WP13-RETR §9/§11 | AGENT_HANDOFF.md §8 (الزام
 Evidence:             specs/WP-1.3-implementation-report.md (WP13-RPT) + registerها + commit/PR
 Out of Scope:         merge به main | بستن/ادغام PR #1 | changes به AGENT_HANDOFF.md و KANDOO_AGENT_COORDINATION.md (مالکیت PR #1/Agent 2 — اجتناب از تعارض)
 ```
+
+---
+
+## T-APP-1 — Digital Issuance composition (application-level increment; Issue #4 continuation)
+
+```text
+Task ID:              T-APP-1
+Phase:                P10 cross-cutting (application level; NOT a new Work Package)
+Work Package:         APP-ISS — Digital Issuance composition (Issue #4 continuation; PR #9 area continued)
+Objective:            ترکیبِ افزودنیِ دو لایهٔ موجود (pipeline: capture→canonical؛ digital_invoice: WP-10.1) در یک workspace دائمیِ تحت مالکیت برنامه، تا فاکتور دیجیتالِ ISSUED از صفحات خام از طریق یک سطح فراخوانیِ واحد و بدون wiring دستی در دسترس باشد.
+Context:              پس از PR #9 هر دو نیمهٔ زنجیرهٔ AS-01 موجود و تست‌شده‌اند، اما هیچ composition تولیدی آن‌ها را به هم وصل نمی‌کند؛ لایهٔ pipeline عمداً هر سطح digital-invoice را ممنوع کرده و WP-10.1 فقط از تست/smoke خودش فراخوانی می‌شود.
+Locked Decisions:     AS-01 | AS-03 (واژگان lifecycle عیناً) | D-02/D-03 (بدون هویت/dedup جدید) | D-06 (بدون customer) | AD-02/AD-03 (مرز دامنه/موجودی) | DEF1–DEF6 مسدود و بازنشده | D-09 (بدون CLI/تصمیم معماری جدید)
+Reference Documents:  specs/ISSUE-4-issuance-composition-report.md (گزارش اجرا) | src/issuance/README.md (OD-IX-A..D) | src/pipeline/README.md (لایهٔ مصرف‌شده) | specs/WP-10.1-digital-invoice-lifecycle-contract.md (سطح مصرف‌شده)
+Inputs:               main = 2d61b4dd61837810134cfcd97df8e7d4c0eba9b0 (پایهٔ تأییدشده)؛ سورسِ تست‌شده = 93e1c6e8b3e225f4351cf87214307ec98431d673
+Scope:                src/issuance/{__init__,model,service,workspace}.py + src/issuance/tests/ (۲۹ تست) + src/run_smoke_issuance.py (بیست‌ودومین smoke) + مستندات/رجیستری/هندآف + deliveries/issue-4-issuance/
+Out of Scope:         هر WP جدید | واژه/حالت/گذار جدید | مقدار سیاست (tolerance/TTL/threshold) | CLI محصول | ارائه/رسید (DEF5) | adapter (DEF6) | purge فیزیکی (DEF4) | ماتریس دسترسی (DEF2) | ساخت Sale/Inventory
+Forbidden Actions:    تغییر فایل‌های Frozen یا تست‌های موجود | ادغام بدون دستور PO | ثبت Acceptance از جانب Agent | باز کردن اقلام Deferred | حذف داده
+Dependencies:         PR #9 ادغام‌شده (pipeline) + WP-10.1 IMPLEMENTED (digital_invoice) — هر دو موجود در main
+Expected Deliverables: بستهٔ افزودنیِ src/issuance + تست متمرکز + smoke + گزارش + شواهد + archive/MANIFEST + PR
+Tests:                focused: pytest src/issuance/tests → 29 passed؛ رگرسیون کامل: 1683 passed (1654 قدیمی + 29 جدید)؛ 22 smoke runner → همه EXIT_CODE=0
+Acceptance Criteria:  (۱) مسیر محصول صفحات→ISSUED روی store های واقعی سبز؛ (۲) هیچ‌چیز خودکار نیست (submission هیچ act ای انجام نمی‌دهد)؛ (۳) replay/restart/resume بی‌اثرِ افزاینده؛ (۴) refusal/tamper با صفر-residue و fail-closed؛ (۵) بدون سطح Deferred/SQL/CLI و بدون مقدار سیاست (AST-swept)؛ (۶) مالکیت و declarations صریح
+Status:               ✅ IMPLEMENTED (2026-10-12) — در PR باز؛ NOT merged، NOT accepted (Acceptance فقط با ثبت رسمی PO/TM)
+Implementation Notes: ۲۹ تست متمرکز + ۸ گام smoke سبز؛ رگرسیون 1683/1683؛ additive-only — هیچ فایل سورس/تست موجودی تغییر نکرد (شاهد: deliveries/issue-4-issuance/evidence/boundary-check.txt)؛ ویرایش‌ها فقط مستندات/رجیستری/هندآف
+Evidence:             specs/ISSUE-4-issuance-composition-report.md + deliveries/issue-4-issuance/evidence/*.txt + SHA آرشیو در deliveries/issue-4-issuance/README.md
+DoD:                  کد + تست + smoke + گزارش + archive/manifest/SHA + PR باز + هندآف همگام — کامل؛ merge/Acceptance در اختیار PO
+```
+
+---

@@ -801,3 +801,31 @@ Boundary declaration (WP-1.3): هیچ حالت lifecycle/وضعیت integrity ج
 idempotency/dedup جدید در سطح سند (D-03) — idempotency فقط برای رکوردهای تصمیم journal است؛
 هیچ اثر Sale/Inventory/Customer/Canonical (AD-02/AD-03/DEF1/DEF3)؛ هیچ موتور/DB انتخاب
 نشده (D-09)؛ no content read در gate/report (INV-C7/INV-C8).
+
+---
+
+## Digital Issuance composition — increment-level derived checks (Issue #4 continuation, 2026-10-12)
+
+```text
+وضعیت:        IMPLEMENTED + EXECUTED EVIDENCE — در PR باز · NOT accepted · NOT merged
+Tested commit: 93e1c6e8b3e225f4351cf87214307ec98431d673 (tree 6707f9eb165d63bb5b3058198715e9e55f90ec1f)
+گزارش:        specs/ISSUE-4-issuance-composition-report.md
+```
+
+این بلوک **ثبت Acceptance نیست**: ردیف‌های زیر checks مشتق‌شدهٔ سطح افزایش (derived
+traceability) هستند و هیچ AC رسمی WP را نمی‌بندند؛ تصویب فقط با ثبت صریح PO/TM
+انجام می‌شود.
+
+| Check | الحاق (Authority) | شواهد اجراشده | نتیجه |
+|---|---|---|---|
+| D-1 raw pages → Canonical Invoice تأییدشده → Digital Invoice با وضعیت ISSUED روی store های واقعی | AS-01؛ WP-1.1..6.2؛ WP-10.1 | `test_product_path_from_raw_pages_to_issued_digital_invoice` · `test_whole_chain_trace_covers_every_frozen_layer` · smoke steps 1/3/5 | PASS |
+| D-2 هیچ‌چیز خودکار نیست — فقط act های صریح | WP-10.1 §5 · D-03 | `test_submission_alone_never_opens_or_advances_anything` · `test_state_of_a_fresh_digital_invoice_is_the_frozen_draft` · `test_review_stop_never_reaches_the_digital_invoice` · smoke step 2 | PASS |
+| D-3 replay/restart/resume بدون ردیف جدید | D-02/D-03 · WP-1.1 VOR · WP-10.1 replay | `test_replay_and_restart_are_idempotent` · `test_resume_after_a_stop_before_the_open_act` · smoke steps 4/6 | PASS |
+| D-4 refusal/tamper: fail-closed با صفر-residue | WP-6.2 §4/§9 · WP-10.1 §5.3/§6 | `test_refusals_and_foreign_invoices_leave_zero_residue` · `test_malformed_declarations_never_touch_the_workspace` · `test_tampered_durable_rows_are_withheld_never_served` · smoke steps 2/7/8 | PASS |
+| D-5 بدون سطح Deferred/SQL/CLI و بدون مقدار سیاست | D-06/D-09 · DEF1–DEF6 · WP-12.3 | `test_no_sql_process_policy_or_deferred_identifier_anywhere` · `test_no_frozen_vocabulary_literal_outside_a_docstring` · `test_production_inventory_is_exactly_the_declared_surface` · `test_imports_stay_inside_the_declared_allowlist` · `test_physical_purge_stays_blocked_and_out_of_the_composed_surface` | PASS |
+| D-6 مالکیت/declarations/کشف فقط-خواندنی | الگوی ownership موجود | `test_workspace_requires_explicit_declarations_before_creating_files` · `test_workspace_owns_exactly_the_frozen_stores` · `test_constructor_failure_closes_already_opened_stores` · `test_close_is_idempotent_and_closed_workspace_refuses_work` · `test_lifecycle_layer_reads_the_same_assembly_store_it_was_composed_with` · `test_reads_and_listings_never_grow_business_entities` | PASS |
+
+Evidence note: focused suite 29/29 (7.27s)؛ رگرسیون کامل 1683/1683 (183.96s؛
+1654 baseline + 29 جدید)؛ همهٔ 22 smoke runner EXIT_CODE=0. مرزها: DEF1–DEF6 بدون
+تغییر و بازنشده؛ purge فیزیکی مسدود و از مسیر ترکیب‌شده غیرقابل‌دسترس؛ هیچ فایل
+Frozen/تست موجودی تغییر نکرد.

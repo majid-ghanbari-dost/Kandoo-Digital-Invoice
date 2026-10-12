@@ -1,0 +1,43 @@
+# Boundary / additivity proof — Digital Issuance composition
+# Tested source commit: 93e1c6e8b3e225f4351cf87214307ec98431d673
+# Base main verified: 2d61b4dd61837810134cfcd97df8e7d4c0eba9b0
+
+## 1) Nothing pre-existing was modified by the implementation commit
+$ git diff --name-status origin/main...HEAD
+A	src/issuance/__init__.py
+A	src/issuance/model.py
+A	src/issuance/service.py
+A	src/issuance/tests/conftest.py
+A	src/issuance/tests/test_issuance_boundary.py
+A	src/issuance/tests/test_issuance_flow.py
+A	src/issuance/workspace.py
+A	src/run_smoke_issuance.py
+# Interpretation: only ADDED source/test/smoke files (status A). No pre-existing file is modified.
+
+## 2) Python sources/tests unchanged since the tested commit (docs only)
+$ git diff --stat -- '*.py'
+(no output — no Python file changed after the tested commit)
+
+$ git status --porcelain
+M PROJECT_CONTINUITY_HANDOFF.md
+ M registers/acceptance-register.md
+ M registers/task-register.md
+ M registers/work-package-register.md
+ M src/README.md
+?? deliveries/issue-4-issuance/
+?? specs/ISSUE-4-issuance-composition-report.md
+?? src/issuance/README.md
+# Interpretation: only documentation/registers/handoff are being edited after the
+# tested commit; code/test bytes are identical to 93e1c6e8b3e225f4351cf87214307ec98431d673.
+
+## 3) Frozen registers untouched
+$ git diff --stat -- registers/decision-register.md registers/deferred-decision-register.md
+(no output — Decision Register and Deferred Decision Register unchanged)
+
+## 4) Documentation edits since the tested commit (allowed/required by the mission)
+$ git status --porcelain -- registers PROJECT_CONTINUITY_HANDOFF.md src/README.md
+M PROJECT_CONTINUITY_HANDOFF.md
+ M registers/acceptance-register.md
+ M registers/task-register.md
+ M registers/work-package-register.md
+ M src/README.md
