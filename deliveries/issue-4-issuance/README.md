@@ -55,3 +55,25 @@ Additive only: no pre-existing source or test file was modified
 decisions and the Deferred register are untouched; physical purge stays blocked and
 is unreachable from the composed layer. No merge and no formal acceptance is
 claimed — merge/acceptance authority remains with the Product Owner.
+
+## Publication record (2026-10-12)
+
+- Pull request: https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/10
+  (base `main`, head `arena/5fbd6749-kandoo-digital-invoice`) — **OPEN, NOT merged**.
+- Branch pushed and verified remotely: `git ls-remote origin
+  refs/heads/arena/5fbd6749-kandoo-digital-invoice` equals local HEAD.
+- PR delivery comment (substitute record of record):
+  https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/10#issuecomment-6121949978
+- **Issue #4 report: NOT POSTED.** Two attempts failed —
+  `gh issue comment 4` (GraphQL addComment): `Message: Resource not accessible by
+  integration, Locations: [{Line:1 Column:49}]`; REST `POST …/issues/4/comments`:
+  **HTTP 403** `{"message":"Resource not accessible by integration"}`. The latest
+  comment on Issue #4 is still the TM dispatch of `2026-10-12T09:07:13Z`.
+  Per GOV-PP-01 §1/الف the copyable block lives in the PR body and in the PR
+  delivery comment, and the Issue-report witness remains **UNMET**.
+- The archive/manifest above cover the delivery commit
+  `4d16ecf445e82ce854a8bac686376387d8b174cb`; this README is delivery metadata and is
+  deliberately outside the archive (non-recursive rule). Later metadata-only changes
+  to this README (publication record) do not alter the archive, its checksum or any
+  source/test byte.
+
