@@ -2,9 +2,9 @@
 
 ```text
 نوع سند:        Handoff تداوم پروژه — نسخه ۲.۱ (بازسازی‌کامل بر اساس حقیقت زندهٔ GitHub)
-نسخه:           2.3 (پیشین: 2.2 — ثبت وضعیت پس از ادغام PR #6؛ نسخه‌های پیشین تاریخی‌اند)
+نسخه:           2.4 (پیشین: 2.3 — ثبت انتقال گزارش Agent 2 به Issue #5؛ نسخه‌های پیشین تاریخی‌اند)
 تاریخ:          2026-10-12 · ویرایش: پس از ادغام PR #6 و ثبت SHA ادغام
-زمان ثبت (UTC): 2026-10-12T06:47:37Z (ادغام PR #6)
+زمان ثبت (UTC): 2026-10-12T06:47:37Z (ادغام PR #6) · پیگیری: انتقال گزارش به Issue #5 توسط TM
 نویسنده:        Agent 2 — governance/handoff/review (مأموریت رسمی: Issue #5)
 مبنای داده‌ها:   فقط بررسی زندهٔ GitHub (gh/git در همین سندباکس) + اجرای واقعی تست؛
                 هیچ ادعای «گزارش‌شده» بدون برچسب «قطعی» نشده است.
@@ -221,7 +221,7 @@ Known live state after PR #6 merge — recorded 2026-10-12T06:47:37Z (re-verify 
   PR #2 MERGED 2026-10-11T19:28:01Z; WP-1.3 source/fixes present in main.
   PR #3 MERGED 2026-10-11T19:30:20Z; prior handoff superseded.
   Issue #4 OPEN (Agent 1 — source/tests owner). Agent 1's MVP pipeline is NOT yet on GitHub in a reviewable PR; latest delivery is textual/local only, based on the agent's report. The 19-file package and tests are reported, not independently verified here.
-  Issue #5 OPEN (Agent 2 — governance); report comment exists on PR #6, but Issue #5 comment posting failed with HTTP 403.
+  Issue #5 OPEN (Agent 2 — governance). Agent 2's original comment attempt failed with HTTP 403, but TM subsequently transferred the delivery report to a real Issue #5 comment: https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/issues/5#issuecomment-6119226926.
   Reported test evidence from Agent 2 on the prior main tree: WP-1.3 130 passed, capture 220 passed, full regression 1606 passed, smoke OK, compileall 0. No CI/check-runs are configured on the PR; these are agent-local execution results.
 
 Preserve Frozen decisions (D-01..D-09, AD-*, AS-*) and DEF1..DEF6 — DEF4 stays
@@ -234,7 +234,7 @@ reporting the next three actions from handoff section 8.
 ---
 
 ```text
-پایان سند — نسخه ۲.۳. این سند مستندات‌محور است: هیچ کد/تست/Frozen/DEF تغییر نکرده؛
+پایان سند — نسخه ۲.۴. این سند مستندات‌محور است: هیچ کد/تست/Frozen/DEF تغییر نکرده؛
 REGISTER فقط سطرهای وضعیتِ زنده را با reconciliation تاریخی اصلاح کرده (بند ۷).
 SHA-256 نسخهٔ نهایی این فایل در پیام commit این به‌روزرسانی ثبت می‌شود؛
 ثبت در Issue #5 طبق GOV-PP-01 v1.1 بند ۱/الف فقط با انتقالِ واقعیِ PO/TM برقرار می‌شود.
