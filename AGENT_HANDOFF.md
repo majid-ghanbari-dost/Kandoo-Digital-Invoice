@@ -93,66 +93,43 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
-P1–P10: completed/frozen.
-WP-11.1: implemented, tested, packaged and accepted at implementation level.
-WP-12.1: implemented and tested.
-WP-12.2: implemented and tested.
-WP-12.3: PO/G4 decision boundary; D-07/D-08/DEF2 require ratification.
-WP-11.2: Adapter must NOT be implemented until its required decisions/contract are resolved; a Decision Package exists.
+Verified for this EOD update on 2026-10-15:
 
-Latest reported P12 implementation source anchor: `d8dbc29`.
-Latest reported final delivery/hygiene commits in the previous working project: `a73fde5`, `574444f`.
-These commit IDs refer to the previous working project history and are not yet present in this newly-created repository.
+- The checkout is on the Arena-fixed branch `arena/9dc17500-kandoo-digital-invoice`; this EOD work started from `1b79e630a8f476ed13d2d9fa7b6fb1c3de391cd0` and was replayed onto the existing remote branch tip `ade8af5f0c80d5bfb9b58e3d65dd9f231ba18a02` to preserve its commits. No other branch was used.
+- Native Checkout PO decisions are recorded in `specs/native-checkout-contract-proposal.md`: Q1=Option 1, Q2=Option 2, Q3=Option 1, Q4=Option 1. Per PO direction, this is future architecture, not current MVP priority; no Native Checkout code was added.
+- `WP-HOLOO-IMAGE-EXTRACTION-01` has an experimental `src/image_extraction_adapter/` using Tesseract, with a labeled synthetic English invoice fixture and an existing-issuance-service smoke runner. This is an external printed-invoice/OCR path, not Native Checkout and not the WP-11.2 Holoo database adapter.
+- Actual synthetic E2E evidence is saved in `deliveries/image-extraction-ocr/`: Tesseract 5.5.1 (`eng`) read the fixture with 47 word scores (minimum 87.00, mean 95.21); all nine expected extracted values matched; the pipeline completed and a Digital Invoice reached `ISSUED`, verified `true`, with a 24-link trace. No genuine Holoo raster was available, so this is not evidence of Holoo accuracy.
+- A second run at confidence threshold 90 returned adapter-local `REVIEW_REQUIRED`; issuance was not called and no Digital Invoice was created. This is not a persisted P5.2 ReviewQueue record: Frozen contracts do not carry OCR confidence.
+- Persian/RTL OCR and Persian invoice parsing are not implemented. WP-11.2 (Holoo database adapter/enrichment) remains a separate deferred scope under its decision package.
+- Frozen contracts D-01–D-09 were not changed.
 
-Latest verified transfer package available for bootstrap:
-- File: `kandoo-current-implementation10.zip`
-- ZIP SHA-256: `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`
-- Project files inside ZIP: 281
-- Total ZIP entries: 282 (281 project files + embedded manifest)
-- Manifest reports: 281 files
-- Manifest verification: 281/281 file hashes matched; 0 missing; 0 extra; 0 size mismatches.
-- Project content types verified: 248 Python, 33 Markdown, 1 text manifest.
-- This package is the current authoritative transfer candidate and supersedes the older 277-file delivery package for bootstrap purposes.
-- The package includes source anchor `54211b6` according to its embedded manifest.
+## EOD Status [2026-10-15]
 
-Latest reported verification from the working project:
-- WP-12.1 dedicated tests: 90/90, repeated independently ×3.
-- WP-12.2 dedicated tests: 33/33, repeated independently ×3.
-- Smoke: 19/19.
-- Full regression: 1439/1440 passed, with one known pre-existing date-sensitive flake:
-  `test_ir_provenance::test_no_raw_pipeline_values_are_stored`.
-- No new regression failure was reported.
+- Native Checkout Q1–Q4 decisions were recorded in `specs/native-checkout-contract-proposal.md`; they are approved for future architecture, not current MVP priority.
+- Today `src/image_extraction_adapter/` was built with Tesseract OCR and exercised end-to-end on a synthetic English invoice; the existing pipeline produced an `ISSUED` Digital Invoice. The fixture is synthetic and does not establish Holoo accuracy.
+- Persian/RTL is not currently supported.
+- **Priority for the next agent:** extend Tesseract configuration and parsing for Persian, add a clearly labeled synthetic Persian fixture, then test against a real Holoo invoice when a sanitized, authorized sample is supplied. Do not substitute Native Checkout work for this external-image path.
 
 ## 7. Current Agent Ownership
 
-Agent 1:
-- Owns the active P12 execution stream until it reaches its genuine PO/evidence boundary.
-- Must not assume this new repository already contains the working tree.
-
-Agent 2:
-- Owns independent work only after inspecting this repository and coordination state.
-- Must not modify Agent 1's active WP/files concurrently.
+- **Next implementation agent:** continue `WP-HOLOO-IMAGE-EXTRACTION-01`, starting with Persian OCR/parser support and a synthetic Persian fixture; do not substitute Native Checkout work for this external-image task.
+- **Product Owner:** Native Checkout Q1–Q4 decisions are recorded; any later change to those decisions or MVP priority remains a PO decision.
+- **WP-11.2 Holoo DB adapter:** remains a separate deferred scope; the image-extraction adapter does not resolve its source mapping/authority/synchronization decisions.
+- Preserve unrelated work already present in the working tree; do not absorb other agents' uncommitted files into this EOD commit.
 
 ## 8. Current Real Boundaries
 
-1. P12.3: PO/G4 ratification of D-07, D-08 and DEF2.
-2. WP-11.2: required source mapping/authority/sync/conflict/write-back decisions and sufficient contract before Adapter implementation.
-3. Repository bootstrap: actual 281-file project tree must still be transferred from the verified local ZIP into `main`.
+1. `WP-HOLOO-IMAGE-EXTRACTION-01` has only a synthetic English proof. Persian OCR/layout support and a genuine, authorized Holoo invoice sample are still required before claiming external-source suitability.
+2. The low-confidence path is an adapter-local `REVIEW_REQUIRED` hold. The Frozen contracts do not persist OCR confidence or provide a proven P5.2 review-queue mapping; do not describe this local hold as a persistent Frozen `REVIEW` state.
+3. The synthetic smoke reached `ISSUED` through the existing pipeline; this does not prove Holoo accuracy or Persian readiness.
+4. Native Checkout is future architecture only under the recorded Q1–Q4 choices; it is not the current MVP priority and no Native Checkout code was added.
+5. WP-11.2 (Holoo database adapter/enrichment) remains separate and deferred pending its own decisions/evidence.
 
-## 9. Repository Bootstrap Status
+## 9. Repository and EOD Branch Status
 
-The repository contains the collaboration/handoff files, but the actual 281-file implementation tree has not yet been transferred.
+The checkout contains the project source tree. The EOD image-extraction code, synthetic OCR evidence, Native Checkout decision note and handoff updates are scoped to the fixed Arena branch `arena/9dc17500-kandoo-digital-invoice`; no change is to be merged to `main`.
 
-Verified transfer candidate:
-`kandoo-current-implementation10.zip` with SHA-256 `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`.
-
-The current GitHub connector has repository write permissions but no bulk local-directory upload/Git-push operation. Therefore the ZIP cannot be truthfully represented as integrated source until the 281 files are actually written to Git.
-
-Next bootstrap action:
-- transfer the exact 281 project files without reconstruction or modification;
-- preserve the embedded manifest;
-- verify repository file count/content against the transfer package;
-- update this handoff with actual repository HEAD and verification results.
+The image-extraction/EOD change is based on the existing remote tip `ade8af5f0c80d5bfb9b58e3d65dd9f231ba18a02`; its prior commits were preserved. The final commit SHA and push result are reported from Git in the EOD response. Do not force-push or overwrite remote work if a future divergence occurs. Unrelated pre-existing spooler artifacts remain uncommitted and outside this image-extraction commit.
 
 ## 10. Handoff Protocol
 
