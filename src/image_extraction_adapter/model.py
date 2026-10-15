@@ -55,8 +55,25 @@ class FieldAssessment:
 
 
 @dataclass(frozen=True)
+class CellOCRVariantResult:
+    """Non-canonical OCR evidence for one cropped cell/preprocessing variant."""
+
+    field_name: str
+    preprocessing: str
+    bbox: tuple[int, int, int, int]
+    raw_value: str
+    confidence: Optional[float]
+    status: str
+    reason: Optional[str] = None
+    unrestricted_raw_value: Optional[str] = None
+    line_pixels_removed: int = 0
+    psm: int = 7
+    whitelist: Optional[str] = None
+
+
+@dataclass(frozen=True)
 class OCRResult:
-    """Text and word-level confidence returned by an OCR backend."""
+    """Text, word-level confidence, and spatial boxes returned by an OCR backend."""
     engine: str
     language: str
     text: str
@@ -97,6 +114,7 @@ class ImageExtractionReviewRequired:
     field_assessments: tuple[FieldAssessment, ...] = ()
     spatial_column_boundaries: tuple[float, ...] = ()
     spatial_row_bands: tuple[tuple[float, float], ...] = ()
+    cell_ocr_variants: tuple[CellOCRVariantResult, ...] = ()
 
 
 @dataclass(frozen=True)

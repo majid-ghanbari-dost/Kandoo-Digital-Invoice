@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from image_extraction_adapter import (
+    CellOCRVariantResult,
     ImageExtractionAdapter,
     ImageExtractionReady,
     ImageExtractionReviewRequired,
@@ -254,6 +255,54 @@ class ImageExtractionAdapterTests(unittest.TestCase):
         fields = {item.field_name: item for item in result.field_assessments}
         self.assertEqual(fields["line.0.total"].raw_value, "۴۵۰و")
         self.assertEqual(fields["line.0.total"].status, "REVIEW")
+        self.assertEqual(service.calls, [])
+
+    def test_cell_variants_are_supplementary_and_do_not_replace_review_fields(self):
+        class FakeCellOCR(FakeOCR):
+            def __init__(self):
+                super().__init__(
+                    confidences=(90.0, 95.0),
+                    text="INVOICE NO: 79\n11:28 1405.06.18",
+                    language=PERSIAN_TESSERACT_LANGUAGE,
+                    words=spatial_words_fixture(),
+                    image_size=(600, 1000),
+                )
+                self.cell_calls = 0
+
+            def recognize_spatial_cells(self, image_path, spatial, *, minimum_confidence):
+                self.cell_calls += 1
+                self.assert_spatial = spatial
+                self.minimum_confidence = minimum_confidence
+                return (CellOCRVariantResult(
+                    field_name="line.0.total",
+                    preprocessing="otsu",
+                    bbox=(120, 380, 220, 410),
+                    raw_value="۱۲۳",
+                    confidence=95.0,
+                    status="REVIEW",
+                    reason="supplementary test result only",
+                    unrestricted_raw_value="۱۲۳",
+                    line_pixels_removed=4,
+                    psm=7,
+                    whitelist="0123456789۰۱۲۳۴۵۶۷۸۹.,",
+                ),)
+
+        backend = FakeCellOCR()
+        service = RecordingService()
+        adapter = ImageExtractionAdapter(backend, minimum_word_confidence=60.0)
+
+        result = adapter.submit_image(self.image, service, **DECLARATION)
+
+        self.assertIsInstance(result, ImageExtractionReviewRequired)
+        self.assertEqual(backend.cell_calls, 1)
+        self.assertEqual(result.field_values[0], ("invoice.number", "۷۹"))
+        self.assertIn(("line.0.total", "۴۵۰و"), result.field_values)
+        self.assertEqual(result.cell_ocr_variants[0].raw_value, "۱۲۳")
+        original_total = next(
+            field for field in result.field_assessments
+            if field.field_name == "line.0.total")
+        self.assertEqual(original_total.raw_value, "۴۵۰و")
+        self.assertEqual(original_total.status, "REVIEW")
         self.assertEqual(service.calls, [])
 
     def test_high_confidence_persian_ocr_submits_utf8_fields(self):

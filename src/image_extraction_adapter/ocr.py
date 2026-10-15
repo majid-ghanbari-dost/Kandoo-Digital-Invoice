@@ -10,13 +10,24 @@ from __future__ import annotations
 import csv
 import importlib
 import io
+import re
 from pathlib import Path
-from typing import Optional, Protocol
+from typing import Any, Optional, Protocol
 
-from .model import OCRResult, OCRWord
+from .model import CellOCRVariantResult, OCRResult, OCRWord
+from .preprocessing import PREPROCESSING_MODES, crop_spatial_cells, preprocess_cell
 
 
 PERSIAN_TESSERACT_LANGUAGE = "fas+eng"
+NUMERIC_TESSERACT_WHITELIST = "0123456789۰۱۲۳۴۵۶۷۸۹.,"
+_NUMERIC_DIGITS = "0123456789۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩"
+_NUMERIC_DIGITS_ASCII = "012345678901234567890123456789"
+_NUMERIC_DIGIT_TRANSLATION = str.maketrans(
+    _NUMERIC_DIGITS, _NUMERIC_DIGITS_ASCII)
+_NUMERIC_FORMAT = re.compile(
+    r"^(?:[0-9۰-۹٠-٩]+|[0-9۰-۹٠-٩]{1,3}(?:,[0-9۰-۹٠-٩]{3})+)"
+    r"(?:\.[0-9۰-۹٠-٩]+)?$"
+)
 
 
 class OCRBackend(Protocol):
@@ -64,6 +75,81 @@ def _parse_tsv_words(tsv: str) -> tuple[OCRWord, ...]:
             word_num=word_num,
         ))
     return tuple(words)
+
+
+def _digits_for_diagnostic(value: str) -> str:
+    return "".join(
+        char.translate(_NUMERIC_DIGIT_TRANSLATION)
+        for char in value
+        if char.translate(_NUMERIC_DIGIT_TRANSLATION).isdigit()
+    )
+
+
+def _numeric_cell_review_reason(
+    raw_value: str,
+    *,
+    unrestricted_raw_value: str,
+    confidence: Optional[float],
+    minimum_confidence: float,
+    source_status: Optional[str],
+) -> Optional[str]:
+    """Reject invalid/ambiguous numeric output without normalizing its value."""
+    reasons: list[str] = []
+    if not raw_value:
+        reasons.append("cell OCR returned no numeric text")
+    if any(char in raw_value or char in unrestricted_raw_value for char in "|!"):
+        reasons.append("pipe/exclamation OCR glyph is invalid; no digit substitution allowed")
+    if confidence is None:
+        reasons.append("cell OCR returned no confidence score")
+    elif confidence < minimum_confidence:
+        reasons.append(
+            f"cell OCR confidence {confidence:.2f} is below "
+            f"{minimum_confidence:.2f}")
+    if raw_value and _NUMERIC_FORMAT.fullmatch(raw_value) is None:
+        reasons.append("raw cell OCR does not match the declared numeric format")
+    if unrestricted_raw_value and raw_value:
+        if _digits_for_diagnostic(unrestricted_raw_value) != _digits_for_diagnostic(raw_value):
+            reasons.append("whitelisted OCR differs from unrestricted diagnostic OCR")
+    if source_status == "REVIEW":
+        reasons.append("full-page spatial assessment remains REVIEW; cell OCR is supplementary")
+    return "; ".join(dict.fromkeys(reasons)) or None
+
+
+def _prepare_cell_for_tesseract(
+    image: Any, *, scale_factor: int = 2, white_padding: int = 8
+) -> Any:
+    try:
+        from PIL import Image, ImageOps
+    except Exception as exc:  # pragma: no cover - environment dependent
+        raise OCREngineUnavailable("Pillow is required for cell OCR") from exc
+    if scale_factor < 1 or scale_factor > 6:
+        raise ValueError("cell OCR scale_factor must be from 1 through 6")
+    fill = 255 if image.mode == "L" else (255, 255, 255)
+    prepared = ImageOps.expand(image, border=white_padding, fill=fill)
+    if scale_factor > 1:
+        prepared = prepared.resize(
+            (prepared.width * scale_factor, prepared.height * scale_factor),
+            Image.Resampling.LANCZOS,
+        )
+    return prepared.convert("RGB")
+
+
+def _cell_confidence(api: Any) -> Optional[float]:
+    try:
+        score = float(api.MeanTextConf())
+    except Exception:
+        return None
+    return score if 0 <= score <= 100 else None
+
+
+def _cell_text(api: Any) -> str:
+    return (api.GetUTF8Text() or "").strip()
+
+
+def _clear_cell_adaptation(api: Any) -> None:
+    clear = getattr(api, "ClearAdaptiveClassifier", None)
+    if callable(clear):
+        clear()
 
 
 class TesseractOCR:
@@ -149,3 +235,144 @@ class TesseractOCR:
             image_width=image_width,
             image_height=image_height,
         )
+
+    def recognize_spatial_cells(
+        self,
+        image_path: Path,
+        spatial: Any,
+        *,
+        minimum_confidence: float,
+        scale_factor: int = 3,
+        white_padding: int = 8,
+    ) -> tuple[CellOCRVariantResult, ...]:
+        """OCR geometry-cropped cells with PSM 7 and explicit numeric whitelist.
+
+        Numeric cells are run through raw, Otsu, and adaptive variants. Otsu and
+        adaptive images receive directional morphological line removal. A
+        separate unrestricted pass is retained as a diagnostic: if it reads
+        `|` or `!`, a whitelisted numeric result remains REVIEW. Description
+        cells use PSM 7 without a numeric whitelist. These observations never
+        overwrite the full-page field values or make a review result issuable.
+        """
+        image = Path(image_path)
+        if not image.is_file():
+            raise OCRExecutionError(f"image file is missing or not regular: {image}")
+        if (isinstance(minimum_confidence, bool)
+                or not isinstance(minimum_confidence, (int, float))
+                or not 0 <= float(minimum_confidence) <= 100):
+            raise ValueError("minimum_confidence must be a number from 0 to 100")
+        try:
+            tesserocr = importlib.import_module("tesserocr")
+            pil_image = importlib.import_module("PIL.Image")
+        except Exception as exc:
+            raise OCREngineUnavailable(
+                "install the optional tesserocr and Pillow packages for cell OCR") from exc
+
+        try:
+            with pil_image.open(image) as opened:
+                opened.load()
+                source = opened.convert("RGB")
+            cells = crop_spatial_cells(source, spatial)
+            if not cells:
+                return ()
+
+            psm = getattr(tesserocr.PSM, "SINGLE_LINE", 7)
+            results: list[CellOCRVariantResult] = []
+            source_assessments = {
+                assessment.field_name: assessment
+                for assessment in getattr(spatial, "assessments", ())
+            }
+            with tesserocr.PyTessBaseAPI(
+                    path=str(self._tessdata_dir), lang=self._language, psm=psm) as numeric_api, \
+                    tesserocr.PyTessBaseAPI(
+                    path=str(self._tessdata_dir), lang=self._language, psm=psm) as unrestricted_api:
+                if not numeric_api.SetVariable(
+                        "tessedit_char_whitelist", NUMERIC_TESSERACT_WHITELIST):
+                    raise OCRExecutionError("Tesseract rejected the numeric character whitelist")
+
+                for cell in cells:
+                    baseline = preprocess_cell(cell.image, "none")
+                    baseline_image = _prepare_cell_for_tesseract(
+                        baseline.image,
+                        scale_factor=scale_factor,
+                        white_padding=white_padding,
+                    )
+                    _clear_cell_adaptation(unrestricted_api)
+                    unrestricted_api.SetImage(baseline_image)
+                    unrestricted_raw = _cell_text(unrestricted_api)
+                    unrestricted_confidence = _cell_confidence(unrestricted_api)
+                    source_assessment = source_assessments.get(cell.field_name)
+                    source_status = (
+                        source_assessment.status if source_assessment is not None else None)
+
+                    if not cell.numeric:
+                        text_reason: list[str] = []
+                        if not unrestricted_raw:
+                            text_reason.append("cell OCR returned no text")
+                        if unrestricted_confidence is None:
+                            text_reason.append("cell OCR returned no confidence score")
+                        elif unrestricted_confidence < minimum_confidence:
+                            text_reason.append(
+                                f"cell OCR confidence {unrestricted_confidence:.2f} is below "
+                                f"{minimum_confidence:.2f}")
+                        if any(char in unrestricted_raw for char in "|!"):
+                            text_reason.append("table separator/uncertain glyph remains in text cell")
+                        if (source_assessment is not None
+                                and unrestricted_raw != source_assessment.raw_value):
+                            text_reason.append(
+                                "cell OCR differs from the full-page raw field; manual review required")
+                        if source_status == "REVIEW":
+                            text_reason.append(
+                                "full-page spatial assessment remains REVIEW; cell OCR is supplementary")
+                        results.append(CellOCRVariantResult(
+                            field_name=cell.field_name,
+                            preprocessing="none",
+                            bbox=cell.bbox,
+                            raw_value=unrestricted_raw,
+                            confidence=unrestricted_confidence,
+                            status="REVIEW" if text_reason else "EXTRACTED",
+                            reason="; ".join(dict.fromkeys(text_reason)) or None,
+                            unrestricted_raw_value=unrestricted_raw,
+                            line_pixels_removed=0,
+                            psm=7,
+                            whitelist=None,
+                        ))
+                        continue
+
+                    for mode in PREPROCESSING_MODES:
+                        processed = preprocess_cell(cell.image, mode)
+                        prepared = _prepare_cell_for_tesseract(
+                            processed.image,
+                            scale_factor=scale_factor,
+                            white_padding=white_padding,
+                        )
+                        _clear_cell_adaptation(numeric_api)
+                        numeric_api.SetImage(prepared)
+                        raw_value = _cell_text(numeric_api)
+                        confidence = _cell_confidence(numeric_api)
+                        reason = _numeric_cell_review_reason(
+                            raw_value,
+                            unrestricted_raw_value=unrestricted_raw,
+                            confidence=confidence,
+                            minimum_confidence=float(minimum_confidence),
+                            source_status=source_status,
+                        )
+                        results.append(CellOCRVariantResult(
+                            field_name=cell.field_name,
+                            preprocessing=mode,
+                            bbox=cell.bbox,
+                            raw_value=raw_value,
+                            confidence=confidence,
+                            status="REVIEW" if reason else "EXTRACTED",
+                            reason=reason,
+                            unrestricted_raw_value=unrestricted_raw,
+                            line_pixels_removed=processed.line_pixels_removed,
+                            psm=7,
+                            whitelist=NUMERIC_TESSERACT_WHITELIST,
+                        ))
+        except (OCRExecutionError, OCREngineUnavailable):
+            raise
+        except Exception as exc:
+            raise OCRExecutionError(
+                f"Tesseract failed to process spatial cells in {image.name}: {exc}") from exc
+        return tuple(results)

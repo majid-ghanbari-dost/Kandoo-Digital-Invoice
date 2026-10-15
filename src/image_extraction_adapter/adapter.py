@@ -74,6 +74,17 @@ class ImageExtractionAdapter:
                 ocr, minimum_confidence=self._minimum_word_confidence)
             if spatial.assessments:
                 spatial_summary = "; ".join(spatial.reasons) or "spatial fields need review"
+                cell_ocr_variants = ()
+                cell_ocr_method = getattr(self._ocr, "recognize_spatial_cells", None)
+                if callable(cell_ocr_method):
+                    try:
+                        cell_ocr_variants = cell_ocr_method(
+                            image,
+                            spatial,
+                            minimum_confidence=self._minimum_word_confidence,
+                        )
+                    except (OCREngineUnavailable, OCRExecutionError) as cell_error:
+                        spatial_summary += f"; cell OCR unavailable: {cell_error}"
                 return ImageExtractionReviewRequired(
                     source_image_sha256=digest,
                     ocr=ocr,
@@ -83,6 +94,7 @@ class ImageExtractionAdapter:
                     field_assessments=spatial.assessments,
                     spatial_column_boundaries=spatial.column_boundaries,
                     spatial_row_bands=spatial.row_bands,
+                    cell_ocr_variants=cell_ocr_variants,
                 )
             return ImageExtractionReviewRequired(
                 source_image_sha256=digest,
