@@ -12,6 +12,9 @@ from typing import Optional, Protocol
 from .model import OCRResult
 
 
+PERSIAN_TESSERACT_LANGUAGE = "fas+eng"
+
+
 class OCRBackend(Protocol):
     def recognize(self, image_path: Path) -> OCRResult:
         """Read a raster image and return text plus word confidence values."""
@@ -30,8 +33,10 @@ class TesseractOCR:
     """Tesseract 5 OCR backend; does not require fixed image coordinates.
 
     `tessdata_dir` and `language` are explicit so a deployment cannot silently
-    fall back to an unconfigured language/model. `page_segmentation_mode=None`
-    delegates page layout analysis to Tesseract's AUTO mode.
+    fall back to an unconfigured language/model. For Persian invoices mixing
+    Persian labels with Latin identifiers/decimals, use `fas+eng` (also exported
+    as `PERSIAN_TESSERACT_LANGUAGE`) and supply both traineddata files.
+    `page_segmentation_mode=None` delegates layout analysis to Tesseract AUTO.
     """
 
     def __init__(

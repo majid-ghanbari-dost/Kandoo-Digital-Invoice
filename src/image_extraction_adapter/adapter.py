@@ -135,6 +135,48 @@ class ImageExtractionAdapter:
         extraction = self.extract(image_path)
         if not isinstance(extraction, ImageExtractionReady):
             return extraction
+        return self.submit_extraction(
+            extraction,
+            issuance_service,
+            source_label=source_label,
+            declared_origin=declared_origin,
+            identity_binding=identity_binding,
+            line_binding=line_binding,
+            ruleset_id=ruleset_id,
+            ruleset_version=ruleset_version,
+        )
+
+    def submit_extraction(
+        self,
+        extraction: ImageExtractionReady,
+        issuance_service: IssuanceSubmitter,
+        *,
+        source_label: str,
+        declared_origin: str,
+        identity_binding: Mapping[str, str],
+        line_binding: Optional[Mapping[int, Mapping[str, str]]],
+        ruleset_id: str,
+        ruleset_version: str,
+    ) -> ImageIssuanceSubmission:
+        """Submit a previously reviewed ready result without running OCR again."""
+        if not isinstance(extraction, ImageExtractionReady):
+            raise TypeError("only a high-confidence ImageExtractionReady can be submitted")
+        ocr = extraction.ocr
+        if any(
+            isinstance(score, bool)
+            or not isinstance(score, (int, float))
+            or not math.isfinite(float(score))
+            or not 0 <= float(score) <= 100
+            for score in ocr.word_confidences
+        ):
+            raise ValueError("ready extraction has invalid OCR confidence values")
+        minimum = ocr.minimum_confidence
+        if minimum is None or minimum < self._minimum_word_confidence:
+            raise ValueError("ready extraction is below the declared confidence threshold")
+        parsed = parse_invoice_text(ocr.text)
+        if (parsed.fields != extraction.field_values
+                or parsed.key_value_page != extraction.key_value_page):
+            raise ValueError("ready extraction fields do not match its OCR transcript")
         submission = issuance_service.submit(
             [extraction.key_value_page],
             source_label=source_label,

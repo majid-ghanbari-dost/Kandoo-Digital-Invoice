@@ -93,43 +93,44 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
-Verified for this EOD update on 2026-10-15:
+Verified for this update on 2026-10-15:
 
-- The checkout is on the Arena-fixed branch `arena/9dc17500-kandoo-digital-invoice`; this EOD work started from `1b79e630a8f476ed13d2d9fa7b6fb1c3de391cd0` and was replayed onto the existing remote branch tip `ade8af5f0c80d5bfb9b58e3d65dd9f231ba18a02` to preserve its commits. No other branch was used.
-- Native Checkout PO decisions are recorded in `specs/native-checkout-contract-proposal.md`: Q1=Option 1, Q2=Option 2, Q3=Option 1, Q4=Option 1. Per PO direction, this is future architecture, not current MVP priority; no Native Checkout code was added.
-- `WP-HOLOO-IMAGE-EXTRACTION-01` has an experimental `src/image_extraction_adapter/` using Tesseract, with a labeled synthetic English invoice fixture and an existing-issuance-service smoke runner. This is an external printed-invoice/OCR path, not Native Checkout and not the WP-11.2 Holoo database adapter.
-- Actual synthetic E2E evidence is saved in `deliveries/image-extraction-ocr/`: Tesseract 5.5.1 (`eng`) read the fixture with 47 word scores (minimum 87.00, mean 95.21); all nine expected extracted values matched; the pipeline completed and a Digital Invoice reached `ISSUED`, verified `true`, with a 24-link trace. No genuine Holoo raster was available, so this is not evidence of Holoo accuracy.
-- A second run at confidence threshold 90 returned adapter-local `REVIEW_REQUIRED`; issuance was not called and no Digital Invoice was created. This is not a persisted P5.2 ReviewQueue record: Frozen contracts do not carry OCR confidence.
-- Persian/RTL OCR and Persian invoice parsing are not implemented. WP-11.2 (Holoo database adapter/enrichment) remains a separate deferred scope under its decision package.
-- Frozen contracts D-01–D-09 were not changed.
+- Work is on the Arena-fixed branch `arena/9dc17500-kandoo-digital-invoice`, starting from SHA `931d14111dace044681b3d902b791fa8539066c8`. No other branch was used and `main` was not changed.
+- Native Checkout PO decisions remain recorded in `specs/native-checkout-contract-proposal.md`: Q1=Option 1, Q2=Option 2, Q3=Option 1, Q4=Option 1. Per PO direction this is future architecture, not current MVP priority; no Native Checkout code was added.
+- `WP-HOLOO-IMAGE-EXTRACTION-02 — Persian OCR Support` is implemented in the experimental `src/image_extraction_adapter/` on top of the existing Tesseract/image-to-issuance path. `fas+eng` is configured, Persian/Arabic digits and separators and bidi controls are normalized, and the parser supports the tested Persian labels and line blocks. The original image extraction is preflighted against expected synthetic values before the existing `IssuanceService` is called.
+- The explicitly synthetic Persian PNG was read by Tesseract 5.5.1 with `fas+eng`: 47 word scores, mean 91.04255319148936, minimum 65.0. All 13 expected values matched, including both requested Persian item names and the payable label. The raw OCR and full result are in `deliveries/image-extraction-ocr/synthetic-persian-ocr-e2e.log`; the fixture SHA-256 is `df0e79c5acef87a6f2bcd3c9d36c6afadfb612a7210afadc0ea717c08856d782`.
+- The existing pipeline completed for the synthetic fixture: 4 configured validations `VALID`, domain `VALID/CLEAR`, canonicalization `ACCEPTED`, 2 canonical lines, and lifecycle `DRAFT → EXTRACTED → VALIDATED → ISSUED`; final Digital Invoice was verified with a 24-link trace. Evidence and IDs are in the retained smoke log and `deliveries/image-extraction-ocr/synthetic-digital-invoice-evidence.md`.
+- A confidence threshold of 70 returned adapter-local `REVIEW_REQUIRED` at measured minimum 65; issuance was not called and no Digital Invoice was created. This is not a persisted P5.2 ReviewQueue record: Frozen contracts do not carry OCR confidence.
+- Persian `fas` and English `eng` traineddata were successfully installed and exercised from `/tmp/kandoo-ocr-runtime`; model provenance and SHA-256 checksums are in the evidence document. Optional OCR/test packages and model binaries are not committed.
+- Focused image-adapter tests passed (9); the full repository suite passed (1,703). The English synthetic smoke regression also completed and reached `ISSUED`; its run is retained in `deliveries/image-extraction-ocr/synthetic-english-regression.log`.
+- No genuine, authorized Holoo invoice was available. These results establish synthetic Persian-path behavior only, not Holoo accuracy. Frozen contracts D-01–D-09 were not changed.
 
 ## EOD Status [2026-10-15]
 
-- Native Checkout Q1–Q4 decisions were recorded in `specs/native-checkout-contract-proposal.md`; they are approved for future architecture, not current MVP priority.
-- Today `src/image_extraction_adapter/` was built with Tesseract OCR and exercised end-to-end on a synthetic English invoice; the existing pipeline produced an `ISSUED` Digital Invoice. The fixture is synthetic and does not establish Holoo accuracy.
-- Persian/RTL is not currently supported.
-- **Priority for the next agent:** extend Tesseract configuration and parsing for Persian, add a clearly labeled synthetic Persian fixture, then test against a real Holoo invoice when a sanitized, authorized sample is supplied. Do not substitute Native Checkout work for this external-image path.
+- Native Checkout Q1–Q4 decisions remain approved for future architecture, not current MVP priority.
+- `WP-HOLOO-IMAGE-EXTRACTION-02` synthetic Persian implementation and verification are complete. Persian OCR is configured using `fas+eng`; actual OCR text, expected/actual comparisons, confidence review, pipeline completion, and test results are retained under `deliveries/image-extraction-ocr/`.
+- Real Holoo validation is **BLOCKED pending a sanitized, authorized Holoo invoice sample**. Do not infer Holoo layout/accuracy from the synthetic fixture.
+- Next executable work, when a sample is supplied: run the existing parser/OCR flow against that authorized sample, record actual OCR and field-level mismatches, and preserve fail-closed behavior. Do not substitute Native Checkout or WP-11.2 database-adapter work for this external-image path.
 
 ## 7. Current Agent Ownership
 
-- **Next implementation agent:** continue `WP-HOLOO-IMAGE-EXTRACTION-01`, starting with Persian OCR/parser support and a synthetic Persian fixture; do not substitute Native Checkout work for this external-image task.
+- **Current implementation:** `WP-HOLOO-IMAGE-EXTRACTION-02` synthetic Persian support is complete and evidence-backed; further real-source validation awaits a sanitized, authorized sample.
 - **Product Owner:** Native Checkout Q1–Q4 decisions are recorded; any later change to those decisions or MVP priority remains a PO decision.
 - **WP-11.2 Holoo DB adapter:** remains a separate deferred scope; the image-extraction adapter does not resolve its source mapping/authority/synchronization decisions.
-- Preserve unrelated work already present in the working tree; do not absorb other agents' uncommitted files into this EOD commit.
+- Preserve unrelated work already present in the working tree; do not absorb the untracked spooler adapter or runner into this image-extraction change.
 
 ## 8. Current Real Boundaries
 
-1. `WP-HOLOO-IMAGE-EXTRACTION-01` has only a synthetic English proof. Persian OCR/layout support and a genuine, authorized Holoo invoice sample are still required before claiming external-source suitability.
+1. Synthetic Persian OCR is verified, but no genuine authorized Holoo invoice is available. Holoo-specific recognition/layout suitability remains unverified.
 2. The low-confidence path is an adapter-local `REVIEW_REQUIRED` hold. The Frozen contracts do not persist OCR confidence or provide a proven P5.2 review-queue mapping; do not describe this local hold as a persistent Frozen `REVIEW` state.
-3. The synthetic smoke reached `ISSUED` through the existing pipeline; this does not prove Holoo accuracy or Persian readiness.
-4. Native Checkout is future architecture only under the recorded Q1–Q4 choices; it is not the current MVP priority and no Native Checkout code was added.
-5. WP-11.2 (Holoo database adapter/enrichment) remains separate and deferred pending its own decisions/evidence.
+3. The synthetic smoke reached `ISSUED` through the existing pipeline; this does not prove Holoo accuracy. The successful threshold 60 is a test setting, not a production recommendation; confidence is not calibrated.
+4. The parser recognizes the tested English/Persian labels and line-block layouts, normalizes Persian/Arabic digits and bidi controls, and fails closed for incomplete/ambiguous fields. Jalali-to-Gregorian calendar conversion is not implemented.
+5. Native Checkout is future architecture only under the recorded Q1–Q4 choices; it is not the current MVP priority and no Native Checkout code was added.
+6. WP-11.2 (Holoo database adapter/enrichment) remains separate and deferred pending its own decisions/evidence.
 
 ## 9. Repository and EOD Branch Status
 
-The checkout contains the project source tree. The EOD image-extraction code, synthetic OCR evidence, Native Checkout decision note and handoff updates are scoped to the fixed Arena branch `arena/9dc17500-kandoo-digital-invoice`; no change is to be merged to `main`.
-
-The image-extraction/EOD change is based on the existing remote tip `ade8af5f0c80d5bfb9b58e3d65dd9f231ba18a02`; its prior commits were preserved. The final commit SHA and push result are reported from Git in the EOD response. Do not force-push or overwrite remote work if a future divergence occurs. Unrelated pre-existing spooler artifacts remain uncommitted and outside this image-extraction commit.
+All task-scoped Persian image-extraction source, tests, synthetic fixture, evidence, and handoff updates stay on `arena/9dc17500-kandoo-digital-invoice`, whose work started at `931d14111dace044681b3d902b791fa8539066c8`. No change is to be merged to `main`. The unrelated untracked spooler adapter/runner is intentionally left out of the image-extraction change. Do not force-push or overwrite remote work if a future non-fast-forward condition occurs; report that blocker instead.
 
 ## 10. Handoff Protocol
 

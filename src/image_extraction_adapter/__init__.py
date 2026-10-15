@@ -12,6 +12,7 @@ from .ocr import (
     OCRBackend,
     OCREngineUnavailable,
     OCRExecutionError,
+    PERSIAN_TESSERACT_LANGUAGE,
     TesseractOCR,
 )
 from .parser import InvoiceTextParseError, ParsedImageInvoice, parse_invoice_text
@@ -28,6 +29,7 @@ __all__ = [
     "OCRBackend",
     "OCREngineUnavailable",
     "OCRExecutionError",
+    "PERSIAN_TESSERACT_LANGUAGE",
     "TesseractOCR",
     "InvoiceTextParseError",
     "ParsedImageInvoice",
