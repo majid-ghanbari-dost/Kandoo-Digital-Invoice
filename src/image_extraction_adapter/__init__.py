@@ -7,6 +7,8 @@ from .model import (
     ImageExtractionReviewRequired,
     ImageIssuanceSubmission,
     OCRResult,
+    OCRWord,
+    FieldAssessment,
 )
 from .ocr import (
     OCRBackend,
@@ -15,7 +17,13 @@ from .ocr import (
     PERSIAN_TESSERACT_LANGUAGE,
     TesseractOCR,
 )
-from .parser import InvoiceTextParseError, ParsedImageInvoice, parse_invoice_text
+from .parser import (
+    InvoiceTextParseError,
+    ParsedImageInvoice,
+    SpatialParseResult,
+    parse_invoice_geometry,
+    parse_invoice_text,
+)
 
 __all__ = [
     "ImageExtractionAdapter",
@@ -26,6 +34,8 @@ __all__ = [
     "ImageExtractionReviewRequired",
     "ImageIssuanceSubmission",
     "OCRResult",
+    "OCRWord",
+    "FieldAssessment",
     "OCRBackend",
     "OCREngineUnavailable",
     "OCRExecutionError",
@@ -33,5 +43,7 @@ __all__ = [
     "TesseractOCR",
     "InvoiceTextParseError",
     "ParsedImageInvoice",
+    "SpatialParseResult",
+    "parse_invoice_geometry",
     "parse_invoice_text",
 ]

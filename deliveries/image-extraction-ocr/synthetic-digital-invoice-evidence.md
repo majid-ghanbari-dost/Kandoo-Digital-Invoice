@@ -1,9 +1,11 @@
 # Synthetic image OCR → Digital Invoice evidence
 
-**Evidence class: Synthetic test only.** These fixtures and pipeline records are
-not Holoo invoices or Spooler captures. No authorized genuine Holoo raster was
-available or used, so these tests do not establish Holoo accuracy or production
-readiness. Frozen contracts D-01–D-09 were not changed.
+**Evidence class: Synthetic test only.** This document records only synthetic
+fixtures and pipeline runs; they are not Holoo invoices or Spooler captures.
+A separate user-supplied cleaned invoice image was spatially tested and returned
+review-only; see `real-holoo-spatial-evidence.md`. The synthetic results below do
+not establish Holoo accuracy or production readiness. Frozen contracts D-01–D-09
+were not changed.
 
 ## English baseline
 
@@ -100,26 +102,42 @@ by unit tests. Invoice dates are interpreted as Gregorian dates; Jalali
 calendar conversion is not implemented. The fixture deliberately uses a
 Gregorian ISO date.
 
+## Current spatial-backend regression (Synthetic only)
+
+After adding TSV word boxes, both generated fixtures were rerun through the
+current Tesseract backend. Their logs are clearly labeled `Synthetic` and are
+separate from the user-supplied image evidence:
+
+- English fixture: 47 OCR scores, mean `95.60920540425528`, minimum
+  `87.448105`; declared values matched and the temporary synthetic smoke reached
+  `ISSUED`. Full output: `synthetic-spatial-regression-en.log`.
+- Persian fixture: 47 OCR scores, mean `91.47784295744681`, minimum
+  `65.31218`; declared values matched and the temporary synthetic smoke reached
+  `ISSUED`. Full output: `synthetic-spatial-regression-fa.log`.
+- These regressions test continued behavior on synthetic fixtures only; they
+  are not Holoo validation.
+
 ## Verification performed
 
-- Focused adapter unit tests: 9 passed, including Persian UTF-8, localized
-  digit/separator, and low-confidence resubmission guard cases.
-- Full repository suite: 1,703 passed using pytest 9.1.1, installed only in
-  `/tmp/kandoo-ocr-runtime` for verification.
-- Synthetic Persian issuance smoke at threshold 60: passed as recorded above.
-- Synthetic Persian confidence probe at threshold 70: review hold, no submit.
-- English synthetic smoke regression: completed and reached `ISSUED`; full run
-  retained in `synthetic-english-regression.log`.
+- Focused adapter unit tests after geometry/TSV additions: 12 passed.
+- Full repository suite on the same implementation: 1,706 passed.
+- Synthetic Persian issuance smoke at threshold 60 and the threshold-70
+  confidence hold remain recorded above.
+- Current English/Persian synthetic regressions are retained in the two
+  `synthetic-spatial-regression-*.log` files.
 - `git diff --check`: passed.
 
 ## Scope limits
 
-- English and Persian text-label parsing is coordinate-free; it is not a
-  Holoo layout model. Unknown, incomplete, or ambiguous fields fail closed for
-  review.
-- No real Holoo invoice was supplied. A genuine sanitized/authorized sample
-  remains required before validating Holoo-specific recognition or claiming
-  accuracy on Holoo output.
+- `parse_invoice_text` remains a coordinate-free text-label parser. The new
+  `parse_invoice_geometry` fallback is a narrow rule/numbered-row parser for
+  the observed receipt layout, not a general Holoo layout model. Both fail
+  closed for incomplete or ambiguous values.
+- Synthetic fixtures do not establish Holoo accuracy. The one supplied cleaned
+  invoice image was tested separately; its four rows were spatially aligned,
+  but critical amounts and other fields remain under review and no issuance
+  occurred. See `real-holoo-spatial-evidence.md`. Additional ground-truthed,
+  authorized samples are still needed before broader accuracy claims.
 - Tesseract confidence is a review heuristic, not a calibrated probability;
   the successful synthetic threshold does not establish a production threshold.
 - The reference validators confirmed the four configured rules. They did not

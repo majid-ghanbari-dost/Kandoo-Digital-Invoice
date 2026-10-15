@@ -1,8 +1,9 @@
-"""Coordinate-free English/Persian OCR text parser for declared invoice labels.
+"""English/Persian OCR parsers for labeled text and spatial invoice tables.
 
-The parser consumes OCR text labels and either a recognized delimited header or
-labeled item blocks. It never uses image coordinates, silently guesses missing
-values, or recalculates invoice amounts.
+`parse_invoice_text` consumes OCR labels and delimited/labeled item blocks
+without image coordinates. `parse_invoice_geometry` consumes word boxes for a
+fail-closed spatial fallback. Neither function guesses missing values or
+recalculates invoice amounts.
 """
 from __future__ import annotations
 
@@ -11,6 +12,8 @@ import unicodedata
 from dataclasses import dataclass
 from datetime import date
 from typing import Sequence
+
+from .model import FieldAssessment, OCRResult, OCRWord
 
 
 class InvoiceTextParseError(ValueError):
@@ -298,3 +301,401 @@ def parse_invoice_text(text: str) -> ParsedImageInvoice:
 
     page_text = "".join(f"{name}={value}\n" for name, value in fields)
     return ParsedImageInvoice(tuple(fields), page_text.encode("utf-8"), len(rows))
+
+
+@dataclass(frozen=True)
+class SpatialParseResult:
+    """Partial box-based parse; every uncertain or missing value is REVIEW."""
+
+    assessments: tuple["FieldAssessment", ...]
+    column_boundaries: tuple[float, ...]
+    row_bands: tuple[tuple[float, float], ...]
+    reasons: tuple[str, ...]
+
+    @property
+    def field_values(self) -> tuple[tuple[str, str], ...]:
+        return tuple((item.field_name, item.raw_value) for item in self.assessments)
+
+    @property
+    def review_count(self) -> int:
+        return sum(item.status == "REVIEW" for item in self.assessments)
+
+
+def _bbox(words: Sequence["OCRWord"]) -> tuple[int, int, int, int] | None:
+    if not words:
+        return None
+    left = min(word.left for word in words)
+    top = min(word.top for word in words)
+    right = max(word.right for word in words)
+    bottom = max(word.bottom for word in words)
+    return left, top, right - left, bottom - top
+
+
+def _box_text(words: Sequence["OCRWord"]) -> str:
+    return " ".join(
+        word.text.strip()
+        for word in sorted(words, key=lambda word: (-word.center_x, word.top))
+        if word.text.strip()
+    )
+
+
+def _box_confidence(words: Sequence["OCRWord"]) -> float | None:
+    scores = [word.confidence for word in words if word.text.strip()]
+    return min(scores) if scores else None
+
+
+def _assessment(
+    field_name: str,
+    words: Sequence["OCRWord"],
+    *,
+    minimum_confidence: float,
+    reason: str | None = None,
+    numeric_pattern: re.Pattern[str] | None = None,
+) -> "FieldAssessment":
+    raw_value = _box_text(words)
+    confidence = _box_confidence(words)
+    reasons = [reason] if reason else []
+    if not raw_value:
+        reasons.append("no OCR word recognized in the field region")
+    if confidence is None:
+        reasons.append("field has no word confidence score")
+    elif confidence < minimum_confidence:
+        reasons.append(
+            f"minimum field confidence {confidence:.2f} is below "
+            f"{minimum_confidence:.2f}")
+    if numeric_pattern is not None and raw_value:
+        normalized = _normalize_text(raw_value).strip()
+        if not numeric_pattern.fullmatch(normalized):
+            reasons.append("raw OCR value does not match the declared numeric format")
+    return FieldAssessment(
+        field_name=field_name,
+        raw_value=raw_value,
+        status="REVIEW" if reasons else "EXTRACTED",
+        confidence=confidence,
+        bbox=_bbox(words),
+        reason="; ".join(dict.fromkeys(reasons)) or None,
+    )
+
+
+def _cluster_rule_boxes(
+    words: Sequence["OCRWord"], *, image_height: int
+) -> tuple[list["OCRWord"], list["OCRWord"]]:
+    minimum_height = max(80, int(image_height * 0.12))
+    candidates = [
+        word for word in words
+        if not word.text.strip() and 0 < word.width <= 18 and word.height >= minimum_height
+    ]
+    interior = [
+        word for word in candidates
+        if word.top >= image_height * 0.08 and word.height < image_height * 0.90
+    ]
+    outer = [
+        word for word in candidates
+        if word.height >= image_height * 0.90
+    ]
+    return interior, outer
+
+
+def _column_geometry(
+    words: Sequence["OCRWord"], *, image_width: int, image_height: int
+) -> tuple[tuple[float, ...], tuple[float, float], str | None]:
+    interior, outer = _cluster_rule_boxes(words, image_height=image_height)
+    # The target receipt table has three internal vertical rules, defining the
+    # amount, quantity, item-name, and row-number columns. Group duplicates
+    # within a 12px band because TSV boxes can cover neighboring rule pixels.
+    centers: list[float] = []
+    for word in sorted(interior, key=lambda item: item.center_x):
+        if not centers or abs(word.center_x - centers[-1]) > 12:
+            centers.append(word.center_x)
+        else:
+            centers[-1] = (centers[-1] + word.center_x) / 2
+    if len(centers) != 3:
+        return (), (0.0, 0.0), (
+            f"expected 3 internal table rules, found {len(centers)} long TSV boxes")
+
+    left_candidates = [
+        word.center_x for word in outer
+        if 0 < word.center_x < centers[0]
+    ]
+    right_candidates = [
+        word.center_x for word in outer
+        if centers[-1] < word.center_x < image_width
+    ]
+    if not left_candidates or not right_candidates:
+        return tuple(centers), (0.0, 0.0), "table outer rules were not detected"
+
+    bounds = (
+        max(left_candidates),
+        *centers,
+        min(right_candidates),
+    )
+    table_top = max(word.top for word in interior)
+    table_bottom = min(word.bottom for word in interior)
+    if table_bottom <= table_top:
+        return tuple(bounds), (0.0, 0.0), "internal table rules have no shared Y span"
+    return tuple(bounds), (float(table_top), float(table_bottom)), None
+
+
+def _column_words(
+    words: Sequence["OCRWord"],
+    *,
+    x_left: float,
+    x_right: float,
+    y_top: float,
+    y_bottom: float,
+    edge_margin: float = 8,
+) -> list["OCRWord"]:
+    return [
+        word for word in words
+        if word.text.strip()
+        and x_left + edge_margin <= word.center_x <= x_right - edge_margin
+        and y_top <= word.center_y <= y_bottom
+    ]
+
+
+def _row_anchors(
+    words: Sequence["OCRWord"],
+    *,
+    bounds: Sequence[float],
+    table_span: tuple[float, float],
+) -> tuple[list[tuple[int, "OCRWord"]], list[str]]:
+    table_top, table_bottom = table_span
+    candidates: list[tuple[int, "OCRWord"]] = []
+    for word in words:
+        if not (
+            bounds[-2] + 8 <= word.center_x <= bounds[-1] - 8
+            and table_top <= word.center_y <= table_bottom
+        ):
+            continue
+        raw = _normalize_text(word.text).strip()
+        if re.fullmatch(r"[0-9]{1,2}", raw):
+            candidates.append((int(raw), word))
+
+    candidates.sort(key=lambda item: item[1].center_y)
+    first_index = next(
+        (index for index, (value, _) in enumerate(candidates) if value == 1), None)
+    if first_index is None:
+        return [], ["no row-number token '1' was found in the rightmost table column"]
+
+    anchors = [candidates[first_index]]
+    issues: list[str] = []
+    expected = 2
+    previous_y = anchors[0][1].center_y
+    for value, word in candidates[first_index + 1:]:
+        if word.center_y <= previous_y:
+            continue
+        if value == expected:
+            anchors.append((value, word))
+            previous_y = word.center_y
+            expected += 1
+        elif value > expected:
+            issues.append(f"row sequence {expected} is missing before {value}")
+            break
+    if len(anchors) < 2:
+        issues.append("only one increasing row-number anchor was recognized")
+    return anchors, issues
+
+
+def _bands_from_anchors(
+    anchors: Sequence[tuple[int, "OCRWord"]], table_span: tuple[float, float]
+) -> tuple[tuple[float, float], ...]:
+    centers = [word.center_y for _, word in anchors]
+    top_limit, bottom_limit = table_span
+    bands: list[tuple[float, float]] = []
+    for index, center in enumerate(centers):
+        if index == 0:
+            upper = center - (centers[index + 1] - center) / 2
+        else:
+            upper = (centers[index - 1] + center) / 2
+        if index == len(centers) - 1:
+            lower = center + (center - centers[index - 1]) / 2
+        else:
+            lower = (center + centers[index + 1]) / 2
+        bands.append((max(top_limit, upper), min(bottom_limit, lower)))
+    return tuple(bands)
+
+
+def _labeled_value_words(
+    words: Sequence["OCRWord"], labels: set[str], *, y_tolerance: float = 32
+) -> tuple[list["OCRWord"], list["OCRWord"]]:
+    label_words = [
+        word for word in words
+        if _normalize_text(word.text).strip().strip(":：,.;") in labels
+    ]
+    if not label_words:
+        return [], []
+    label_y = sum(word.center_y for word in label_words) / len(label_words)
+    same_line_labels = [
+        word for word in label_words if abs(word.center_y - label_y) <= y_tolerance
+    ]
+    line_words = [
+        word for word in words if abs(word.center_y - label_y) <= y_tolerance
+    ]
+    label_left = min(word.left for word in same_line_labels)
+    value_words = [
+        word for word in line_words
+        if word.center_x < label_left - 5
+        and re.search(r"[0-9]", _normalize_text(word.text))
+    ]
+    return same_line_labels, value_words
+
+
+def parse_invoice_geometry(
+    ocr: "OCRResult", *, minimum_confidence: float
+) -> SpatialParseResult:
+    """Extract spatially aligned receipt cells and preserve uncertain OCR raw.
+
+    Long whitespace TSV boxes identify the receipt's vertical table rules.
+    Numbered cells in the rightmost column anchor item rows; the remaining
+    cells are assigned right-to-left as item name, quantity, and amount. This
+    routine is deliberately partial and never repairs or calculates a value.
+    """
+    words = ocr.words
+    assessments: list[FieldAssessment] = []
+    reasons: list[str] = []
+    bounds: tuple[float, ...] = ()
+    row_bands: tuple[tuple[float, float], ...] = ()
+    table_span = (0.0, 0.0)
+
+    if not words or ocr.image_width <= 0 or ocr.image_height <= 0:
+        reason = "OCR backend returned no usable spatial word data"
+        return SpatialParseResult((), (), (), (reason,))
+
+    bounds, table_span, geometry_error = _column_geometry(
+        words, image_width=ocr.image_width, image_height=ocr.image_height)
+    if geometry_error:
+        reasons.append(geometry_error)
+
+    # The labeled header makes the receipt number spatially identifiable even
+    # when the date has no label and is in a local calendar format.
+    invoice_label = [
+        word for word in words
+        if _normalize_text(word.text).strip().strip(":：") in {"شماره", "فاکتور", "صورتحساب"}
+    ]
+    invoice_number_words: list["OCRWord"] = []
+    if invoice_label:
+        label_y = sum(word.center_y for word in invoice_label) / len(invoice_label)
+        same_line = [
+            word for word in invoice_label if abs(word.center_y - label_y) <= 28
+        ]
+        left_edge = min(word.left for word in same_line)
+        candidates = [
+            word for word in words
+            if abs(word.center_y - label_y) <= 28
+            and word.center_x < left_edge - 5
+            and re.fullmatch(r"[0-9]+", _normalize_text(word.text).strip())
+        ]
+        if candidates:
+            invoice_number_words = [max(candidates, key=lambda word: word.center_x)]
+    assessments.append(_assessment(
+        "invoice.number", invoice_number_words,
+        minimum_confidence=minimum_confidence,
+        numeric_pattern=re.compile(r"[0-9]+"),
+        reason=None if invoice_number_words else "invoice number is not adjacent to its label",
+    ))
+
+    date_words = [
+        word for word in words
+        if word.center_y < ocr.image_height * 0.4
+        and re.fullmatch(
+            r"[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}",
+            _normalize_text(word.text).strip(),
+        )
+    ]
+    assessments.append(_assessment(
+        "invoice.date", date_words,
+        minimum_confidence=minimum_confidence,
+        reason="unlabeled dot-separated date; calendar conversion is not declared",
+    ))
+
+    payable_labels, payable_words = _labeled_value_words(
+        words, {"مبلغ", "قابل", "پرداخت"})
+    assessments.append(_assessment(
+        "invoice.payable", payable_words,
+        minimum_confidence=minimum_confidence,
+        reason=None if payable_labels else "payable label was not recognized",
+        numeric_pattern=re.compile(r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]{2})?"),
+    ))
+
+    tax_labels, tax_words = _labeled_value_words(
+        words, {"مالیات", "بر", "ارزش", "افزوده"})
+    assessments.append(_assessment(
+        "tax.amount", tax_words,
+        minimum_confidence=minimum_confidence,
+        numeric_pattern=re.compile(r"[0-9]+(?:\.[0-9]{2})?"),
+        reason=None if tax_labels else "tax label was not recognized",
+    ))
+
+    net_labels, net_words = _labeled_value_words(words, {"جمع", "کل"})
+    assessments.append(_assessment(
+        "total.net", net_words,
+        minimum_confidence=minimum_confidence,
+        numeric_pattern=re.compile(r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]{2})?"),
+        reason=None if net_labels and net_words else
+        "no overall net amount was recognized beside a net-total label",
+    ))
+
+    # The charges label is not part of the frozen canonical contract; it is
+    # retained for operator review only.
+    charges_labels, charges_words = _labeled_value_words(words, {"عوارض"})
+    assessments.append(_assessment(
+        "charges.amount", charges_words,
+        minimum_confidence=minimum_confidence,
+        numeric_pattern=re.compile(r"[0-9]+(?:\.[0-9]{2})?"),
+        reason=None if charges_labels else "charges label was not recognized",
+    ))
+
+    if bounds and table_span[1] > table_span[0]:
+        anchors, anchor_issues = _row_anchors(
+            words, bounds=bounds, table_span=table_span)
+        reasons.extend(anchor_issues)
+        row_bands = _bands_from_anchors(anchors, table_span) if len(anchors) >= 2 else ()
+        for (row_number, anchor), band in zip(anchors, row_bands):
+            sequence_assessment = _assessment(
+                f"line.{row_number - 1}.sequence", [anchor],
+                minimum_confidence=minimum_confidence,
+                numeric_pattern=re.compile(r"[0-9]{1,2}"),
+            )
+            assessments.append(sequence_assessment)
+            row_index = row_number - 1
+            desc_words = _column_words(
+                words, x_left=bounds[2], x_right=bounds[3],
+                y_top=band[0], y_bottom=band[1])
+            qty_words = _column_words(
+                words, x_left=bounds[1], x_right=bounds[2],
+                y_top=band[0], y_bottom=band[1])
+            amount_words = _column_words(
+                words, x_left=bounds[0], x_right=bounds[1],
+                y_top=band[0], y_bottom=band[1])
+
+            assessments.append(_assessment(
+                f"line.{row_index}.description", desc_words,
+                minimum_confidence=minimum_confidence,
+            ))
+            assessments.append(_assessment(
+                f"line.{row_index}.quantity", qty_words,
+                minimum_confidence=minimum_confidence,
+                numeric_pattern=re.compile(r"[0-9]+(?:\.[0-9]+)?"),
+            ))
+            assessments.append(_assessment(
+                f"line.{row_index}.total", amount_words,
+                minimum_confidence=minimum_confidence,
+                numeric_pattern=re.compile(r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]{2})?"),
+            ))
+            assessments.append(_assessment(
+                f"line.{row_index}.unit_price", [],
+                minimum_confidence=minimum_confidence,
+                reason="no unit-price column was recognized in the receipt table",
+            ))
+    elif not bounds:
+        reasons.append("no table columns could be assigned from TSV geometry")
+
+    field_reviews = [item.field_name for item in assessments if item.status == "REVIEW"]
+    if field_reviews:
+        reasons.append("fields require review: " + ", ".join(field_reviews))
+    return SpatialParseResult(
+        assessments=tuple(assessments),
+        column_boundaries=bounds,
+        row_bands=row_bands,
+        reasons=tuple(reasons),
+    )

@@ -1,4 +1,4 @@
-"""Image-to-text ingestion adapter; the frozen pipeline remains authoritative."""
+"""Image OCR/spatial extraction adapter; the frozen pipeline remains authoritative."""
 from __future__ import annotations
 
 import hashlib
@@ -15,7 +15,7 @@ from .model import (
     OCRResult,
 )
 from .ocr import OCRBackend, OCREngineUnavailable, OCRExecutionError
-from .parser import InvoiceTextParseError, parse_invoice_text
+from .parser import InvoiceTextParseError, parse_invoice_geometry, parse_invoice_text
 
 
 class IssuanceSubmitter(Protocol):
@@ -70,6 +70,20 @@ class ImageExtractionAdapter:
         try:
             parsed = parse_invoice_text(ocr.text)
         except InvoiceTextParseError as exc:
+            spatial = parse_invoice_geometry(
+                ocr, minimum_confidence=self._minimum_word_confidence)
+            if spatial.assessments:
+                spatial_summary = "; ".join(spatial.reasons) or "spatial fields need review"
+                return ImageExtractionReviewRequired(
+                    source_image_sha256=digest,
+                    ocr=ocr,
+                    reason=(f"flat-text parser blocked: {exc}; "
+                            f"spatial parser: {spatial_summary}"),
+                    field_values=spatial.field_values,
+                    field_assessments=spatial.assessments,
+                    spatial_column_boundaries=spatial.column_boundaries,
+                    spatial_row_bands=spatial.row_bands,
+                )
             return ImageExtractionReviewRequired(
                 source_image_sha256=digest,
                 ocr=ocr,

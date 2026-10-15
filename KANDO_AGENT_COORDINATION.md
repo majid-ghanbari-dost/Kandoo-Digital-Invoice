@@ -8,7 +8,8 @@ Operational coordination between implementation and governance agents. This file
 
 | Area | Owner | Status |
 |---|---|---|
-| `WP-HOLOO-IMAGE-EXTRACTION-02` | Current implementation agent | SYNTHETIC PERSIAN SUPPORT COMPLETE; real-source validation blocked pending an authorized Holoo sample |
+| `WP-HOLOO-IMAGE-EXTRACTION-02` | Current implementation agent | SYNTHETIC PERSIAN SUPPORT COMPLETE; synthetic evidence remains separate from Holoo validation |
+| `HOLOO-EXTRACTION-CONTINUATION-01` | Current implementation agent | SPATIAL OCR FALLBACK IMPLEMENTED; one user-supplied image yielded four rows but remains REVIEW_REQUIRED; issuance not reached |
 | Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
 | WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
 | Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
@@ -40,17 +41,20 @@ This is approved for future architecture, not current MVP priority. No Native Ch
 
 ### External image OCR
 
-- `src/image_extraction_adapter/` uses Tesseract and a coordinate-free, fail-closed labeled-text parser. `PERSIAN_TESSERACT_LANGUAGE` is `fas+eng`; Persian/Arabic digits, decimal/group separators, Arabic/Persian letter forms, and bidirectional controls are normalized.
-- The clearly labeled synthetic Persian raster passed actual Tesseract → expected-value preflight → existing `IssuanceService` → Digital Invoice smoke. OCR: Tesseract 5.5.1 (`fas+eng`), 47 word scores, minimum 65.0, mean 91.04255319148936. All 13 declared values matched. The pipeline reached `ISSUED`, verified `true`, with a 24-link trace.
-- Evidence: `deliveries/image-extraction-ocr/synthetic-persian-ocr-e2e.log`, `synthetic-persian-confidence-review.log`, `synthetic-english-regression.log`, and `synthetic-digital-invoice-evidence.md`. The earlier English synthetic evidence remains in `synthetic-ocr-success.log` and `synthetic-confidence-review.log`.
+- `src/image_extraction_adapter/` uses Tesseract with both a coordinate-free text parser and a fail-closed spatial fallback. The fallback groups TSV word boxes into right-to-left columns and numbered rows. `PERSIAN_TESSERACT_LANGUAGE` is `fas+eng`; text normalization supports Persian/Arabic digits, separators, letter forms, and bidirectional controls.
+- The clearly labeled Synthetic Persian raster passed the current post-spatial-backend Tesseract → expected-value preflight → existing `IssuanceService` → Digital Invoice smoke. OCR: Tesseract 5.5.1 (`fas+eng`), 47 word scores, minimum 65.31218, mean 91.47784295744681. Declared values matched; the pipeline reached `ISSUED`, verified `true`, with a 24-link trace. The English Synthetic regression also passed.
+- Evidence includes `synthetic-spatial-regression-fa.log`, `synthetic-spatial-regression-en.log`, `synthetic-digital-invoice-evidence.md`, and the earlier `synthetic-persian-ocr-e2e.log` / `synthetic-persian-confidence-review.log`. These Synthetic results do not validate Holoo.
 - At threshold 70, the Persian fixture was held as adapter-local `REVIEW_REQUIRED`; issuance was not called. This is not a persisted Frozen P5.2 ReviewQueue item or a Digital Invoice `REVIEW` state.
 - Persian `fas` and English `eng` traineddata were installed and exercised from `/tmp`; provenance/checksums are recorded in the evidence. No traineddata binaries or optional runtime packages were added to the repository.
-- No genuine, sanitized/authorized Holoo invoice was available. Synthetic recognition does not establish Holoo accuracy; Holoo-specific validation remains blocked until such a sample is supplied.
-- Frozen contracts D-01–D-09 were not changed. The original raster hash is logged by the adapter but is not persisted by the Frozen Capture contract.
+- One user-supplied cleaned image, `deliveries/image-extraction-ocr/holo_row_detection.png`, was run through `submit_image()`. The spatial parser found four ordered rows and the amount/quantity/name/sequence columns, while preserving ambiguous raw values. Per-field output and the image hash are in `deliveries/image-extraction-ocr/real-holoo-spatial-evidence.md`.
+- The image returned `ImageExtractionReviewRequired`; a counting wrapper around the real `IssuanceService` recorded zero `submit` calls. No Digital Invoice was issued. This is an adapter-local hold, not a persisted Frozen P5.2 review record.
+- The single image did not yield reliable line totals, payable, net total, quantities, or unit prices. It demonstrates a partial layout parse only—not general Holoo accuracy.
+- Geometry uses `tesserocr.GetTSVText(0)` for level-5 text/confidence/box fields because neither `pytesseract` nor the native Tesseract CLI is present in this runtime. It does not claim to call `pytesseract.image_to_data`.
+- Frozen contracts D-01–D-09 were not changed. The original raster hash is reported by the adapter but is not persisted by the Frozen Capture contract.
 
 ### Next executable work
 
-Synthetic Persian support and regression testing for `WP-HOLOO-IMAGE-EXTRACTION-02` are complete. The next real-source step, when an authorized sanitized Holoo invoice is supplied, is to run OCR/parser against it, preserve raw OCR and field-by-field mismatches, and keep low/uncertain recognition fail-closed. Do not claim Holoo accuracy before that evidence exists. Keep Native Checkout outside current MVP implementation priority. WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
+Synthetic Persian support and regression testing for `WP-HOLOO-IMAGE-EXTRACTION-02` are complete; current synthetic regressions are explicitly labeled in their logs. The supplied image has been tested under `HOLOO-EXTRACTION-CONTINUATION-01`, but its extracted fields remain under review and issuance was not reached. Next work requires confirmed ground truth for reviewed fields and additional authorized layouts before broadening recognition or making accuracy claims; keep uncertain values fail-closed. Do not treat synthetic results as Holoo validation. Keep Native Checkout outside current MVP implementation priority. WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
 
 ## Branch / integration boundary
 
