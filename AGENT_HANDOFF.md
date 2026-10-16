@@ -37,7 +37,7 @@ Administrative discussion that causes no project-state change need not create a 
 For every conversation that produces a real project output/change, the coordinator must:
 - update the actual project artifact in the authoritative repository when the available connector permits it;
 - update this handoff in the same change/commit;
-- update `KANDOO_AGENT_COORDINATION.md` when ownership or execution state changes;
+- update `KANDO_AGENT_COORDINATION.md` when ownership or execution state changes;
 - report the exact repository commit/HEAD in the final report;
 - never claim source integration when only a local/archive artifact was produced.
 
@@ -93,7 +93,7 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
-WP-05 was verified on 2026-10-15; WP-09 verification was added on 2026-10-16 below.
+WP-05 was verified on 2026-10-15; WP-09 and WP-10 verification was added on 2026-10-16 below.
 
 - Work is on the Arena-fixed branch `arena/9dc17500-kandoo-digital-invoice`. `HOLOO-IMAGE-EXTRACTION-05` started from commit `395443ebdc3843767a526151f403170266fd3fbf`; no other branch was used and `main` was not changed.
 - Native Checkout PO decisions remain recorded in `specs/native-checkout-contract-proposal.md`: Q1=Option 1, Q2=Option 2, Q3=Option 1, Q4=Option 1. Per PO direction this is future architecture, not current MVP priority; no Native Checkout code was added.
@@ -118,37 +118,43 @@ WP-05 was verified on 2026-10-15; WP-09 verification was added on 2026-10-16 bel
 - Glyph build used all three receipts. The row template profile contains all ten Persian digits plus comma. The evaluation is a row-disjoint split within the same 13-row invoice: source rows 3–8 train from a separate crop; rows 0–2 and 9–12 plus payable are scored from the full image. It is not independent-invoice validation. The visual labels are provisional and not confirmed by the invoice owner.
 - The prior Adapter spatial geometry produced payable bbox `(199, 1431, 147, 28)` for `13.png`; its raw payable is `۳۴۷,۹۲۰,۰۰۰`. The Glyph evaluation's payable result did not match and remains `REVIEW`.
 - 13-row Glyph evaluation: `exact_digit_cells=12/15`; 12 of 27 returned numeric cells were `EXTRACTED`, 15 were `REVIEW`; zero extracted values were wrong against the available visual labels. Arithmetic Gate failed because line 9 total was malformed (`??۹,۶۰۰,۰۰۰`); all amount cells remained REVIEW. Output: `deliveries/image-extraction-ocr/glyph-classifier-evaluate-13row-3invoice-build.log`.
-- Focused image-adapter suite: 21 passed plus 6 subtests. Full repository suite: 1,715 passed plus 6 subtests. `glyph_classifier.py` is not connected to `adapter.py`; no issuance path or Frozen contract changed. Pillow, tesserocr, and pytest used for this run were installed only under `/tmp/kandoo-glyph-runtime`.
+- Focused image-adapter suite: 21 passed plus 6 subtests. Full repository suite: 1,715 passed plus 6 subtests. At WP-09 completion, `glyph_classifier.py` was not yet connected to `adapter.py`; WP-10 subsequently authorized and implemented that integration. Pillow, tesserocr, and pytest used for this run were installed only under `/tmp/kandoo-glyph-runtime`.
+
+### WP-HOLOO-IMAGE-EXTRACTION-10 — Glyph Integration & E2E (2026-10-16)
+
+- `ImageExtractionAdapter` accepts an explicit numeric-cell backend; `GlyphClassifierOCR` is now the primary numeric-cell engine while Tesseract remains the full-page text/layout backend. Any numeric cell with status other than `EXTRACTED`, missing numeric coverage, disagreement with parsed values, or a backend failure holds the whole page as `ImageExtractionReviewRequired`.
+- The accepted Glyph variants are carried on `ImageExtractionReady`, and `submit_extraction()` rechecks the evidence when Glyph is configured so a ready result without valid numeric evidence cannot bypass the gate. Frozen contracts D-01–D-09 were unchanged.
+- Guarded E2E on `deliveries/image-extraction-ocr/13.png` used `src/templates.json` and detected 13 rows/27 numeric cells: 12 EXTRACTED, 15 REVIEW. The arithmetic gate failed on malformed `line.9.total` (`??۹,۶۰۰,۰۰۰`); the payable was also malformed. The adapter returned `ImageExtractionReviewRequired`.
+- E2E passed its fail-closed check: `NonIssuingSubmitProbe` call count was zero. The real `IssuanceService` was not attached to this guarded real-image run; no Digital Invoice was created and no `ISSUED` state was reached. Do not describe this as a production accuracy result or as an actual invoice issuance-service run.
+- Full log and report: `deliveries/image-extraction-ocr/wp-holoo-image-extraction-10-e2e.log` and `deliveries/image-extraction-ocr/wp-holoo-image-extraction-10-report.md`. Focused image-adapter suite: 25 passed; full repository suite: 1,719 passed plus 6 subtests.
 
 ## EOD Status [2026-10-16]
 
-- Native Checkout Q1–Q4 decisions remain approved for future architecture, not current MVP priority.
-- `WP-HOLOO-IMAGE-EXTRACTION-02` synthetic Persian implementation and verification remain complete. Its results stay explicitly Synthetic and are not treated as Holoo evidence.
-- `HOLOO-EXTRACTION-CONTINUATION-01` implemented the spatial fallback and ran the supplied cleaned image. Four row positions were recovered, but critical fields remain `REVIEW`; see `deliveries/image-extraction-ocr/real-holoo-spatial-evidence.md`.
-- `WP-HOLOO-IMAGE-EXTRACTION-05` implemented cell crops, Pillow Otsu/adaptive thresholding, morphological rule removal, and PSM-7 column-specific OCR. Otsu/adaptive improved exact-cell quantity matching but failed all monetary cells; all OCR variants remained `REVIEW` and no issuance occurred. The one-image manual scoring reference remains unconfirmed.
-- `WP-HOLOO-IMAGE-EXTRACTION-09` implemented dynamic image-projection layout detection. It recovered 4, 5, and 13 rows with five rules and cropped all expected cells. Glyph evaluation on a disjoint row subset of the 13-row invoice reached 12/15 exact labelled cells, but Arithmetic Gate failed on an unreadable line total; 12 cells were EXTRACTED and 15 REVIEW, with no incorrect EXTRACTED values against provisional labels. Labels are not owner-confirmed, and the split is not independent-invoice validation.
-- Next executable work: obtain invoice-owner-confirmed ground truth and additional independent authorized invoice layouts, then address the glyph classifier's 13-row amount/payable errors. Keep uncertain values fail-closed and the classifier unconnected to issuance until separately authorized. Do not use Synthetic fixtures as Holoo evidence or substitute Native Checkout/WP-11.2 work for this path.
+- **WP-09 (Dynamic Layout):** Successfully implemented and pushed as `e5ff46d`. Dynamic projection detected the supplied 4-, 5-, and 13-row layouts and their table columns. These are three tested layouts, not proof of general layout accuracy.
+- **WP-10 (Integration & E2E):** Glyph was integrated into the adapter as the primary numeric-cell engine and the 13-row image was run with the Glyph templates/runtime assets. The arithmetic gate failed, so the adapter returned page-level `ImageExtractionReviewRequired`; the non-issuing submit probe recorded zero calls. The actual issuance service was not attached, so no Digital Invoice could be created and none reached `ISSUED`. Commit: `76a37f0`.
+- The E2E demonstrates the extraction/review fail-closed path, not production OCR accuracy or owner-confirmed values. WP-09 labels/references remain provisional and the row-level train/evaluation split is within the same invoice, not independent-invoice validation. This adapter-local hold is not a persisted Frozen P5.2 review record; D-01–D-09 remain unchanged.
+- **Priority for tomorrow:** Discuss the Windows App interface and the Per-Store Calibration process (clustering and operator labeling). The MVP technical control path for dynamic layout plus fail-closed numeric review has been demonstrated; production OCR accuracy/calibration is not yet proven. Keep Synthetic results separate from Holoo evidence.
 
 ## 7. Current Agent Ownership
 
-- **Current implementation:** `WP-HOLOO-IMAGE-EXTRACTION-02` synthetic Persian support remains complete. `HOLOO-EXTRACTION-CONTINUATION-01` provides spatial OCR; `WP-HOLOO-IMAGE-EXTRACTION-05` adds cell preprocessing; `WP-HOLOO-IMAGE-EXTRACTION-09` adds dynamic projection layout and a test-only glyph evaluation. The Glyph engine remains unconnected to issuance.
+- **Current implementation:** `WP-HOLOO-IMAGE-EXTRACTION-02` synthetic Persian support remains complete. `HOLOO-EXTRACTION-CONTINUATION-01` provides spatial OCR; `WP-HOLOO-IMAGE-EXTRACTION-05` adds cell preprocessing; `WP-HOLOO-IMAGE-EXTRACTION-09` adds dynamic projection layout; `WP-HOLOO-IMAGE-EXTRACTION-10` integrates Glyph as the primary numeric-cell backend with a page-level fail-closed review gate. The guarded 13-row E2E returned REVIEW and recorded zero submit-probe calls; real issuance was not attached and no invoice issued. OCR accuracy remains unproven and visual labels are provisional.
 - **Product Owner:** Native Checkout Q1–Q4 decisions are recorded; any later change to those decisions or MVP priority remains a PO decision.
 - **WP-11.2 Holoo DB adapter:** remains a separate deferred scope; the image-extraction adapter does not resolve its source mapping/authority/synchronization decisions.
 - Preserve unrelated work already present in the working tree; do not absorb the untracked spooler adapter or runner into this image-extraction change.
 
 ## 8. Current Real Boundaries
 
-1. One user-supplied cleaned invoice image was processed. The spatial parser detected four numbered rows and their column positions, but the result is partial; most line values and key totals remain `REVIEW`. This does not establish general Holoo accuracy or suitability across layouts.
-2. `IssuanceService.submit` was called zero times for that sample; no Digital Invoice was issued. The low-confidence path is an adapter-local `REVIEW_REQUIRED` hold, not a persistent Frozen `REVIEW` state or P5.2 ReviewQueue record.
-3. Otsu/adaptive cell preprocessing improved some quantity OCR but did not recover any monetary cell on the one image. The manual scoring transcription is unconfirmed by the invoice owner; do not use it to auto-correct values.
+1. The 13-row target `deliveries/image-extraction-ocr/13.png` was processed through full-page Tesseract plus Glyph numeric-cell OCR. Dynamic crop geometry returned 13 rows and 27 numeric cells (12 EXTRACTED, 15 REVIEW); all 13 totals and payable remain REVIEW after the arithmetic gate failed on malformed `line.9.total`. This does not establish general Holoo accuracy or suitability across layouts.
+2. The guarded E2E adapter outcome was `ImageExtractionReviewRequired`; `NonIssuingSubmitProbe` recorded zero calls. The real `IssuanceService` was not attached to this run, so no Digital Invoice was created or reached `ISSUED`. This is an adapter-local hold, not a persistent Frozen `REVIEW` state or P5.2 ReviewQueue record.
+3. WP-09 visual labels and references are provisional and unconfirmed by the invoice owner. The 13-row train/evaluation split is by rows from the same invoice, not independent-invoice validation. Do not use these results to auto-correct values or claim general accuracy.
 4. Synthetic English and Persian smokes reached `ISSUED` through the existing pipeline, but this is Synthetic evidence only. Threshold 60 is a test setting, not a production recommendation; confidence is not calibrated.
-5. The flat text parser handles tested English/Persian labels. The dynamic projection detector recovered the four-column RTL tables in three supplied images (4, 5, and 13 rows); it has not been validated on other layouts. Projection is primary for crops, with TSV geometry fallback. Ambiguous values remain REVIEW. Jalali-to-Gregorian calendar conversion is not implemented.
+5. The flat text parser handles tested English/Persian labels. The dynamic projection detector recovered four-column RTL tables in the three supplied images (4, 5, and 13 rows); it has not been validated on other layouts. Projection is primary for crops, with TSV geometry fallback. Ambiguous values remain REVIEW. Jalali-to-Gregorian calendar conversion is not implemented.
 6. Native Checkout is future architecture only under the recorded Q1–Q4 choices; it is not the current MVP priority and no Native Checkout code was added.
 7. WP-11.2 (Holoo database adapter/enrichment) remains separate and deferred pending its own decisions/evidence.
 
 ## 9. Repository and EOD Branch Status
 
-All task-scoped image-extraction source, tests, Synthetic regression evidence, real-image spatial/preprocessing/Glyph reports, and handoff updates stay on `arena/9dc17500-kandoo-digital-invoice`. WP-05 was pushed as `fbfe7c0`; remote upload commit `ccb9e99` added the supplied `5.png` and `13.png` images before WP-09 work. No change is to be merged to `main`. The unrelated untracked spooler adapter/runner is intentionally left out of this image-extraction change. Do not force-push or overwrite remote work if a future non-fast-forward condition occurs; report that blocker instead.
+All task-scoped image-extraction source, tests, Synthetic regression evidence, real-image spatial/preprocessing/Glyph reports, and handoff updates stay on `arena/9dc17500-kandoo-digital-invoice`. WP-05 was pushed as `fbfe7c0`; remote upload commit `ccb9e99` added the supplied `5.png` and `13.png` images before WP-09 work. WP-09 was pushed as `e5ff46d`; WP-10 was pushed as `76a37f0`. No change is to be merged to `main`. Earlier untracked WP-06 classifier artifacts and the unrelated spooler adapter/runner are intentionally left out of task commits. Do not force-push or overwrite remote work if a future non-fast-forward condition occurs; report that blocker instead.
 
 ## 10. Handoff Protocol
 
@@ -157,7 +163,7 @@ Every agent joining this project must:
 1. Read this file completely.
 2. Inspect current Git HEAD and working tree.
 3. Read authoritative registers/specs.
-4. Read `KANDOO_AGENT_COORDINATION.md`.
+4. Read `KANDO_AGENT_COORDINATION.md` for current WP ownership/status. `KANDOO_AGENT_COORDINATION.md` is legacy repository-bootstrap context, not the current image-extraction status.
 5. Identify active WP ownership before editing anything.
 6. Work only inside its assigned ownership boundary.
 7. Run required tests/regression/smoke.
