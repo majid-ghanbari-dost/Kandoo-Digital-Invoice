@@ -102,6 +102,7 @@ class ImageExtractionReady:
     ocr: OCRResult
     field_values: tuple[tuple[str, str], ...]
     key_value_page: bytes
+    numeric_ocr_variants: tuple[CellOCRVariantResult, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -1,7 +1,8 @@
-"""English/Persian synthetic raster OCR -> actual Digital Issuance smoke.
+"""OCR smoke runner for synthetic fixtures and guarded real-image E2E checks.
 
-Requires optional tesserocr/Pillow plus traineddata supplied out-of-repository.
-Fixtures are explicitly synthetic and are not Holoo invoices.
+Synthetic fixtures exercise the existing Digital Issuance path. A caller-supplied
+image requires the Glyph template engine and uses a non-issuing submission spy:
+review behavior is tested without creating a Digital Invoice.
 """
 from __future__ import annotations
 
@@ -30,6 +31,7 @@ from image_extraction_adapter import (  # noqa: E402
     ImageIssuanceSubmission,
     TesseractOCR,
 )
+from image_extraction_adapter.glyph_classifier import GlyphClassifierOCR  # noqa: E402
 from issuance import DigitalIssuanceWorkspace  # noqa: E402
 from validation import ReferenceValidationRulesV1  # noqa: E402
 
@@ -118,7 +120,11 @@ def parse_args():
                         help="e.g. eng for English or fas+eng for Persian/mixed text")
     parser.add_argument("--minimum-confidence", type=float, required=True)
     parser.add_argument("--image", type=Path,
-                        help="override the profile's explicitly synthetic fixture")
+                        help="run the guarded real-image path instead of a synthetic fixture")
+    parser.add_argument("--glyph-templates", type=Path,
+                        help="required Glyph template JSON for a caller-supplied image")
+    parser.add_argument("--expected-rows", type=int,
+                        help="optional row-count assertion for the guarded image E2E")
     return parser.parse_args()
 
 
@@ -144,6 +150,113 @@ def _print_comparison(actual_fields, expected_fields) -> list[str]:
         if not equal:
             mismatches.append(field)
     return mismatches
+
+
+class NonIssuingSubmitProbe:
+    """Observe a submit attempt but never delegate or create a Digital Invoice."""
+
+    def __init__(self):
+        self.calls = []
+
+    def submit(self, pages, **kwargs):
+        self.calls.append((pages, kwargs))
+        return {"probe": "non-issuing", "delegated": False}
+
+
+def _run_guarded_image_smoke(args, adapter: ImageExtractionAdapter,
+                             image: Path) -> int:
+    probe = NonIssuingSubmitProbe()
+    print("evidence.class=Non-synthetic image; provisional visual references are not owner-confirmed ground truth")
+    print(f"image.path={image}")
+    print(f"image.expected_rows={args.expected_rows}")
+    print(f"ocr.minimum_word_confidence_threshold={args.minimum_confidence}")
+    print(f"numeric_ocr.engine={GlyphClassifierOCR.__name__}")
+    print(f"numeric_ocr.templates={args.glyph_templates}")
+    print("issuance.submit_target=NonIssuingSubmitProbe (real service not attached)")
+    declarations = dict(DECLARATIONS[args.profile])
+    declarations["source_label"] = "wp-holoo-image-extraction-10-non-issuing-probe"
+    outcome = adapter.submit_image(image, probe, **declarations)
+
+    if isinstance(outcome, ImageExtractionBlocked):
+        print(f"ocr.status=BLOCKED reason={outcome.reason}")
+        print(f"issuance.submit_calls={len(probe.calls)}")
+        print("digital_invoice=NONE (non-issuing probe; no delegate attached)")
+        return 2
+
+    if isinstance(outcome, ImageIssuanceSubmission):
+        print("ocr.status=CRITICAL_SUBMISSION_ATTEMPT")
+        print(f"source_image.sha256={outcome.extraction.source_image_sha256}")
+        _print_ocr(outcome.extraction.ocr)
+        print(f"issuance.submit_calls={len(probe.calls)}")
+        print("critical=adapter attempted submission; non-issuing probe prevented delegation")
+        print("digital_invoice=NONE (guard prevented actual issuance)")
+        return 3
+
+    if not isinstance(outcome, ImageExtractionReviewRequired):
+        print(f"unexpected outcome={type(outcome).__name__}")
+        print(f"issuance.submit_calls={len(probe.calls)}")
+        return 2
+
+    print("ocr.status=REVIEW_REQUIRED")
+    print(f"source_image.sha256={outcome.source_image_sha256}")
+    _print_ocr(outcome.ocr)
+    print(f"review.reason={outcome.reason}")
+    print(f"spatial.column_boundary_count={len(outcome.spatial_column_boundaries)}")
+    print(f"spatial.row_band_count={len(outcome.spatial_row_bands)}")
+    print(f"spatial.field_assessment_count={len(outcome.field_assessments)}")
+    for field in outcome.field_assessments:
+        print(f"spatial.field={field.field_name} status={field.status} "
+              f"raw={field.raw_value!r} reason={field.reason!r}")
+
+    variants = outcome.cell_ocr_variants
+    review_count = sum(item.status != "EXTRACTED" for item in variants)
+    extracted_count = sum(item.status == "EXTRACTED" for item in variants)
+    arithmetic_failures = [
+        item for item in variants
+        if "arithmetic gate failed" in (item.reason or "").casefold()
+    ]
+    print(f"glyph.cells.total={len(variants)}")
+    print(f"glyph.cells.EXTRACTED={extracted_count}")
+    print(f"glyph.cells.REVIEW={review_count}")
+    print(f"glyph.arithmetic_gate={'FAIL' if arithmetic_failures else 'NOT_REPORTED'}")
+    for item in variants:
+        print(f"glyph.cell={item.field_name} status={item.status} "
+              f"raw={item.raw_value!r} confidence={item.confidence!r} "
+              f"bbox={item.bbox} reason={item.reason!r}")
+
+    line_indices = sorted({
+        int(parts[1])
+        for item in variants
+        for parts in (item.field_name.split("."),)
+        if len(parts) == 3 and parts[0] == "line" and parts[1].isdigit()
+    })
+    print(f"glyph.detected_line_rows={len(line_indices)}")
+    print(f"glyph.detected_line_indices={line_indices}")
+    print(f"issuance.submit_calls={len(probe.calls)}")
+    print("issuance.submit=NOT_CALLED" if not probe.calls
+          else "issuance.submit=CALLED (non-issuing probe only)")
+    print("digital_invoice=NONE (non-issuing probe; no delegate attached)")
+
+    expected_rows_ok = (
+        args.expected_rows is None or line_indices == list(range(args.expected_rows)))
+    gate_ok = bool(arithmetic_failures)
+    if probe.calls:
+        print("critical=review outcome must never call submit")
+        return 3
+    if not variants:
+        print("e2e.result=FAIL (Glyph produced no numeric cells)")
+        return 3
+    if args.expected_rows is not None and not expected_rows_ok:
+        print("e2e.result=FAIL (detected row indices differ from expected row count)")
+        return 3
+    if args.expected_rows is not None and not gate_ok:
+        print("e2e.result=FAIL (expected arithmetic-gate failure was not observed)")
+        return 3
+    if review_count == 0:
+        print("e2e.result=FAIL (no numeric cell entered REVIEW)")
+        return 3
+    print("e2e.result=PASS (uncertain numeric page held before submit)")
+    return 0
 
 
 def _print_pipeline(image_submission: ImageIssuanceSubmission, workspace) -> int:
@@ -216,7 +329,32 @@ def _print_pipeline(image_submission: ImageIssuanceSubmission, workspace) -> int
 
 def main() -> int:
     args = parse_args()
-    image = args.image or FIXTURES[args.profile]
+    if args.expected_rows is not None and args.expected_rows < 1:
+        print("--expected-rows must be a positive integer")
+        return 2
+    if args.image is not None:
+        if args.glyph_templates is None:
+            print("--glyph-templates is required with --image; refusing unverified numeric OCR")
+            return 2
+        if not args.glyph_templates.is_file():
+            print(f"Glyph templates file is missing: {args.glyph_templates}")
+            return 2
+        try:
+            glyph_ocr = GlyphClassifierOCR.from_file(args.glyph_templates)
+        except Exception as exc:
+            print(f"Glyph templates could not be loaded: {exc}")
+            return 2
+        image_adapter = ImageExtractionAdapter(
+            TesseractOCR(tessdata_dir=args.tessdata_dir, language=args.language),
+            minimum_word_confidence=args.minimum_confidence,
+            numeric_ocr_backend=glyph_ocr,
+        )
+        return _run_guarded_image_smoke(args, image_adapter, args.image)
+    if args.glyph_templates is not None:
+        print("--glyph-templates is accepted only with --image")
+        return 2
+
+    image = FIXTURES[args.profile]
     adapter = ImageExtractionAdapter(
         TesseractOCR(tessdata_dir=args.tessdata_dir, language=args.language),
         minimum_word_confidence=args.minimum_confidence,
