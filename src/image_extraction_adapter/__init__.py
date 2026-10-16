@@ -20,8 +20,10 @@ from .ocr import (
     TesseractOCR,
 )
 from .preprocessing import (
+    DynamicTableLayout,
     PREPROCESSING_MODES,
     adaptive_binarize,
+    detect_dynamic_table_layout,
     crop_spatial_cells,
     otsu_binarize,
     preprocess_cell,
@@ -53,8 +55,10 @@ __all__ = [
     "NUMERIC_TESSERACT_WHITELIST",
     "PERSIAN_TESSERACT_LANGUAGE",
     "TesseractOCR",
+    "DynamicTableLayout",
     "PREPROCESSING_MODES",
     "adaptive_binarize",
+    "detect_dynamic_table_layout",
     "crop_spatial_cells",
     "otsu_binarize",
     "preprocess_cell",

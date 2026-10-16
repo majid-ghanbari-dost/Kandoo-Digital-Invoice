@@ -12,9 +12,15 @@ service, SQLite schema, and Frozen contracts are unchanged.
 application remains stdlib-only; provide the traineddata directory and language
 explicitly. The repository does not vendor Tesseract binaries or traineddata.
 The full-page OCR retains Tesseract TSV text/confidence/left/top/width/height
-boxes. When spatial table geometry is detected, the adapter crops amount,
-quantity, and description cells from each row and also crops the labeled payable
-value when a box is available. The source invoice image is never modified.
+boxes. `crop_spatial_cells` first runs a Pillow image-projection layout detector:
+contiguous horizontal/vertical black runs at least 80% of the longest projection
+run define candidate rules; the longest median-spaced horizontal sequence
+identifies the table, and median row height excludes the nearby rounded payable
+box edges. It then crops amount, quantity, and description cells from the
+projected rows/columns and crops the labeled payable value when a box is
+available. No page-specific row coordinates or expected row count are used. If
+projection geometry is incomplete, existing TSV boundaries/bands remain a
+compatibility fallback. The source invoice image is never modified.
 
 Cell OCR uses Tesseract PSM 7 (`SINGLE_LINE`). Numeric cells use
 `NUMERIC_TESSERACT_WHITELIST` (`0123456789۰۱۲۳۴۵۶۷۸۹.,`); description cells do
@@ -45,10 +51,12 @@ ReviewQueue item: current Frozen contracts do not carry OCR confidence. A
 `PipelineStopped`/REVIEW result from `IssuanceService.submit` is returned
 unchanged.
 
-The current spatial rule parser targets numbered rows and vertical-rule columns
-in the supplied receipt layout; it is not a general Holoo layout model. A unit
-price column is not inferred when the image contains no detected unit-price
-column. Jalali calendar conversion is not implemented.
+The projection detector was exercised against the supplied 4-, 5-, and 13-row
+receipts and found the same five vertical boundaries with the expected item-row
+counts. It still assumes this four-column RTL receipt structure (amount,
+quantity, description, sequence); it is not a general arbitrary-invoice layout
+model. A unit-price column is not inferred when the image contains no detected
+unit-price column. Jalali calendar conversion is not implemented.
 
 ## Preprocessing benchmark
 

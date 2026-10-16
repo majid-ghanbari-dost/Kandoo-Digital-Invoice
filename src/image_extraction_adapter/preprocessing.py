@@ -6,6 +6,7 @@ replaced. Pillow is loaded lazily so the base adapter remains stdlib-only.
 from __future__ import annotations
 
 import math
+import statistics
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -31,6 +32,18 @@ class PreprocessedCell:
     image: Any
     mode: PreprocessingMode
     line_pixels_removed: int = 0
+
+
+@dataclass(frozen=True)
+class DynamicTableLayout:
+    """Image-projection result for a table's columns and item-row bands."""
+
+    column_boundaries: tuple[float, ...]
+    row_bands: tuple[tuple[float, float], ...]
+    horizontal_lines: tuple[float, ...]
+    vertical_lines: tuple[float, ...]
+    median_row_height: float
+    header_row_excluded: bool
 
 
 def _pillow():
@@ -62,6 +75,174 @@ def _crop_box(
     return box
 
 
+def _contiguous_groups(indices: list[int]) -> list[list[int]]:
+    groups: list[list[int]] = []
+    for index in indices:
+        if not groups or index > groups[-1][-1] + 1:
+            groups.append([index])
+        else:
+            groups[-1].append(index)
+    return groups
+
+
+def _longest_black_runs(binary_image: Any, *, horizontal: bool) -> list[int]:
+    """Measure contiguous black runs on each row or column of a binary copy."""
+    width, height = binary_image.size
+    pixels = binary_image.convert("L").tobytes()
+    count = height if horizontal else width
+    span = width if horizontal else height
+    runs: list[int] = []
+    for primary in range(count):
+        longest = current = 0
+        for secondary in range(span):
+            offset = (primary * width + secondary if horizontal
+                      else secondary * width + primary)
+            if pixels[offset] < 128:
+                current += 1
+                longest = max(longest, current)
+            else:
+                current = 0
+        runs.append(longest)
+    return runs
+
+
+def _long_line_centers(runs: list[int], *, fraction: float = 0.8) -> tuple[float, ...]:
+    longest = max(runs, default=0)
+    if longest <= 0:
+        return ()
+    cutoff = math.ceil(longest * fraction)
+    candidates = [index for index, length in enumerate(runs) if length >= cutoff]
+    return tuple((group[0] + group[-1]) / 2.0
+                 for group in _contiguous_groups(candidates))
+
+
+def _longest_regular_line_chain(
+    lines: tuple[float, ...],
+    *,
+    minimum_ratio: float = 0.65,
+    maximum_ratio: float = 1.4,
+) -> tuple[float, ...]:
+    """Pick the longest median-spaced sequence; short rounded-box edges split it."""
+    if len(lines) < 2:
+        return ()
+    gaps = [right - left for left, right in zip(lines, lines[1:])]
+    pitch = statistics.median(gaps)
+    if pitch <= 0:
+        return ()
+    minimum_gap = minimum_ratio * pitch
+    maximum_gap = maximum_ratio * pitch
+    chains: list[list[float]] = []
+    current = [lines[0]]
+    for line in lines[1:]:
+        gap = line - current[-1]
+        if minimum_gap <= gap <= maximum_gap:
+            current.append(line)
+        else:
+            chains.append(current)
+            current = [line]
+    chains.append(current)
+    best = max(chains, key=lambda chain: (
+        len(chain), chain[-1] - chain[0], -chain[0]))
+    return tuple(best) if len(best) >= 2 else ()
+
+
+def detect_dynamic_table_layout(
+    image: Any,
+    *,
+    line_fraction: float = 0.8,
+    minimum_row_ratio: float = 0.65,
+    maximum_row_ratio: float = 1.4,
+) -> DynamicTableLayout | None:
+    """Detect table borders from horizontal/vertical image projections.
+
+    A line candidate must contain a contiguous black run at least 80% as long
+    as the longest run on that axis. The table is the longest median-spaced
+    horizontal-line chain. A shorter leading interval is treated as the table
+    header; the remaining consecutive intervals are item rows. Median row
+    height rejects nearby short rounded-payable borders and other false edges.
+    Column rules are projected only between the selected table's first and last
+    horizontal borders. No page-specific coordinates or expected row count are
+    used.
+    """
+    try:
+        binary = otsu_binarize(image)
+    except (RuntimeError, AttributeError, TypeError, ValueError):
+        return None
+
+    horizontal_runs = _longest_black_runs(binary, horizontal=True)
+    horizontal_candidates = _long_line_centers(
+        horizontal_runs, fraction=line_fraction)
+    chain = _longest_regular_line_chain(
+        horizontal_candidates,
+        minimum_ratio=minimum_row_ratio,
+        maximum_ratio=maximum_row_ratio,
+    )
+    if len(chain) < 2:
+        return None
+
+    chain_gaps = [right - left for left, right in zip(chain, chain[1:])]
+    header_row_excluded = False
+    if len(chain_gaps) >= 2:
+        body_pitch = statistics.median(chain_gaps[1:])
+        if body_pitch > 0 and chain_gaps[0] < 0.92 * body_pitch:
+            header_row_excluded = True
+    body_borders = chain[1:] if header_row_excluded else chain
+    body_gaps = [right - left for left, right in zip(body_borders, body_borders[1:])]
+    if not body_gaps:
+        return None
+
+    median_row_height = statistics.median(body_gaps)
+    row_bands = tuple(
+        (top, bottom)
+        for top, bottom in zip(body_borders, body_borders[1:])
+        if minimum_row_ratio * median_row_height
+        <= bottom - top
+        <= maximum_row_ratio * median_row_height
+    )
+    if not row_bands:
+        return None
+
+    width, height = binary.size
+    pixels = binary.convert("L").tobytes()
+    y_start = max(0, math.floor(chain[0]))
+    y_end = min(height - 1, math.ceil(chain[-1]))
+    vertical_runs: list[int] = []
+    for x in range(width):
+        longest = current = 0
+        for y in range(y_start, y_end + 1):
+            if pixels[y * width + x] < 128:
+                current += 1
+                longest = max(longest, current)
+            else:
+                current = 0
+        vertical_runs.append(longest)
+    longest_vertical = max(vertical_runs, default=0)
+    if longest_vertical <= 0:
+        return None
+    vertical_cutoff = math.ceil(longest_vertical * line_fraction)
+    vertical_candidates = [
+        x for x, length in enumerate(vertical_runs) if length >= vertical_cutoff]
+    vertical_lines = tuple(
+        (group[0] + group[-1]) / 2.0
+        for group in _contiguous_groups(vertical_candidates)
+    )
+    # This invoice table has four RTL columns (amount, quantity, name, sequence)
+    # bounded by five rules. Ambiguous extra/missing rules fail closed.
+    if len(vertical_lines) != 5:
+        return None
+    if any(right <= left for left, right in zip(vertical_lines, vertical_lines[1:])):
+        return None
+
+    return DynamicTableLayout(
+        column_boundaries=vertical_lines,
+        row_bands=row_bands,
+        horizontal_lines=chain,
+        vertical_lines=vertical_lines,
+        median_row_height=median_row_height,
+        header_row_excluded=header_row_excluded,
+    )
+
+
 def crop_spatial_cells(
     image: Any,
     spatial: Any,
@@ -79,8 +260,15 @@ def crop_spatial_cells(
     No fixed page coordinates are used. Unit-price cells are omitted when the
     layout parser did not find a unit-price column.
     """
-    boundaries = tuple(getattr(spatial, "column_boundaries", ()))
-    row_bands = tuple(getattr(spatial, "row_bands", ()))
+    layout = detect_dynamic_table_layout(image)
+    if layout is not None:
+        boundaries = layout.column_boundaries
+        row_bands = layout.row_bands
+    else:
+        # Preserve the existing spatial parser as a fail-closed compatibility
+        # fallback when projection geometry is incomplete or Pillow is absent.
+        boundaries = tuple(getattr(spatial, "column_boundaries", ()))
+        row_bands = tuple(getattr(spatial, "row_bands", ()))
     if len(boundaries) != 5 or not row_bands:
         return ()
 

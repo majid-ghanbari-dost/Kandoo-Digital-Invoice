@@ -11,6 +11,7 @@ Operational coordination between implementation and governance agents. This file
 | `WP-HOLOO-IMAGE-EXTRACTION-02` | Current implementation agent | SYNTHETIC PERSIAN SUPPORT COMPLETE; synthetic evidence remains separate from Holoo validation |
 | `HOLOO-EXTRACTION-CONTINUATION-01` | Current implementation agent | SPATIAL OCR FALLBACK IMPLEMENTED; one user-supplied image yielded four rows but remains REVIEW_REQUIRED; issuance not reached |
 | `WP-HOLOO-IMAGE-EXTRACTION-05` | Current implementation agent | GEOMETRY-BASED CELL CROPS, PIL PREPROCESSING, AND PSM-7 OCR IMPLEMENTED; benchmark complete; supplied image remains REVIEW_REQUIRED |
+| `WP-HOLOO-IMAGE-EXTRACTION-09` | Current implementation agent | DYNAMIC PROJECTION TABLE DETECTOR IMPLEMENTED AND TESTED ON 4/5/13-ROW IMAGES; GLYPH EVAL RAN ON 13-ROW IMAGE, ARITHMETIC GATE FAILS CLOSED |
 | Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
 | WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
 | Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
@@ -27,7 +28,7 @@ Operational coordination between implementation and governance agents. This file
 8. Never claim source integration or Holoo accuracy without verifiable artifacts and real-source evidence.
 9. No merge to `main` is authorized by this EOD update.
 
-## Current State — 2026-10-15
+## Current State — 2026-10-16
 
 ### Native Checkout
 
@@ -56,10 +57,15 @@ This is approved for future architecture, not current MVP priority. No Native Ch
 - Geometry uses `tesserocr.GetTSVText(0)` for level-5 text/confidence/box fields because neither `pytesseract` nor the native Tesseract CLI is present in this runtime. It does not claim to call `pytesseract.image_to_data`.
 - Frozen contracts D-01–D-09 were not changed. The original raster hash is reported by the adapter but is not persisted by the Frozen Capture contract.
 - WP-05 validation: 18 focused preprocessing/adapter tests passed; full repository suite passed (1,712 tests). Synthetic English and Persian smoke checks passed and remain explicitly Synthetic, not Holoo evidence.
+- WP-09 added `detect_dynamic_table_layout()` and made image projections primary in `crop_spatial_cells()`; old OCR geometry is fallback only. Contiguous black horizontal/vertical runs use the 80%-of-longest rule; the longest median-spaced grid excludes the short rounded-payable edges and applies median row-height filtering. No page-specific row coordinates or expected row count are used.
+- The projection benchmark returned 4/4, 5/5, and 13/13 rows, five column rules, and 12/15/39 amount/quantity/description cell crops respectively. Detailed boundaries, medians, and image hashes: `deliveries/image-extraction-ocr/dynamic-layout-projection.log`.
+- Glyph templates were built from all three receipts: all 0–9 plus comma are present in the `row` profile. The 13-row image is split by rows 3–8 for training and rows 0–2 plus 9–12 for labelled holdout; the payable is scored. This is a within-invoice row holdout, not independent-invoice validation. All labels are provisional visual transcriptions, not invoice-owner-confirmed ground truth.
+- 13-row Glyph evaluation: `exact_digit_cells=12/15`; 12 `EXTRACTED`, 15 `REVIEW` (counted across all 27 returned numeric cells), zero `EXTRACTED` values mismatch their visual labels. Arithmetic Gate **failed** on unreadable `line.9.total` (`??۹,۶۰۰,۰۰۰`); the payable also remains `REVIEW`. Full output is `deliveries/image-extraction-ocr/glyph-classifier-evaluate-13row-3invoice-build.log`.
+- WP-09 validation: image-adapter suite 21 passed plus 6 subtests; full repository suite 1,715 passed plus 6 subtests. Temporary Pillow/tesserocr/pytest runtime stayed under `/tmp`; no repository dependency changes. `glyph_classifier.py` remains unconnected to `adapter.py`; no issuance path was changed.
 
 ### Next executable work
 
-Synthetic Persian support (`WP-HOLOO-IMAGE-EXTRACTION-02`), the spatial fallback (`HOLOO-EXTRACTION-CONTINUATION-01`), and cell-preprocessing work (`WP-HOLOO-IMAGE-EXTRACTION-05`) are complete. The synthetic regressions are explicitly labeled and are not Holoo validation. The supplied image remains under review; no numeric field was accepted and issuance was not reached. Next work requires invoice-owner-confirmed ground truth for the reviewed fields and additional authorized layouts before broadening recognition or making accuracy claims; keep uncertain values fail-closed. Keep Native Checkout outside current MVP implementation priority. WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
+Synthetic Persian support (`WP-HOLOO-IMAGE-EXTRACTION-02`), the spatial fallback (`HOLOO-EXTRACTION-CONTINUATION-01`), cell preprocessing (`WP-HOLOO-IMAGE-EXTRACTION-05`), and the dynamic projection detector (`WP-HOLOO-IMAGE-EXTRACTION-09`) are implemented. The detector passes all three supplied layouts, but Glyph evaluation on the 13-row invoice did not pass its arithmetic gate; leave those monetary fields in `REVIEW` and do not connect the classifier to issuance. Labels are provisional visual readings and do not constitute owner-confirmed ground truth. Next work requires independently authorized invoice samples and confirmed labels before calibration or broader accuracy claims. Keep Native Checkout outside current MVP implementation priority. WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
 
 ## Branch / integration boundary
 

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 
 from image_extraction_adapter import (
+    DynamicTableLayout,
     NUMERIC_TESSERACT_WHITELIST,
     adaptive_binarize,
     crop_spatial_cells,
+    detect_dynamic_table_layout,
     otsu_binarize,
     preprocess_cell,
     remove_morphological_table_lines,
@@ -23,6 +26,70 @@ except ImportError:  # pragma: no cover - optional OCR runtime
 
 @unittest.skipIf(Image is None, "optional Pillow runtime is not installed")
 class CellPreprocessingTests(unittest.TestCase):
+    @staticmethod
+    def _projection_table(row_count):
+        width, header_top, header_bottom, row_height = 360, 50, 70, 28
+        table_bottom = header_bottom + row_count * row_height
+        image = Image.new("L", (width, table_bottom + 90), 255)
+        draw = ImageDraw.Draw(image)
+        rules = (20, 120, 160, 300, 340)
+        draw.line((20, header_top, 340, header_top), fill=0, width=2)
+        draw.line((20, header_bottom, 340, header_bottom), fill=0, width=2)
+        for row in range(1, row_count + 1):
+            y = header_bottom + row * row_height
+            draw.line((20, y, 340, y), fill=0, width=2)
+        for x in rules:
+            draw.line((x, header_top, x, table_bottom), fill=0, width=2)
+        # Rounded payable-box edges are long enough to pass the 80% projection
+        # cutoff but are too close/far from the table median row pitch.
+        draw.line((45, table_bottom + 7, 315, table_bottom + 7), fill=0, width=2)
+        draw.line((45, table_bottom + 68, 315, table_bottom + 68), fill=0, width=2)
+        return image
+
+    def test_projection_detects_four_five_and_thirteen_rows_without_fixed_coords(self):
+        for row_count in (4, 5, 13):
+            with self.subTest(row_count=row_count):
+                image = self._projection_table(row_count)
+                layout = detect_dynamic_table_layout(image)
+                self.assertIsInstance(layout, DynamicTableLayout)
+                self.assertEqual(len(layout.row_bands), row_count)
+                self.assertEqual(len(layout.column_boundaries), 5)
+                self.assertEqual(layout.median_row_height, 28)
+                self.assertTrue(layout.header_row_excluded)
+                self.assertLess(layout.row_bands[-1][1], image.height - 80)
+
+    def test_real_holoo_images_have_dynamic_row_and_column_geometry(self):
+        root = Path(__file__).resolve().parents[3]
+        image_root = root / "deliveries" / "image-extraction-ocr"
+        expected = {"holo_row_detection.png": 4, "5.png": 5, "13.png": 13}
+        for name, row_count in expected.items():
+            with self.subTest(image=name):
+                path = image_root / name
+                self.assertTrue(path.is_file(), f"missing supplied image: {path}")
+                with Image.open(path) as opened:
+                    opened.load()
+                    layout = detect_dynamic_table_layout(opened)
+                    crops = crop_spatial_cells(
+                        opened, SimpleNamespace(assessments=()),
+                        include_payable=False,
+                    )
+                self.assertIsNotNone(layout)
+                self.assertEqual(len(layout.row_bands), row_count)
+                self.assertEqual(len(layout.column_boundaries), 5)
+                self.assertEqual(len(crops), row_count * 3)
+
+    def test_crop_uses_projection_before_spatial_fallback(self):
+        source = self._projection_table(4)
+        spatial = SimpleNamespace(column_boundaries=(0, 1, 2, 3, 4), row_bands=())
+
+        cells = crop_spatial_cells(
+            source, spatial, include_descriptions=False, include_payable=False)
+
+        self.assertEqual(len(cells), 8)
+        self.assertEqual(cells[0].field_name, "line.0.total")
+        self.assertEqual(cells[-1].field_name, "line.3.quantity")
+        self.assertGreater(cells[0].bbox[2] - cells[0].bbox[0], 90)
+
     def test_otsu_threshold_zero_keeps_black_foreground(self):
         image = Image.new("L", (20, 12), 255)
         ImageDraw.Draw(image).rectangle((5, 3, 7, 9), fill=0)
