@@ -1,0 +1,37 @@
+fixture.label=Synthetic (fa)
+fixture.path=src/image_extraction_adapter/tests/fixtures/synthetic_invoice_fa.png
+ocr.status=REVIEW_REQUIRED (adapter hold; no submit)
+source_image.sha256=df0e79c5acef87a6f2bcd3c9d36c6afadfb612a7210afadc0ea717c08856d782
+ocr.engine=tesseract 5.5.1
+ocr.language=fas+eng
+ocr.word_count=47
+ocr.mean_confidence=91.04255319148936
+ocr.minimum_confidence=65.0
+ocr.raw_text.begin
+فاکتور مصنوعی
+
+SYNTHETIC TEST ONLY
+
+INVOICE NO: 1001
+DATE: 2026-10-14
+
+شرح کالا: ساندویچ کالباس
+تعداد: ۲
+
+قیمت واحد: 500.00
+جمع ردیف: 1000.00
+
+شرح کالا: دستمال سفره تم
+تعداد: 1
+
+قیمت واحد: 300.00
+جمع ردیف: 300.00
+
+NET TOTAL: 1,300.00
+104.00 ‏مالیات:‎
+
+مبلغ قابل پرداخت: 1,404.00
+ocr.raw_text.end
+review.reason=minimum word confidence 65.00 is below the declared threshold 70.00
+issuance.submit=NOT_CALLED
+digital_invoice=NONE
