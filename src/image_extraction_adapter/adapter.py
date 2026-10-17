@@ -53,6 +53,27 @@ _DIGIT_AND_SEPARATOR_TRANSLATION = str.maketrans(
     "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩٬٫",
     "01234567890123456789,.",
 )
+_PERSIAN_RIAL_DIGIT_TRANSLATION = str.maketrans(
+    "۰۱۲۳۴۵۶۷۸۹",
+    "0123456789",
+)
+
+
+def to_rials(value: Optional[str]) -> Optional[int]:
+    """Convert Persian digits and comma-grouped integer Rials to ``int``.
+
+    Values containing anything other than Persian/ASCII digits and grouping
+    commas are uncertain and return ``None`` rather than being guessed.
+    """
+    if not isinstance(value, str) or not value:
+        return None
+    normalized = value.translate(_PERSIAN_RIAL_DIGIT_TRANSLATION).replace(",", "")
+    if not normalized or not normalized.isascii() or not normalized.isdigit():
+        return None
+    try:
+        return int(normalized)
+    except ValueError:
+        return None
 
 
 class ImageExtractionAdapter:
@@ -61,10 +82,11 @@ class ImageExtractionAdapter:
     The caller must explicitly set the minimum word-confidence threshold. A
     low-confidence, empty-confidence, ambiguous parse, or uncertain numeric
     cell returns an adapter-local `ImageExtractionReviewRequired` and DOES NOT
-    call the issuance service. When configured, ``numeric_ocr_backend`` is the
-    primary numeric-cell engine (for example Glyph); any cell-level REVIEW,
-    missing result, or disagreement with parsed numeric fields holds the whole
-    page. The full-page backend remains responsible for text/layout context.
+    call the issuance service. ``numeric_authority`` defaults to
+    ``"tesseract_parse"`` for the existing behavior. In explicit ``"glyph"``
+    mode, ``numeric_ocr_backend`` is authoritative for numeric fields and the
+    full-page backend supplies text/layout context; disagreements produce REVIEW
+    rather than BLOCKED.
 
     This is a fail-closed review hold, not a new Digital Invoice state or a
     persisted P5.2 ReviewQueue record; the frozen contracts have no
@@ -78,15 +100,24 @@ class ImageExtractionAdapter:
         *,
         minimum_word_confidence: float,
         numeric_ocr_backend: Optional[SpatialCellOCRBackend] = None,
+        numeric_authority: str = "tesseract_parse",
     ):
         if (isinstance(minimum_word_confidence, bool)
                 or not isinstance(minimum_word_confidence, (int, float))
                 or not math.isfinite(float(minimum_word_confidence))
                 or not 0 <= float(minimum_word_confidence) <= 100):
             raise ValueError("minimum_word_confidence must be explicitly set from 0 to 100")
+        if numeric_authority not in ("tesseract_parse", "glyph"):
+            raise ValueError("numeric_authority must be 'tesseract_parse' or 'glyph'")
         self._ocr = ocr_backend
         self._numeric_ocr = numeric_ocr_backend
+        self._numeric_authority = numeric_authority
         self._minimum_word_confidence = float(minimum_word_confidence)
+
+    @property
+    def numeric_authority(self) -> str:
+        """Configured authority for parsed numeric fields."""
+        return self._numeric_authority
 
     def _recognize_numeric_cells(
         self,
@@ -121,6 +152,14 @@ class ImageExtractionAdapter:
         except (InvalidOperation, ValueError):
             return None
         return parsed if parsed.is_finite() else None
+
+    @classmethod
+    def _canonical_numeric_value(cls, value: str) -> Optional[str]:
+        rials = to_rials(value)
+        if rials is not None:
+            return str(rials)
+        parsed = cls._numeric_value(value)
+        return format(parsed, "f") if parsed is not None else None
 
     def _numeric_backend_review(
         self,
@@ -187,24 +226,138 @@ class ImageExtractionAdapter:
             return "primary numeric OCR coverage/consistency failed: " + "; ".join(problems)
         return None
 
+    @staticmethod
+    def _is_numeric_authority_field(field: str) -> bool:
+        return field == "invoice.payable" or bool(_NUMERIC_FIELD.fullmatch(field))
+
+    def _glyph_authority_problem(
+        self,
+        fields: tuple[tuple[str, str], ...],
+        variants: Sequence[CellOCRVariantResult],
+    ) -> Optional[tuple[str, str]]:
+        """Assess glyph results without allowing Tesseract to veto authority.
+
+        A present, non-empty Tesseract value is compared as evidence. Missing
+        or empty Tesseract numeric values do not invalidate extracted glyph
+        values. Glyph REVIEW/BLOCKED statuses, incomplete coverage, and invalid
+        glyph values remain fail-closed.
+        """
+        if not variants:
+            return "REVIEW", "glyph_authority_returned_no_numeric_cells"
+
+        blocked = [item for item in variants if item.status == "BLOCKED"]
+        if blocked:
+            details = "; ".join(
+                f"{item.field_name}: {item.reason or item.status}" for item in blocked)
+            return "BLOCKED", f"glyph_authority_blocked: {details}"
+
+        reviewed = [item for item in variants if item.status != "EXTRACTED"]
+        if reviewed:
+            details = "; ".join(
+                f"{item.field_name}: {item.reason or item.status}" for item in reviewed)
+            return "REVIEW", f"glyph_authority_requires_review: {details}"
+
+        numeric_field_names = [
+            field for field, _ in fields if self._is_numeric_authority_field(field)
+        ]
+        if len(set(numeric_field_names)) != len(numeric_field_names):
+            return "REVIEW", "glyph_authority_input_has_duplicate_numeric_fields"
+
+        observed = {item.field_name: item for item in variants}
+        if len(observed) != len(variants):
+            return "REVIEW", "glyph_authority_returned_duplicate_numeric_fields"
+
+        unexpected = sorted(
+            field for field in observed if not self._is_numeric_authority_field(field)
+        )
+        if unexpected:
+            return "REVIEW", (
+                "glyph_authority_returned_non_numeric_fields: " + ", ".join(unexpected))
+
+        expected = {
+            field: value for field, value in fields
+            if self._is_numeric_authority_field(field)
+        }
+        missing = sorted(set(expected) - set(observed))
+        if missing:
+            return "REVIEW", "glyph_authority_missing_numeric_fields: " + ", ".join(missing)
+
+        for item in variants:
+            if self._numeric_value(item.raw_value) is None:
+                return "REVIEW", f"glyph_authority_invalid_numeric_value: {item.field_name}"
+
+        for field, tesseract_value in expected.items():
+            if not isinstance(tesseract_value, str) or not tesseract_value.strip():
+                continue
+            glyph_value = observed[field].raw_value
+            if self._numeric_value(tesseract_value) != self._numeric_value(glyph_value):
+                return "REVIEW", "tesseract_disagreement_with_glyph_authority"
+        return None
+
+    @classmethod
+    def _fields_with_glyph_numeric_authority(
+        cls,
+        fields: tuple[tuple[str, str], ...],
+        variants: Sequence[CellOCRVariantResult],
+    ) -> tuple[tuple[str, str], ...]:
+        """Overlay canonical glyph values while preserving nonnumeric fields."""
+        output = list(fields)
+        positions = {field: index for index, (field, _) in enumerate(output)}
+        for item in variants:
+            value = cls._canonical_numeric_value(item.raw_value)
+            if value is None:
+                continue
+            if item.field_name in positions:
+                output[positions[item.field_name]] = (item.field_name, value)
+            else:
+                positions[item.field_name] = len(output)
+                output.append((item.field_name, value))
+        return tuple(output)
+
+    @staticmethod
+    def _key_value_page(fields: tuple[tuple[str, str], ...]) -> bytes:
+        return "".join(f"{name}={value}\n" for name, value in fields).encode("utf-8")
+
     def _primary_numeric_review(
         self,
         image: Path,
         digest: str,
         ocr: OCRResult,
         fields: tuple[tuple[str, str], ...],
-    ) -> tuple[Optional[ImageExtractionReviewRequired],
+    ) -> tuple[Optional[ImageExtractionReviewRequired | ImageExtractionBlocked],
                tuple[CellOCRVariantResult, ...]]:
         if self._numeric_ocr is None:
+            if self._numeric_authority == "glyph":
+                spatial = parse_invoice_geometry(
+                    ocr, minimum_confidence=self._minimum_word_confidence)
+                return self._numeric_backend_review(
+                    digest, ocr, fields, spatial=spatial, variants=(),
+                    reason="glyph_authority_backend_not_configured"), ()
             return None, ()
         spatial = parse_invoice_geometry(
             ocr, minimum_confidence=self._minimum_word_confidence)
         variants, backend_error = self._recognize_numeric_cells(
             image, spatial, fallback_to_full_page_backend=False)
         if backend_error:
+            reason = (
+                f"glyph_authority_backend_failed: {backend_error}"
+                if self._numeric_authority == "glyph"
+                else f"primary numeric OCR failed; full page held: {backend_error}"
+            )
             return self._numeric_backend_review(
                 digest, ocr, fields, spatial=spatial, variants=variants,
-                reason=f"primary numeric OCR failed; full page held: {backend_error}"), variants
+                reason=reason), variants
+
+        if self._numeric_authority == "glyph":
+            authority_problem = self._glyph_authority_problem(fields, variants)
+            if authority_problem is None:
+                return None, variants
+            status, reason = authority_problem
+            if status == "BLOCKED":
+                return ImageExtractionBlocked(digest, reason), variants
+            return self._numeric_backend_review(
+                digest, ocr, fields, spatial=spatial, variants=variants,
+                reason=reason), variants
 
         problem = self._numeric_evidence_problem(fields, variants)
         if problem:
@@ -299,11 +452,18 @@ class ImageExtractionAdapter:
         if numeric_review is not None:
             return numeric_review
 
+        field_values = parsed.fields
+        key_value_page = parsed.key_value_page
+        if self._numeric_authority == "glyph":
+            field_values = self._fields_with_glyph_numeric_authority(
+                parsed.fields, numeric_ocr_variants)
+            key_value_page = self._key_value_page(field_values)
+
         return ImageExtractionReady(
             source_image_sha256=digest,
             ocr=ocr,
-            field_values=parsed.fields,
-            key_value_page=parsed.key_value_page,
+            field_values=field_values,
+            key_value_page=key_value_page,
             numeric_ocr_variants=numeric_ocr_variants,
         )
 
@@ -367,10 +527,31 @@ class ImageExtractionAdapter:
         if minimum is None or minimum < self._minimum_word_confidence:
             raise ValueError("ready extraction is below the declared confidence threshold")
         parsed = parse_invoice_text(ocr.text)
-        if (parsed.fields != extraction.field_values
-                or parsed.key_value_page != extraction.key_value_page):
+        expected_fields = parsed.fields
+        expected_page = parsed.key_value_page
+        if self._numeric_authority == "glyph":
+            authority_problem = self._glyph_authority_problem(
+                parsed.fields, extraction.numeric_ocr_variants)
+            if authority_problem is not None:
+                status, reason = authority_problem
+                if status == "BLOCKED":
+                    return ImageExtractionBlocked(
+                        extraction.source_image_sha256, reason)
+                return ImageExtractionReviewRequired(
+                    source_image_sha256=extraction.source_image_sha256,
+                    ocr=ocr,
+                    reason=reason + "; submit blocked",
+                    field_values=parsed.fields,
+                    cell_ocr_variants=extraction.numeric_ocr_variants,
+                )
+            expected_fields = self._fields_with_glyph_numeric_authority(
+                parsed.fields, extraction.numeric_ocr_variants)
+            expected_page = self._key_value_page(expected_fields)
+        if (expected_fields != extraction.field_values
+                or expected_page != extraction.key_value_page):
             raise ValueError("ready extraction fields do not match its OCR transcript")
-        if self._numeric_ocr is not None:
+        if (self._numeric_authority == "tesseract_parse"
+                and self._numeric_ocr is not None):
             numeric_problem = self._numeric_evidence_problem(
                 parsed.fields, extraction.numeric_ocr_variants)
             if numeric_problem:
