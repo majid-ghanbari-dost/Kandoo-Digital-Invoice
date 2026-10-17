@@ -21,7 +21,9 @@ from .ocr import (
 )
 from .preprocessing import (
     DynamicTableLayout,
+    LayoutSafetyResult,
     PREPROCESSING_MODES,
+    detect_layout_safe,
     adaptive_binarize,
     detect_dynamic_table_layout,
     crop_spatial_cells,
@@ -56,9 +58,11 @@ __all__ = [
     "PERSIAN_TESSERACT_LANGUAGE",
     "TesseractOCR",
     "DynamicTableLayout",
+    "LayoutSafetyResult",
     "PREPROCESSING_MODES",
     "adaptive_binarize",
     "detect_dynamic_table_layout",
+    "detect_layout_safe",
     "crop_spatial_cells",
     "otsu_binarize",
     "preprocess_cell",

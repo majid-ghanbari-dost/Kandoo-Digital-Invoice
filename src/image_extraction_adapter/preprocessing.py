@@ -46,6 +46,16 @@ class DynamicTableLayout:
     header_row_excluded: bool
 
 
+@dataclass(frozen=True)
+class LayoutSafetyResult:
+    """Fail-closed status wrapper around the existing layout geometry."""
+
+    status: Literal["OK", "REVIEW", "BLOCKED"]
+    reason: str
+    geometry: Any | None
+    row_count: int | None
+
+
 def _pillow():
     try:
         from PIL import Image, ImageChops, ImageFilter, ImageOps
@@ -240,6 +250,163 @@ def detect_dynamic_table_layout(
         vertical_lines=vertical_lines,
         median_row_height=median_row_height,
         header_row_excluded=header_row_excluded,
+    )
+
+
+def _layout_geometry_issues(layout: DynamicTableLayout) -> list[str]:
+    """Return structural problems without changing detector behavior."""
+    issues: list[str] = []
+
+    def ordered_values(
+        name: str,
+        values: Any,
+        *,
+        expected_count: int | None = None,
+        minimum_count: int = 1,
+    ) -> None:
+        try:
+            numbers = tuple(float(value) for value in values)
+        except (TypeError, ValueError, OverflowError):
+            issues.append(f"{name} is missing or non-numeric")
+            return
+        if expected_count is not None and len(numbers) != expected_count:
+            issues.append(f"{name} must contain exactly {expected_count} values")
+        elif len(numbers) < minimum_count:
+            issues.append(f"{name} must contain at least {minimum_count} values")
+        if any(not math.isfinite(value) for value in numbers):
+            issues.append(f"{name} contains non-finite values")
+        if any(right <= left for left, right in zip(numbers, numbers[1:])):
+            issues.append(f"{name} is not strictly increasing")
+
+    ordered_values("column_boundaries", layout.column_boundaries, expected_count=5)
+    ordered_values("vertical_lines", layout.vertical_lines, expected_count=5)
+    ordered_values("horizontal_lines", layout.horizontal_lines, minimum_count=2)
+
+    try:
+        row_bands = tuple(layout.row_bands)
+    except TypeError:
+        row_bands = ()
+        issues.append("row_bands is missing or invalid")
+    if not row_bands:
+        issues.append("row_bands contains no item rows")
+    previous_bottom: float | None = None
+    for index, band in enumerate(row_bands):
+        try:
+            top, bottom = (float(value) for value in band)
+        except (TypeError, ValueError, OverflowError):
+            issues.append(f"row_bands[{index}] is not a numeric (top, bottom) pair")
+            continue
+        if not math.isfinite(top) or not math.isfinite(bottom) or bottom <= top:
+            issues.append(f"row_bands[{index}] has invalid bounds")
+        if previous_bottom is not None and top < previous_bottom:
+            issues.append(f"row_bands[{index}] overlaps or precedes the previous row")
+        previous_bottom = bottom
+
+    try:
+        median_row_height = float(layout.median_row_height)
+    except (TypeError, ValueError, OverflowError):
+        median_row_height = 0.0
+    if not math.isfinite(median_row_height) or median_row_height <= 0:
+        issues.append("median_row_height must be positive and finite")
+
+    return issues
+
+
+def detect_layout_safe(image: Any) -> LayoutSafetyResult:
+    """Call the unchanged projection detector and fail closed on its result.
+
+    The detector's public API still returns ``DynamicTableLayout | None``.
+    This additive wrapper translates its result into OK/REVIEW/BLOCKED and
+    treats geometry that reaches the image edge as likely truncated input.
+    """
+    try:
+        layout = detect_dynamic_table_layout(image)
+    except Exception as exc:
+        return LayoutSafetyResult(
+            status="BLOCKED",
+            reason=f"Layout detector raised {type(exc).__name__}: {exc}",
+            geometry=None,
+            row_count=None,
+        )
+
+    if layout is None:
+        return LayoutSafetyResult(
+            status="BLOCKED",
+            reason="No table geometry was detected.",
+            geometry=None,
+            row_count=None,
+        )
+
+    if not isinstance(layout, DynamicTableLayout):
+        return LayoutSafetyResult(
+            status="REVIEW",
+            reason="Detector returned an unsupported or incomplete geometry type.",
+            geometry=layout,
+            row_count=None,
+        )
+
+    try:
+        row_bands = tuple(layout.row_bands)
+        row_count = len(row_bands)
+    except Exception as exc:
+        return LayoutSafetyResult(
+            status="REVIEW",
+            reason=f"Could not determine the detected row count: {type(exc).__name__}: {exc}",
+            geometry=layout,
+            row_count=None,
+        )
+
+    try:
+        issues = _layout_geometry_issues(layout)
+    except Exception as exc:
+        return LayoutSafetyResult(
+            status="BLOCKED",
+            reason=f"Could not validate detected geometry: {type(exc).__name__}: {exc}",
+            geometry=None,
+            row_count=None,
+        )
+    if row_count < 1 or row_count > 50:
+        issues.append(f"row count {row_count} is outside the supported range 1..50")
+    if issues:
+        return LayoutSafetyResult(
+            status="REVIEW",
+            reason="Incomplete or unreasonable table geometry: " + "; ".join(issues),
+            geometry=layout,
+            row_count=row_count,
+        )
+
+    try:
+        width, height = image.size
+        edge_margin = 5
+        horizontal = tuple(float(value) for value in layout.horizontal_lines)
+        vertical = tuple(float(value) for value in layout.vertical_lines)
+        reaches_image_edge = (
+            any(value <= edge_margin or value >= height - 1 - edge_margin
+                for value in horizontal)
+            or any(value <= edge_margin or value >= width - 1 - edge_margin
+                   for value in vertical)
+        )
+    except Exception as exc:
+        return LayoutSafetyResult(
+            status="BLOCKED",
+            reason=f"Could not validate image bounds: {type(exc).__name__}: {exc}",
+            geometry=None,
+            row_count=None,
+        )
+
+    if reaches_image_edge:
+        return LayoutSafetyResult(
+            status="BLOCKED",
+            reason="Detected table geometry reaches the image edge; input may be truncated.",
+            geometry=None,
+            row_count=None,
+        )
+
+    return LayoutSafetyResult(
+        status="OK",
+        reason="Complete table geometry detected.",
+        geometry=layout,
+        row_count=row_count,
     )
 
 
