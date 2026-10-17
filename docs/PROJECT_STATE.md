@@ -72,6 +72,15 @@ No image files are tracked in the current HEAD (`git ls-files` returned no image
 - **Tesseract policy:** intended policy says Tesseract is an evidence source, not authority and not a veto. The current working-tree adapter contradicts the “not a veto” part: `_numeric_evidence_problem` compares Glyph output against parsed full-page OCR fields and can force page-level REVIEW on disagreement (details in Sections 4 and 7). This is a known implementation risk, not a decision silently resolved by T0.
 - **Native Checkout decisions** recorded in the working-tree proposal: Q1=Option 1, Q2=Option 2, Q3=Option 1, Q4=Option 1. These are future-architecture decisions, not current implementation priority.
 
+### D3 — Holo DB Access: CLOSED
+
+هلو همکاری و دسترسی به داده ندارد و وب‌سرویسش برای
+فروشگاه‌ها پرهزینه است؛ مسیر چاپ محصول است. تلفن و نام
+واقعی مشتری از چاپ نمی‌آید و باید از اپراتور گرفته شود.
+
+Decision: CLOSED on 2026-10-17.
+This decision is final and will not be revisited.
+
 ## 4. Glyph Classifier State
 
 ### Availability and handoff components
