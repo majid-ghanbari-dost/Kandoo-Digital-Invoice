@@ -1,0 +1,9 @@
+fixture=SYNTHETIC; not a Holoo/Spooler image
+ocr.status=REVIEW_REQUIRED (adapter hold; no submit)
+source_image.sha256=c06075646afe254528925093d0b8877be1dd7ea0ff382865aa74aef7bead65cd
+ocr.engine=tesseract 5.5.1
+ocr.language=eng
+ocr.minimum_confidence=87.0
+review.reason=minimum word confidence 87.00 is below the declared threshold 90.00
+issuance.submit=NOT_CALLED
+digital_invoice=NONE

@@ -1,0 +1,37 @@
+== ../deliveries/image-extraction-ocr/13.png
+  line.0.total|glyph|raw='۷,۸۸۰,۰۰۰'|confidence=100.0|status=REVIEW|reference='۷,۸۸۰,۰۰۰'|digits_match_reference=True|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.0.quantity|glyph|raw='?'|confidence=0.0|status=REVIEW|reference='۴'|digits_match_reference=False|reason='glyph 1 not accepted: ambiguous: margin 0.146 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format'
+  line.1.total|glyph|raw='۴,۸۵۰,۰۰۰'|confidence=100.0|status=REVIEW|reference='۴,۸۵۰,۰۰۰'|digits_match_reference=True|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.1.quantity|glyph|raw='۱۰'|confidence=100.0|status=EXTRACTED|reference='۱۰'|digits_match_reference=True
+  line.2.total|glyph|raw='۸,۷۵۰,۰۰۰'|confidence=100.0|status=REVIEW|reference='۸,۷۵۰,۰۰۰'|digits_match_reference=True|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.2.quantity|glyph|raw='۵'|confidence=100.0|status=EXTRACTED|reference='۵'|digits_match_reference=True
+  line.3.total|glyph|raw='۶,۴۰۰,۰۰۰'|confidence=100.0|status=REVIEW|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.3.quantity|glyph|raw='۲'|confidence=100.0|status=EXTRACTED
+  line.4.total|glyph|raw='۴۹,۴۰۰,۰۰۰'|confidence=100.0|status=REVIEW|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.4.quantity|glyph|raw='۲۰'|confidence=100.0|status=EXTRACTED
+  line.5.total|glyph|raw='۱,۵۷۰,۰۰۰'|confidence=100.0|status=REVIEW|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.5.quantity|glyph|raw='۱'|confidence=100.0|status=EXTRACTED
+  line.6.total|glyph|raw='۶,۹۰۰,۰۰۰'|confidence=100.0|status=REVIEW|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.6.quantity|glyph|raw='۵'|confidence=100.0|status=EXTRACTED
+  line.7.total|glyph|raw='۶,۸۷۰,۰۰۰'|confidence=100.0|status=REVIEW|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.7.quantity|glyph|raw='۱'|confidence=100.0|status=EXTRACTED
+  line.8.total|glyph|raw='۳,۷۰۰,۰۰۰'|confidence=100.0|status=REVIEW|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.8.quantity|glyph|raw='۲'|confidence=100.0|status=EXTRACTED
+  line.9.total|glyph|raw='??۹,۶۰۰,۰۰۰'|confidence=0.0|status=REVIEW|reference='۲۲۹,۶۰۰,۰۰۰'|digits_match_reference=False|reason="glyph 1 not accepted: ambiguous: margin 0.108 below 0.150; glyph 2 not accepted: ambiguous: margin 0.108 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.9.quantity|glyph|raw='۸'|confidence=66.2|status=EXTRACTED|reference='۸'|digits_match_reference=True
+  line.10.total|glyph|raw='۱۹,۰۵۰,۰۰۰'|confidence=100.0|status=REVIEW|reference='۱۹,۰۵۰,۰۰۰'|digits_match_reference=True|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.10.quantity|glyph|raw='۱۵'|confidence=100.0|status=EXTRACTED|reference='۱۵'|digits_match_reference=True
+  line.11.total|glyph|raw='۱,۳۸۰,۰۰۰'|confidence=100.0|status=REVIEW|reference='۱,۳۸۰,۰۰۰'|digits_match_reference=True|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.11.quantity|glyph|raw='۱'|confidence=100.0|status=EXTRACTED|reference='۱'|digits_match_reference=True
+  line.12.total|glyph|raw='۱,۵۷۰,۰۰۰'|confidence=100.0|status=REVIEW|reference='۱,۵۷۰,۰۰۰'|digits_match_reference=True|reason="arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  line.12.quantity|glyph|raw='۱'|confidence=100.0|status=EXTRACTED|reference='۱'|digits_match_reference=True
+  invoice.payable|glyph|raw='????۷,????۰,۰۰۰'|confidence=0.0|status=REVIEW|reference='۳۴۷,۹۲۰,۰۰۰'|digits_match_reference=False|reason="glyph 1 not accepted: distance 0.644 exceeds 0.250; glyph 2 not accepted: distance 0.466 exceeds 0.250; glyph 3 not accepted: distance 0.308 exceeds 0.250; glyph 4 not accepted: distance 0.434 exceeds 0.250; glyph 7 not accepted: distance 0.855 exceeds 0.250; glyph 8 not accepted: distance 0.743 exceeds 0.250; glyph 9 not accepted: distance 0.308 exceeds 0.250; glyph 10 not accepted: distance 0.500 exceeds 0.250; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount"
+  arithmetic_gate passed=False line_sum=None payable=None extra=0 reason=line.9.total '??۹,۶۰۰,۰۰۰' is not a well-formed amount
+metric.definition=exact match and CER on digit strings; separators ignored for scoring only
+metrics.glyph.exact_digit_cells=12/15 digit_CER=10.00%
+metrics.glyph.segmentation_mismatch_cells=1
+metrics.glyph.arithmetic_gate_passed=0/1
+calibration.best_label_correct.distance n=75 min=0.000 max=0.107
+calibration.best_label_correct.margin   n=75 min=0.108 max=0.864
+calibration.best_label_wrong.distance   n=0
+calibration.best_label_wrong.margin   n=0
