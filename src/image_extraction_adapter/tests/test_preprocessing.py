@@ -113,6 +113,64 @@ class CellPreprocessingTests(unittest.TestCase):
         self.assertEqual(cleaned.getpixel((6, 40)), 255)
         self.assertEqual(cleaned.getpixel((60, 39)), 0)
 
+    def test_skip_vertical_rule_removal_flag_defaults_to_existing_behavior(self):
+        image = Image.new("L", (120, 80), 255)
+        draw = ImageDraw.Draw(image)
+        draw.rectangle((0, 5, 119, 7), fill=0)
+        draw.rectangle((5, 0, 7, 79), fill=0)
+        draw.rectangle((55, 30, 64, 48), fill=0)
+
+        default, default_removed = remove_morphological_table_lines(image)
+        explicit_default, _ = remove_morphological_table_lines(
+            image, skip_vertical_rule_removal=False)
+        horizontal_only, skipped_removed = remove_morphological_table_lines(
+            image, skip_vertical_rule_removal=True)
+
+        self.assertEqual(default.tobytes(), explicit_default.tobytes())
+        self.assertEqual(default.getpixel((40, 6)), 255)
+        self.assertEqual(default.getpixel((6, 40)), 255)
+        self.assertGreater(default_removed, skipped_removed)
+        self.assertEqual(horizontal_only.getpixel((40, 6)), 255)
+        self.assertEqual(horizontal_only.getpixel((6, 40)), 0)
+        self.assertEqual(horizontal_only.getpixel((60, 39)), 0)
+
+    def test_payable_crop_skips_only_vertical_rule_removal(self):
+        source = Image.new("L", (160, 180), 255)
+        draw = ImageDraw.Draw(source)
+        draw.line((40, 28, 40, 96), fill=0, width=2)
+        draw.line((80, 28, 80, 96), fill=0, width=2)
+        draw.line((40, 106, 40, 145), fill=0, width=2)
+        spatial = SimpleNamespace(
+            column_boundaries=(20, 60, 100, 140, 150),
+            row_bands=((20, 100),),
+            assessments=(SimpleNamespace(
+                field_name="invoice.payable", bbox=(20, 110, 80, 32)),),
+        )
+
+        crops = crop_spatial_cells(
+            source, spatial, include_descriptions=False, include_payable=True)
+        by_name = {crop.field_name: crop for crop in crops}
+        self.assertEqual(by_name["line.0.total"].image.info["kandoo_cell_class"], "total")
+        self.assertEqual(by_name["line.0.quantity"].image.info["kandoo_cell_class"], "quantity")
+        self.assertEqual(by_name["invoice.payable"].image.info["kandoo_cell_class"], "payable")
+
+        old_total, _ = remove_morphological_table_lines(
+            otsu_binarize(by_name["line.0.total"].image))
+        old_quantity, _ = remove_morphological_table_lines(
+            otsu_binarize(by_name["line.0.quantity"].image))
+        old_payable, _ = remove_morphological_table_lines(
+            otsu_binarize(by_name["invoice.payable"].image))
+        new_total = preprocess_cell(by_name["line.0.total"].image, "otsu")
+        new_quantity = preprocess_cell(by_name["line.0.quantity"].image, "otsu")
+        new_payable = preprocess_cell(by_name["invoice.payable"].image, "otsu")
+
+        self.assertEqual(new_total.image.tobytes(), old_total.tobytes())
+        self.assertEqual(new_quantity.image.tobytes(), old_quantity.tobytes())
+        self.assertEqual(new_total.image.getpixel((16, 32)), 255)
+        self.assertEqual(new_quantity.image.getpixel((16, 32)), 255)
+        self.assertEqual(old_payable.getpixel((24, 20)), 255)
+        self.assertEqual(new_payable.image.getpixel((24, 20)), 0)
+
     def test_spatial_crop_uses_rtl_columns_and_preserves_source(self):
         source = Image.new("RGB", (100, 80), "white")
         ImageDraw.Draw(source).rectangle((10, 20, 29, 39), fill="black")

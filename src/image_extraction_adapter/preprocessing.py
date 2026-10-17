@@ -13,6 +13,7 @@ from typing import Any, Literal
 
 PreprocessingMode = Literal["none", "otsu", "adaptive"]
 PREPROCESSING_MODES: tuple[PreprocessingMode, ...] = ("none", "otsu", "adaptive")
+_CELL_CLASS_INFO_KEY = "kandoo_cell_class"
 
 
 @dataclass(frozen=True)
@@ -410,6 +411,26 @@ def detect_layout_safe(image: Any) -> LayoutSafetyResult:
     )
 
 
+def _cell_class_for_field(field_name: str) -> str | None:
+    if field_name == "invoice.payable":
+        return "payable"
+    for class_name in ("total", "quantity", "description"):
+        if field_name.endswith(f".{class_name}"):
+            return class_name
+    return None
+
+
+def _tag_cell_image(image: Any, field_name: str) -> Any:
+    """Attach the crop class to its private Pillow image copy for preprocessing."""
+    cell_class = _cell_class_for_field(field_name)
+    if cell_class is not None:
+        existing_info = getattr(image, "info", None)
+        info = dict(existing_info) if isinstance(existing_info, dict) else {}
+        info[_CELL_CLASS_INFO_KEY] = cell_class
+        image.info = info
+    return image
+
+
 def crop_spatial_cells(
     image: Any,
     spatial: Any,
@@ -459,10 +480,11 @@ def crop_spatial_cells(
             )
             if box is None:
                 continue
+            field_name = f"line.{row_index}.{suffix}"
             crops.append(CellCrop(
-                field_name=f"line.{row_index}.{suffix}",
+                field_name=field_name,
                 bbox=box,
-                image=image.crop(box).copy(),
+                image=_tag_cell_image(image.crop(box).copy(), field_name),
                 numeric=numeric,
             ))
 
@@ -481,7 +503,8 @@ def crop_spatial_cells(
                 crops.append(CellCrop(
                     field_name="invoice.payable",
                     bbox=box,
-                    image=image.crop(box).copy(),
+                    image=_tag_cell_image(
+                        image.crop(box).copy(), "invoice.payable"),
                     numeric=True,
                 ))
     return tuple(crops)
@@ -588,16 +611,18 @@ def remove_morphological_table_lines(
     *,
     horizontal_kernel: int | None = None,
     vertical_kernel: int | None = None,
+    skip_vertical_rule_removal: bool = False,
 ) -> tuple[Any, int]:
     """Remove long horizontal/vertical rules from a binarized cell copy.
 
     Morphological opening with directional line kernels identifies likely table
     rules. The detected union is subtracted from the foreground mask; pixels
-    outside the mask are unchanged. A mask can intersect a glyph near a rule,
-    so resulting OCR remains subject to confidence/format review. Returns the
-    cleaned binary image and count of removed foreground pixels.
+    outside the mask are unchanged. `skip_vertical_rule_removal` defaults to
+    False to preserve the existing behavior. When True, horizontal rules are
+    still removed while the vertical-rule mask is omitted. Returns the cleaned
+    binary image and count of removed foreground pixels.
     """
-    _, image_chops, _, image_ops = _pillow()
+    Image, image_chops, _, image_ops = _pillow()
     gray = binary_image.convert("L")
     width, height = gray.size
     if horizontal_kernel is None:
@@ -607,8 +632,11 @@ def remove_morphological_table_lines(
     foreground = image_ops.invert(gray)
     horizontal_mask = _opening_line_mask(
         foreground, horizontal_kernel, horizontal=True)
-    vertical_mask = _opening_line_mask(
-        foreground, vertical_kernel, horizontal=False)
+    if skip_vertical_rule_removal:
+        vertical_mask = Image.new("L", foreground.size, 0)
+    else:
+        vertical_mask = _opening_line_mask(
+            foreground, vertical_kernel, horizontal=False)
     line_mask = image_chops.lighter(horizontal_mask, vertical_mask)
     cleaned_foreground = image_chops.subtract(foreground, line_mask)
     removed_pixels = sum(1 for value in line_mask.getdata() if value > 0)
@@ -621,11 +649,14 @@ def preprocess_cell(
     *,
     adaptive_radius: int = 9,
     adaptive_offset: int = 10,
+    skip_vertical_rule_removal: bool = False,
 ) -> PreprocessedCell:
     """Prepare a cell for OCR without mutating the original crop.
 
     `none` is the unthresholded control. Otsu and adaptive modes each threshold
-    a grayscale copy and then remove detected horizontal/vertical table rules.
+    a grayscale copy and then remove detected table rules. The vertical-rule
+    skip flag defaults to False; tagged payable crops also skip only vertical
+    rule removal, without changing total, quantity, or untagged-image behavior.
     """
     _, _, _, image_ops = _pillow()
     if mode not in PREPROCESSING_MODES:
@@ -638,7 +669,14 @@ def preprocess_cell(
     else:
         binary = adaptive_binarize(
             image, radius=adaptive_radius, offset=adaptive_offset)
-    cleaned, removed = remove_morphological_table_lines(binary)
+    image_info = getattr(image, "info", None)
+    cell_class = (
+        image_info.get(_CELL_CLASS_INFO_KEY)
+        if isinstance(image_info, dict) else None
+    )
+    skip_vertical = skip_vertical_rule_removal or cell_class == "payable"
+    cleaned, removed = remove_morphological_table_lines(
+        binary, skip_vertical_rule_removal=skip_vertical)
     return PreprocessedCell(
         image=image_ops.autocontrast(cleaned),
         mode=mode,
