@@ -232,3 +232,67 @@ The detector projects long horizontal runs, selects the longest median-spaced ho
 - Negative inputs end in an explicit `REVIEW`/`Blocked` status: **FAIL / not provided by this geometry API**. The truncated image returns a seven-row partial layout with no status field; production callers must add/retain a fail-closed completeness decision. No existing source/default behavior was changed in this check.
 
 Test run: 8 tests, all passed. Tesseract was not run.
+
+### Board v4 Sync (E-00)
+
+#### Decisions Confirmed by Owner (D1-D14)
+- D1: Two modes. A: Kandoo is the store software.
+  B: Kandoo runs beside other software.
+- D2: Language-independent Canonical contract.
+  Extraction in Python. Platform in C# (ASP.NET Core).
+- D3: No Holo database access. Print path is the product.
+- D4: Customer delivery: SMS + QR + share button.
+  Link carries unguessable token (>= 128 bit).
+  Viewing one invoice needs no account.
+  Seeing all invoices needs registration with OTP.
+  phone_status = claimed | verified.
+- D5: Hosting: free or foreign host allowed for MVP only
+  if migration takes under one hour.
+- D6: One Kandoo app for Windows and Android.
+  One account, many memberships.
+- D7: One hub per store. Other devices work only on LAN.
+  Hub off = other devices cannot start work. No Bluetooth.
+  Hub runs without internet, replicates to cloud.
+- D8: Backup/restore: cloud full copy + local backup.
+  Hub disk is single point of failure (known limitation).
+- D9: Products: unique store product id + normalised name.
+  Near-duplicate names raise warning.
+- D10: Concurrency: inventory is event ledger.
+  Price/spec edits carry base version. Conflicts shown to
+  operator, never overwritten silently. Issued invoice is
+  immutable. Every operation has operation_id (idempotent)
+  and device_id.
+- D11: Per-phone invoice lock: second device gets hard
+  error. Lock ends on issue/cancel/disconnect/timeout.
+  Sequential purchases with same number allowed.
+- D12: Invoice numbering: internal unique id + sequential
+  display number from hub.
+- D13: Staged delivery. Multi-device from day one.
+- D14: Legal status UNKNOWN. Customer pages say "digital
+  receipt, not an official tax document" (wording needs
+  owner approval).
+
+#### Known-Answer Onboarding
+- E-03 will provide 4 test invoices (3 learning + 1 exam)
+  with fully prescribed items.
+- Every symbol 0-9 and comma appears >= 5 times.
+- Exam printed twice (print-to-print variance).
+
+#### Local-First Principle
+- No image leaves a store without explicit approval.
+- Extraction is local (Pillow + standard library).
+- Tesseract only in legacy adapter path (not in product path).
+
+#### Stash Inventory (read-only)
+- Stash 72c4b48 was previously reported as missing.
+- Current available stash: fea913a (safety snapshot).
+- No apply, no drop. List only.
+
+#### Open Items (need owner)
+- SMS provider
+- Host
+- Default lock timeout (proposal: 15 minutes)
+- Legal wording (D14)
+
+#### E-00 Execution Note
+- The supplied verbatim text names `fea913a`, but the E-00 safety snapshot in this checkout is `a397d8fa73ddfb90e743659e46e13c27062f3e65` (`stash@{0}`). The read-only stash list contained no `fea913a` entry. No stash was applied or dropped.
