@@ -38,6 +38,9 @@ convert OCR text, or implement E-02/C# behavior.
 | `summary.subtotal` | non-negative integer rials | Yes | Per-field provenance label | Summary amount; no arithmetic equation is imposed by v0. |
 | `summary.extra_amounts` | object of non-negative integer rials | Yes | Per-key provenance labels | Named adjustments; send `{}` when empty. |
 | `summary.payable` | non-negative integer rials | Yes | Per-field provenance label | Amount payable in rials. |
+| `summary.tax_lines` | optional array of `{label: string, amount: integer rials, provenance: v0 label}` | No | Per-entry provenance | Default annotation `[]`; reserved structure only, not computed or business-validated in MVP. |
+| `summary.discount_lines` | optional array of `{label: string, amount: integer rials, provenance: v0 label}` | No | Per-entry provenance | Default annotation `[]`; reserved structure only, not computed or business-validated in MVP. |
+| `summary.rounding` | optional integer or null | No | No separate provenance field specified | Default annotation `null`; no rounding behavior in MVP. |
 | `attention_cells` | array of `{field, raw_value, reason}` | Yes | Review evidence | Send `[]` when no unresolved cells exist. Must be empty at VALIDATED or later. |
 | `header` | object | Yes | Per-field below | Container is required; its printed/capture properties are optional. |
 | `header.captured_at` | nullable ISO 8601 timestamp | No | `derived` when present; otherwise `unavailable` | Probe capture time; a present timestamp must carry an offset. |
@@ -47,8 +50,26 @@ convert OCR text, or implement E-02/C# behavior.
 | `provenance.image_sha256` | nullable lower-case SHA-256 hex | Yes | Provenance metadata | Hash only; no image bytes are stored or sent by this contract. |
 | `provenance.template_library_id` | nullable string | Yes | Provenance metadata | Template-library identity, if applicable. |
 | `provenance.engine_version` | nullable string | Yes | Provenance metadata | Extraction-engine version, if applicable. |
-| `provenance.fields` | mirrored provenance object | Yes | Labels per contract | Mirrors customer, each line, summary fields, and header; keys/indexes must match. |
+| `provenance.fields` | mirrored provenance object | Yes | Labels per contract | Mirrors customer, each line, subtotal/extra_amounts/payable, and header; tax/discount provenance is carried per entry. |
 | `issued_content_sha256` | lower-case SHA-256 hex | Conditional | `derived` integrity metadata | Required at ISSUED and retained by REVOKED/SUPERSEDED; absent before ISSUED. |
+
+### Reserved for Future Accounting Module
+
+E-01b reserves the optional `summary.tax_lines`, `summary.discount_lines`, and
+`summary.rounding` fields for ACC-0. ACC-0 is **PARKED** and is not part of the
+MVP. The schema annotates absent fields with defaults `[]`, `[]`, and `null`,
+respectively. `validate_canonical_invoice()` remains non-mutating: omission is
+valid, but validation does not materialize those defaults in the input.
+
+When present, each tax/discount entry must have a string `label`, integer `amount`
+in rials, and a `provenance` value from the existing v0 label set. `rounding`
+must be an integer or `null`. E-01b checks only structure and types; it does not
+compute tax, discounts, or rounding, validate tax/discount rules, or reconcile
+these fields with subtotal/payable. No separate provenance property for
+`rounding` is defined in this increment.
+
+Before ACC-0 starts, it requires a tax/accounting expert review, a market and
+competitor analysis, and a legal review of the responsibility change.
 
 ## 3. State machine
 
@@ -74,17 +95,22 @@ validator checks every edge rather than accepting a state label by itself.
   `verified`; claimed is a valid status, not proof of ownership. v0 does not
   normalize phone numbers.
 - `line_items` contains at least one item. `quantity` is a positive integer.
-  `unit_price`, `line_total`, and all `summary` amounts are non-negative integer
-  rials. Floating-point monetary values, decimal strings, rounding, and
-  implicit currency conversion are not accepted. `extra_amounts` is an object
-  of named integer-rial amounts; use `{}` when there are none. Send
+  The existing `unit_price`, `line_total`, `subtotal`, `extra_amounts`, and
+  `payable` amounts are non-negative integer rials. E-01b's optional
+  `tax_lines[].amount`, `discount_lines[].amount`, and `rounding` are type-checked
+  only (integer, integer, and integer-or-null); no sign or accounting rule is
+  applied to these reserved fields. Floating-point monetary values, decimal
+  strings, and implicit currency conversion are not accepted. `extra_amounts`
+  is an object of named integer-rial amounts; use `{}` when there are none. Send
   `attention_cells: []` when there are no unresolved cells. Although the schema
   carries JSON Schema `default` annotations, validation does not insert defaults.
-- `provenance.fields` mirrors the invoice's business fields. Each line item has
-  a matching provenance object; the `extra_amounts` provenance keys must match
-  the amount keys. Labels are `native`, `captured`, `derived`, `untrusted`, or
-  `unavailable`. A missing provenance value is an error; the validator never
-  fills one in.
+- `provenance.fields` mirrors customer, line items, `subtotal`, `extra_amounts`,
+  `payable`, and header. Each line item has a matching provenance object; the
+  `extra_amounts` provenance keys must match the amount keys. E-01b tax and
+  discount entries carry their own provenance label; `rounding` has no separate
+  provenance property. Labels are `native`, `captured`, `derived`, `untrusted`,
+  or `unavailable`. A missing required provenance value is an error; the
+  validator never fills one in.
 - In mode A, a Kandoo-native `unit_price` may be labeled `native`. In mode B,
   label a printed unit price `captured`; otherwise label a value explicitly
   supplied by an upstream derivation `derived`. This validator does not
@@ -102,10 +128,12 @@ validator checks every edge rather than accepting a state label by itself.
   schema stores no image bytes and performs no upload or network operation.
 
 The validator does not assert that subtotal equals the sum of line totals or
-that payable equals subtotal plus `extra_amounts`. The v0 contract does not
-define discounts, tax semantics, rounding, or other adjustment algebra. Any
-arithmetic or extraction uncertainty must be handled by the upstream review
-gate; v0 never repairs values.
+that payable equals subtotal plus `extra_amounts`. E-01b reserves tax/discount
+line arrays and an optional rounding value but does not define their arithmetic
+or accounting semantics. The validator does not compute totals including tax or
+discount, apply rounding, or validate tax/discount rules. Any arithmetic or
+extraction uncertainty must be handled by the upstream review gate; v0 never
+repairs values.
 
 ### Issued-content validation details
 
@@ -324,6 +352,9 @@ Each case fails validation; none is repaired automatically:
   field, summary field, provenance metadata key, or required provenance label.
 - `customer.phone_status: "unknown"` or a provenance label outside the five
   v0 labels.
+- A reserved tax/discount line missing `label`, `amount`, or `provenance`, a
+  non-integer line amount, or a `rounding` value that is neither integer nor
+  `null`.
 - A mode B `unit_price` labeled `untrusted`/`unavailable`, or mismatched
   provenance-array length / extra-amount keys.
 - A non-null `printed_date` labeled `unavailable`, a null printed date labeled
@@ -406,7 +437,8 @@ under **Assumptions**:
   `operation_id`, `device_id`, and the random `public_token`, and what are the
   lifecycle/restore rules for those identifiers?
 - What are the business meanings and arithmetic relationships of `subtotal`,
-  `extra_amounts` (including tax/discount treatment), and `payable`?
+  `extra_amounts`, `tax_lines`, `discount_lines`, `rounding`, and `payable`?
+  ACC-0 remains parked; E-01b does not calculate or validate these relationships.
 - What authority and evidence moves a phone from `claimed` to `verified`, and
   which phone normalization rules, if any, will a product mode use?
 - Which C# implementation will share the schema, provenance checks, hash

@@ -136,6 +136,55 @@
         },
         "payable": {
           "$ref": "#/$defs/nonNegativeRials"
+        },
+        "tax_lines": {
+          "type": "array",
+          "default": [],
+          "description": "Optional structure reserved for ACC-0 tax lines; E-01b applies only structural type checks, not accounting rules.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "amount", "provenance"],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "integer",
+                "description": "Integer rials; no tax computation, sign rule, or reconciliation is applied in E-01b."
+              },
+              "provenance": {
+                "$ref": "#/$defs/provenanceLabel"
+              }
+            }
+          }
+        },
+        "discount_lines": {
+          "type": "array",
+          "default": [],
+          "description": "Optional structure reserved for ACC-0 discount lines; E-01b applies only structural type checks, not accounting rules.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "amount", "provenance"],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "integer",
+                "description": "Integer rials; no discount computation, sign rule, or reconciliation is applied in E-01b."
+              },
+              "provenance": {
+                "$ref": "#/$defs/provenanceLabel"
+              }
+            }
+          }
+        },
+        "rounding": {
+          "type": ["integer", "null"],
+          "default": null,
+          "description": "Optional integer-or-null structure reserved for ACC-0; E-01b applies no rounding behavior."
         }
       }
     },

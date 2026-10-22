@@ -342,6 +342,150 @@ class CanonicalInvoiceV0Tests(unittest.TestCase):
                 target[path[-1]] = value
                 self.assertFalse(validate_canonical_invoice(invoice)[0])
 
+    def test_valid_invoice_with_empty_tax_lines(self):
+        invoice = make_invoice()
+        invoice["summary"]["tax_lines"] = []
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertTrue(valid, errors)
+
+    def test_valid_invoice_with_tax_lines(self):
+        invoice = make_invoice()
+        invoice["summary"]["tax_lines"] = [
+            {"label": "VAT", "amount": 80, "provenance": "captured"}
+        ]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertTrue(valid, errors)
+
+    def test_valid_invoice_with_empty_discount_lines(self):
+        invoice = make_invoice()
+        invoice["summary"]["discount_lines"] = []
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertTrue(valid, errors)
+
+    def test_valid_invoice_with_discount_lines(self):
+        invoice = make_invoice()
+        invoice["summary"]["discount_lines"] = [
+            {"label": "Store promotion", "amount": 50, "provenance": "derived"}
+        ]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertTrue(valid, errors)
+
+    def test_valid_invoice_with_rounding_null(self):
+        invoice = make_invoice()
+        invoice["summary"]["rounding"] = None
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertTrue(valid, errors)
+
+    def test_valid_invoice_with_rounding_integer(self):
+        invoice = make_invoice()
+        invoice["summary"]["rounding"] = -1
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertTrue(valid, errors)
+
+    def test_valid_invoice_without_optional_accounting_fields(self):
+        invoice = make_invoice()
+        original = copy.deepcopy(invoice)
+        for field_name in ("tax_lines", "discount_lines", "rounding"):
+            self.assertNotIn(field_name, invoice["summary"])
+
+        with _SCHEMA_PATH.open(encoding="utf-8") as schema_file:
+            schema = json.load(schema_file)
+        summary_properties = schema["properties"]["summary"]["properties"]
+        self.assertEqual(summary_properties["tax_lines"]["default"], [])
+        self.assertEqual(summary_properties["discount_lines"]["default"], [])
+        self.assertIsNone(summary_properties["rounding"]["default"])
+
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertTrue(valid, errors)
+        self.assertEqual(invoice, original)  # Validation remains non-mutating.
+
+    def test_invalid_invoice_with_tax_lines_missing_label(self):
+        invoice = make_invoice()
+        invoice["summary"]["tax_lines"] = [{"amount": 80, "provenance": "captured"}]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("label" in error for error in errors))
+
+    def test_invalid_invoice_with_tax_lines_missing_amount(self):
+        invoice = make_invoice()
+        invoice["summary"]["tax_lines"] = [{"label": "VAT", "provenance": "captured"}]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("amount" in error for error in errors))
+
+    def test_invalid_invoice_with_tax_lines_missing_provenance(self):
+        invoice = make_invoice()
+        invoice["summary"]["tax_lines"] = [{"label": "VAT", "amount": 80}]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("provenance" in error for error in errors))
+
+    def test_invalid_invoice_with_discount_lines_missing_label(self):
+        invoice = make_invoice()
+        invoice["summary"]["discount_lines"] = [{"amount": 50, "provenance": "captured"}]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("label" in error for error in errors))
+
+    def test_invalid_invoice_with_discount_lines_missing_amount(self):
+        invoice = make_invoice()
+        invoice["summary"]["discount_lines"] = [
+            {"label": "Store promotion", "provenance": "captured"}
+        ]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("amount" in error for error in errors))
+
+    def test_invalid_invoice_with_discount_lines_missing_provenance(self):
+        invoice = make_invoice()
+        invoice["summary"]["discount_lines"] = [
+            {"label": "Store promotion", "amount": 50}
+        ]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("provenance" in error for error in errors))
+
+    def test_invalid_invoice_with_discount_lines_string_amount(self):
+        invoice = make_invoice()
+        invoice["summary"]["discount_lines"] = [
+            {"label": "Store promotion", "amount": "50", "provenance": "captured"}
+        ]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("amount" in error for error in errors))
+
+    def test_invalid_invoice_with_rounding_string(self):
+        invoice = make_invoice()
+        invoice["summary"]["rounding"] = "0"
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("rounding" in error for error in errors))
+
+    def test_invalid_invoice_with_rounding_float(self):
+        invoice = make_invoice()
+        invoice["summary"]["rounding"] = 0.5
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("rounding" in error for error in errors))
+
+    def test_invalid_invoice_with_tax_lines_amount_float(self):
+        invoice = make_invoice()
+        invoice["summary"]["tax_lines"] = [
+            {"label": "VAT", "amount": 80.0, "provenance": "captured"}
+        ]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("amount" in error or "floating-point" in error for error in errors))
+
+    def test_invalid_invoice_with_tax_lines_invalid_provenance(self):
+        invoice = make_invoice()
+        invoice["summary"]["tax_lines"] = [
+            {"label": "VAT", "amount": 80, "provenance": "estimated_by_magic"}
+        ]
+        valid, errors = validate_canonical_invoice(invoice)
+        self.assertFalse(valid)
+        self.assertTrue(any("provenance" in error for error in errors))
+
     def test_missing_required_fields_are_rejected(self):
         required = (
             "schema_version",

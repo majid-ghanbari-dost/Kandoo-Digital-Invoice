@@ -166,12 +166,53 @@ def _scan_for_floats(value: Any, path: str = "$-") -> list[str]:
     return errors
 
 
+def _optional_accounting_field_errors(summary: Any) -> list[str]:
+    """Type-check the optional E-01b accounting placeholders without interpreting them."""
+    if not isinstance(summary, dict):
+        return []  # The JSON Schema reports an invalid summary shape.
+
+    errors: list[str] = []
+    for field_name in ("tax_lines", "discount_lines"):
+        if field_name not in summary:
+            continue
+        lines = summary[field_name]
+        if not isinstance(lines, list):
+            errors.append(f"summary.{field_name}: must be an array")
+            continue
+        for index, line in enumerate(lines):
+            path = f"summary.{field_name}[{index}]"
+            if not isinstance(line, dict):
+                errors.append(f"{path}: must be an object")
+                continue
+            for required_name in ("label", "amount", "provenance"):
+                if required_name not in line:
+                    errors.append(f"{path}.{required_name}: is required")
+            if "label" in line and not isinstance(line["label"], str):
+                errors.append(f"{path}.label: must be a string")
+            if "amount" in line and type(line["amount"]) is not int:
+                errors.append(f"{path}.amount: must be an integer number of rials")
+            if "provenance" in line:
+                label = line["provenance"]
+                if not isinstance(label, str) or label not in PROVENANCE_LABELS:
+                    errors.append(
+                        f"{path}.provenance: must be one of the v0 provenance labels"
+                    )
+
+    if "rounding" in summary:
+        rounding = summary["rounding"]
+        if rounding is not None and type(rounding) is not int:
+            errors.append("summary.rounding: must be an integer or null")
+
+    return errors
+
+
 def _semantic_errors(data: Any) -> list[str]:
     if not isinstance(data, dict):
         return []
 
     errors: list[str] = []
     errors.extend(_scan_for_floats(data))
+    errors.extend(_optional_accounting_field_errors(data.get("summary")))
 
     # A transition log is a complete ordered path, not a list of independent
     # labels. It starts in DRAFT and its final state must match the snapshot.

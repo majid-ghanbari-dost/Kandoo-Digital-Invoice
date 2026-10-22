@@ -21,15 +21,18 @@ frozen contracts or extraction implementation.
    are the lowercase values `claimed` and `verified`. Both are valid invoice
    states; this contract does not assert phone ownership or normalize to a
    particular national format.
-5. **Integer amounts and quantity.** Every monetary value is a non-negative
-   integer number of rials; quantity is a positive whole number. Negative
-   adjustments, fractional quantities, float values, rounding, and implicit
-   toman/rial or decimal-string conversion are not accepted. `extra_amounts`
-   uses arbitrary named non-negative integer-rial values; producers send `{}`
-   and `attention_cells: []` explicitly when empty because validators do not
-   apply JSON Schema `default` annotations. No subtotal/payable arithmetic
-   equation is imposed because tax, discount, and
-   adjustment semantics were not specified.
+5. **Integer amounts and quantity.** The pre-existing `unit_price`,
+   `line_total`, `subtotal`, `extra_amounts`, and `payable` amounts are
+   non-negative integer rials; quantity is a positive whole number. Floats,
+   decimal strings, fractional quantities, and implicit toman/rial conversion
+   are not accepted. E-01b's optional tax/discount line amounts are integers;
+   `rounding` is integer-or-null. These fields are structural only; no sign,
+   arithmetic, tax, discount, or rounding rule is applied. `extra_amounts` uses
+   arbitrary named non-negative
+   integer-rial values; producers send `{}` and `attention_cells: []` explicitly
+   when empty because validators do not apply JSON Schema `default` annotations.
+   No subtotal/payable arithmetic equation is imposed because accounting
+   semantics remain unspecified.
 6. **Per-field provenance.** The canonical labels are `native`, `captured`,
    `derived`, `untrusted`, and `unavailable`. Provenance mirrors customer,
    line-item, summary, and header fields; extra-amount keys and line-item
@@ -152,3 +155,12 @@ frozen contracts or extraction implementation.
     restore/security/concurrency guarantee; any later claim in those areas must
     be backed by a failing test and the existing E-00b decisions remain in
     force.
+27. **E-01b accounting placeholders.** `summary.tax_lines` and
+    `summary.discount_lines` are optional arrays; each entry requires a string
+    label, integer amount in rials, and one of the existing provenance labels.
+    `summary.rounding` is optional integer-or-null and has no separate
+    provenance property in the E-01b schema. The schema's `default` annotations
+    are `[]`, `[]`, and `null`; canonical validation remains non-mutating and
+    does not materialize them. These fields reserve structure for ACC-0, which
+    remains parked; E-01b applies only structural type checks and performs no
+    accounting computation, sign/rule validation, or arithmetic.
