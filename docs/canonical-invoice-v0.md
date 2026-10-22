@@ -1,7 +1,10 @@
 # Canonical Invoice v0
 
+## 1. Overview
+
 Canonical Invoice v0 is the storage-neutral Python-side contract for an invoice
-in either Kandoo mode. Its JSON Schema is
+in either Kandoo mode. It is the proposed data boundary between local Python
+extraction and the future platform implementation. Its JSON Schema is
 [`schemas/canonical_invoice_v0.json`](../schemas/canonical_invoice_v0.json); the
 structural, provenance, lifecycle, and issued-content checks are implemented in
 `src/image_extraction_adapter/canonical_invoice.py`.
@@ -10,7 +13,56 @@ This deliverable defines a contract and validator only. It does **not** connect
 the extraction adapter to issuance, change a frozen contract, issue invoices,
 convert OCR text, or implement E-02/C# behavior.
 
-## Values and provenance
+## 2. Field reference
+
+| Name | Type | Required | Provenance | Description |
+| --- | --- | --- | --- | --- |
+| `schema_version` | string | Yes | Platform metadata | Contract version; fixed to `"0"`. |
+| `mode` | enum `A` / `B` | Yes | Platform metadata | Native Kandoo issuance / capture alongside an existing POS. |
+| `invoice_id` | string | Yes | `native` | Internal invoice identity; opaque and unique within its owner. |
+| `display_number` | string | Yes | `native` | Kandoo display identifier; distinct from the printed POS number. Allocation is outside E-01. |
+| `operation_id` | string | Yes | `native` | Producer-supplied operation identity. |
+| `device_id` | string | Yes | `native` | Producer-supplied device identity. |
+| `public_token` | string | Yes | `native` | Unpadded base64url token, at least 22 characters; producers must generate at least 128 random bits. |
+| `store_id` | string | Yes | `native` | Opaque store identity. |
+| `customer` | object | Yes | Per-field below | Required customer data container. |
+| `customer.phone` | non-empty string | Yes | `native` or `captured` | Phone value; v0 does not normalize it. |
+| `customer.phone_status` | enum `claimed` / `verified` | Yes | `native` | Platform verification status; claimed is permitted and is not proof of ownership. |
+| `state` | lifecycle enum | Yes | Platform metadata | One of the six states below; not an extraction outcome. |
+| `state_history` | array of transition objects | Yes | Event metadata | Complete ordered transition path from DRAFT; each event carries `operation_id` and `device_id`. |
+| `line_items` | non-empty array | Yes | Per-field below | Invoice line records; at least one item. |
+| `line_items[].product_name` | non-empty string | Yes | `native`, `captured`, `derived`, or `untrusted` | Product description/name; unavailable required line values are rejected. |
+| `line_items[].quantity` | positive integer | Yes | `native`, `captured`, `derived`, or `untrusted` | Whole-number quantity; fractional quantities are rejected. |
+| `line_items[].unit_price` | non-negative integer rials | Yes | Mode A: `native`; mode B: `captured` if printed, otherwise `derived` | Validator checks the label but never calculates or repairs the value. |
+| `line_items[].line_total` | non-negative integer rials | Yes | `native`, `captured`, `derived`, or `untrusted` | Exact line amount in rials. |
+| `summary.subtotal` | non-negative integer rials | Yes | Per-field provenance label | Summary amount; no arithmetic equation is imposed by v0. |
+| `summary.extra_amounts` | object of non-negative integer rials | Yes | Per-key provenance labels | Named adjustments; send `{}` when empty. |
+| `summary.payable` | non-negative integer rials | Yes | Per-field provenance label | Amount payable in rials. |
+| `attention_cells` | array of `{field, raw_value, reason}` | Yes | Review evidence | Send `[]` when no unresolved cells exist. Must be empty at VALIDATED or later. |
+| `header` | object | Yes | Per-field below | Container is required; its printed/capture properties are optional. |
+| `header.captured_at` | nullable ISO 8601 timestamp | No | `derived` when present; otherwise `unavailable` | Probe capture time; a present timestamp must carry an offset. |
+| `header.printed_date` | nullable string | No | `untrusted` when present; otherwise `unavailable` | Raw printed date; not an ordering authority. |
+| `header.printed_time` | nullable string | No | `untrusted` when present; otherwise `unavailable` | Raw printed time. |
+| `header.invoice_number` | nullable string | No | `untrusted` when present; otherwise `unavailable` | External printed number; distinct from `display_number`. |
+| `provenance.image_sha256` | nullable lower-case SHA-256 hex | Yes | Provenance metadata | Hash only; no image bytes are stored or sent by this contract. |
+| `provenance.template_library_id` | nullable string | Yes | Provenance metadata | Template-library identity, if applicable. |
+| `provenance.engine_version` | nullable string | Yes | Provenance metadata | Extraction-engine version, if applicable. |
+| `provenance.fields` | mirrored provenance object | Yes | Labels per contract | Mirrors customer, each line, summary fields, and header; keys/indexes must match. |
+| `issued_content_sha256` | lower-case SHA-256 hex | Conditional | `derived` integrity metadata | Required at ISSUED and retained by REVOKED/SUPERSEDED; absent before ISSUED. |
+
+## 3. State machine
+
+```text
+DRAFT -> EXTRACTED -> VALIDATED -> ISSUED -> REVOKED
+                                      `----> SUPERSEDED
+```
+
+The last two transitions are alternatives from ISSUED; REVOKED and SUPERSEDED
+are terminal. `state_history` must be the contiguous complete path from DRAFT
+and its final target must equal `state`. DRAFT has an empty history. The
+validator checks every edge rather than accepting a state label by itself.
+
+## 4. Provenance policy
 
 - `schema_version` is the string `"0"`; `mode` is `"A"` (native Kandoo) or
   `"B"` (capture alongside an existing POS).
@@ -55,7 +107,7 @@ define discounts, tax semantics, rounding, or other adjustment algebra. Any
 arithmetic or extraction uncertainty must be handled by the upstream review
 gate; v0 never repairs values.
 
-## Lifecycle and issuance
+### Issued-content validation details
 
 The six lifecycle states and only allowed edges are:
 
@@ -101,7 +153,7 @@ escapes. Floating-point values and lone surrogates are forbidden. The digest is
 an integrity check, not a signature or privileged-storage/WORM guarantee; a
 writer able to replace both content and digest can rewrite the record.
 
-## Extraction-status mapping
+## 5. Status mapping
 
 Adapter outcomes are routing outcomes, **not** additional invoice lifecycle
 states:
@@ -120,7 +172,7 @@ whole quantities. An upstream conversion rule must be explicit and lossless;
 otherwise route to `REVIEW`. No adapter, glyph-classifier, threshold, or OCR
 behavior is changed here.
 
-## Examples
+## 6. Valid examples
 
 The following are synthetic contract examples, not OCR-accuracy evidence and
 not production identifiers.
@@ -262,7 +314,7 @@ That attention-cell example must remain in `EXTRACTED` (or earlier) and cannot
 be promoted to `VALIDATED` until the ambiguity is resolved through an explicit
 review process.
 
-## Invalid cases
+## 7. Invalid examples
 
 Each case fails validation; none is repaired automatically:
 
@@ -284,6 +336,86 @@ Each case fails validation; none is repaired automatically:
   `line_total`, customer phone, summary payable, or provenance) without a
   matching issued-content digest. Changing content and recomputing the hash is
   not a cryptographic signature and is outside this validator's authority.
+
+## 8. Python extraction to C# platform bridge
+
+The JSON object is the language-neutral seam: Python extraction may produce a
+candidate field set, while the platform owns Kandoo identifiers, customer
+status, lifecycle events, and issuance. E-01 does not directly cast the current
+adapter result into this schema.
+
+The existing adapter exposes `ImageExtractionReady.field_values` as
+`(field_name, string_value)` pairs. These are semantic mapping candidates, not
+an approved conversion or proof that a value is integer rials:
+
+| Existing adapter field | Canonical candidate | Boundary note |
+| --- | --- | --- |
+| `invoice.number` | `header.invoice_number` | Keep as untrusted printed identity; do not use as `display_number`. |
+| `invoice.date` | `header.printed_date` | Keep untrusted; preserve raw value. |
+| `total.net` | `summary.subtotal` | Source is currently a numeric string; only accept after explicit, lossless integer-rial interpretation. |
+| `tax.amount` | `summary.extra_amounts.tax` | Same explicit integer-rial conversion requirement. |
+| `invoice.payable` | `summary.payable` | Same explicit integer-rial conversion requirement. |
+| `line.i.description` | `line_items[i].product_name` | Preserve field order/index mapping and provenance. |
+| `line.i.quantity` | `line_items[i].quantity` | Current parser may return a string and can represent fractional quantity; v0 accepts only positive integers. |
+| `line.i.unit_price` | `line_items[i].unit_price` | Printed → `captured`; otherwise only an explicitly provided upstream derivation → `derived`. |
+| `line.i.total` | `line_items[i].line_total` | Current parser exposes numeric text; do not round or truncate. |
+
+`invoice_id`, `display_number`, `operation_id`, `device_id`, `public_token`,
+`store_id`, `customer.phone`, and `customer.phone_status` are not supplied by
+those OCR field names; the appropriate platform/producer must provide them.
+`header.captured_at` is Probe capture metadata, not a printed invoice date.
+When a source value is decimal-formatted or cannot be proven to represent an
+integer number of rials, keep it in `REVIEW`; E-01 does not normalize digits,
+round, infer currency, reconcile totals, or repair extraction.
+
+A future C# consumer should validate the same JSON Schema and reproduce the
+cross-field rules and canonical SHA-256 profile in this document. The synthetic
+examples and known-answer digest test provide starting fixtures, but a true
+Python/C# conformance suite and C# implementation are still future work. Images
+remain local: the contract carries a hash only, not image bytes or a transport
+operation.
+
+## 9. Relationship to the E-04 audit
+
+[`docs/issuance-gap-analysis.md`](issuance-gap-analysis.md) recorded that no
+E-01/Canonical Invoice v0 artifact existed at its audit baseline and therefore
+marked v0 compatibility **unverified**. This commit adds the missing v0 JSON
+Schema, Python validator, examples, and tests. It does not establish that the
+existing WP-6.2/P6.2 v1.0-MVP records conform to v0, add a migration, or prove
+C# interoperability.
+
+The E-04 findings about local issuance behavior also remain scoped: its local
+lifecycle and append-only service APIs are not a distributed hub, per-phone
+lock, sequential display-number allocator, or WORM/privileged-storage boundary.
+The E-01 digest detects stale content against the stored fingerprint but does
+not prevent a privileged writer from replacing both content and digest. E-01
+adds required identifiers as data fields; it does not implement their hub
+allocation, a native-vs-capture product flow, E-02 integration, or D14 legal
+wording/owner approval.
+
+## 10. Open questions
+
+The following are deliberately not decided by the v0 schema; current
+conservative assumptions are recorded in [`docs/DECISIONS.md`](DECISIONS.md)
+under **Assumptions**:
+
+- What approved, lossless rule maps the adapter's decimal-formatted monetary
+  strings and possible fractional quantities to integer rials and whole
+  quantities? Until decided, such values remain REVIEW.
+- Which platform service creates `invoice_id`, `display_number`,
+  `operation_id`, `device_id`, and the random `public_token`, and what are the
+  lifecycle/restore rules for those identifiers?
+- What are the business meanings and arithmetic relationships of `subtotal`,
+  `extra_amounts` (including tax/discount treatment), and `payable`?
+- What authority and evidence moves a phone from `claimed` to `verified`, and
+  which phone normalization rules, if any, will a product mode use?
+- Which C# implementation will share the schema, provenance checks, hash
+  serializer, and golden vectors with Python? E-01 makes no cross-language
+  conformance claim.
+- Is the SHA-256 digest sufficient for the deployment threat model, or will a
+  later increment require signatures, access controls, or WORM storage?
+- D14 customer-facing legal/tax wording still requires owner approval as noted
+  by E-04; it is outside this invoice data contract.
 
 ## Running tests
 

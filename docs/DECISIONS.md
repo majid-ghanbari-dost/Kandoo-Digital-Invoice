@@ -85,3 +85,11 @@ frozen contracts or extraction implementation.
     provenance mirroring, exact-float rejection, and immutability are custom
     semantic checks. The repository's image tests also use Pillow 13.0.0;
     Tesseract is not needed for the unit-test command.
+17. **Open questions retained under Assumptions.** The E-01 choices do not
+    settle lossless conversion of adapter decimal strings/fractional quantities,
+    platform allocation and restore rules for IDs/display numbers/tokens,
+    arithmetic semantics for subtotal/tax/discount/payable, phone-verification
+    authority/normalization, C# conformance to the JSON/hash profile, privileged
+    storage protection beyond a content hash, or the owner-approved D14
+    customer wording. Keep unresolved values in REVIEW and obtain owner/design
+    decisions before implementing those behaviors.
