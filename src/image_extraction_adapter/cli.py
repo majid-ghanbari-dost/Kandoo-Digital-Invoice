@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from .canonical_invoice import validate_canonical_invoice
+from .multi_evidence import evaluate_multi_evidence
 from .pipeline_v0 import DEFAULT_TEMPLATE_BANK_PATH, extract_pipeline_v0
 
 EXIT_READY = 0
@@ -65,6 +66,11 @@ def _build_parser() -> _ArgumentParser:
         default=DEFAULT_TEMPLATE_BANK_PATH,
         metavar="PATH",
         help=f"local Glyph template bank (default: {DEFAULT_TEMPLATE_BANK_PATH})",
+    )
+    extract.add_argument(
+        "--multi-evidence",
+        action="store_true",
+        help="require all six local evidence witnesses before AUTO_CANDIDATE",
     )
     return parser
 
@@ -143,10 +149,29 @@ def _run_extract(args: argparse.Namespace) -> int:
     if result.status not in {"AUTO_CANDIDATE", "REVIEW"}:
         raise RuntimeError(f"pipeline returned unsupported status: {result.status!r}")
 
+    effective_status = result.status
+    if args.multi_evidence:
+        evidence = evaluate_multi_evidence(
+            result.cell_results,
+            result.arithmetic_gate,
+            result,
+        )
+        if not evidence.all_pass:
+            print(
+                "multi-evidence: REVIEW; failed witnesses: "
+                + ", ".join(evidence.reasons),
+                file=sys.stderr,
+            )
+            for name in evidence.reasons:
+                detail = evidence.witnesses[name]["detail"]
+                print(f"  {name}: {detail}", file=sys.stderr)
+            if result.status == "AUTO_CANDIDATE":
+                effective_status = "REVIEW"
+
     invoice = result.canonical_invoice
     if invoice is None:
         details = _pipeline_diagnostics(result)
-        if result.status == "REVIEW":
+        if effective_status == "REVIEW":
             print(
                 "REVIEW: no schema-valid Canonical Invoice candidate is available; stdout is empty.",
                 file=sys.stderr,
@@ -166,7 +191,7 @@ def _run_extract(args: argparse.Namespace) -> int:
         return EXIT_ERROR
 
     _write_canonical_json(invoice)
-    return EXIT_READY if result.status == "AUTO_CANDIDATE" else EXIT_REVIEW
+    return EXIT_READY if effective_status == "AUTO_CANDIDATE" else EXIT_REVIEW
 
 
 def main(argv: Sequence[str] | None = None) -> int:
