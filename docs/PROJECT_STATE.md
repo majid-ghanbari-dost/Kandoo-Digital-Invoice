@@ -296,3 +296,75 @@ Test run: 8 tests, all passed. Tesseract was not run.
 
 #### E-00 Execution Note
 - The supplied verbatim text names `fea913a`, but the E-00 safety snapshot in this checkout is `a397d8fa73ddfb90e743659e46e13c27062f3e65` (`stash@{0}`). The read-only stash list contained no `fea913a` entry. No stash was applied or dropped.
+
+### Amendment v4.1 (E-00b)
+
+#### D4 Amended
+- SMS provider is NOT chosen yet.
+- Use a stub provider through P-10.
+- Real provider is selected before P-08 starts.
+
+#### D5 Amended
+- Vercel is NOT recommended (not suited to ASP.NET +
+  PostgreSQL containers; reports of access problems
+  from Iran; sanctions environment).
+- Pilot host = a small VPS (domestic or non-US) running
+  Docker.
+- Free tiers must NOT carry customer data.
+- Final host is the owner's decision.
+
+#### D11 Clarified
+- The lock covers an invoice DRAFT in progress for one
+  phone number on one device.
+- Released on: issue, cancel, disconnect, timeout
+  (default 15 minutes, configurable).
+- Resending the same operation id is a separate
+  idempotency rule.
+- Sequential purchases with the same number are allowed.
+
+#### D14 Replaced
+- Wording is "Kandoo digital invoice" (NOT described as
+  a receipt).
+- Store agreement (accepted at install with a digital
+  signature) states data custody and encryption.
+- ALL legal wording is drafted/reviewed by a lawyer.
+- Developers write NO legal claims.
+
+#### NEW SEC-1 (decision, S)
+- Three options for data protection:
+  1. Server-side encryption with restricted audited access
+  2. End-to-end encryption for private store data with
+     recovery key
+  3. Hybrid
+- Default for MVP: server-side encryption + restricted,
+  logged access, with a key design that does not block a
+  later move to end-to-end encryption.
+
+#### NEW Rule: Restore Second Factor
+- Restoring a store after reinstall requires a second
+  factor besides the SMS code:
+  * Recovery key created at install, OR
+  * Approval from a previously paired device
+- SIM-swap must NOT expose a whole store.
+- Affects: P-02 (restore), P-04 (restore export), P-12.
+
+#### NEW Rule: Agreement Truthfulness
+- The agreement text must NEVER claim something the code
+  does not do.
+- Example: "we cannot see data" requires a test that
+  proves it.
+- All claims in agreement text must have a corresponding
+  test.
+
+#### Tasks Affected by v4.1
+- P-02: D11 clarified, SEC-1 restore 2FA
+- P-04: SEC-1 restore export 2FA
+- P-08: D4 (stub until P-10, real before P-08)
+- P-09: D14 (legal wording "Kandoo digital invoice")
+- P-10: D5 (VPS with Docker, not Vercel)
+- P-12: SEC-1 restore 2FA
+- P-16: SEC-1 encryption
+
+#### Tasks NOT Affected
+- E-01, E-02, E-03, E-04, E-09, E-10 (extraction pipeline,
+  independent of SMS/hosting/restore/legal)
