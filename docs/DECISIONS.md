@@ -93,3 +93,62 @@ frozen contracts or extraction implementation.
     storage protection beyond a content hash, or the owner-approved D14
     customer wording. Keep unresolved values in REVIEW and obtain owner/design
     decisions before implementing those behaviors.
+18. **E-02 pipeline boundary.** `pipeline_v0.py` is a separate local pipeline;
+    it does not call the flat-text parser, Tesseract, a network service, or the
+    issuance adapter. Its local integer-Rial converter mirrors the strict
+    `to_rials` behavior without a direct `adapter.py` dependency or parser
+    call. Image bytes and crops are read locally but not retained; image-level
+    provenance is SHA-256
+    alongside numeric/crop metadata. Runtime extraction does not upload or
+    persist invoice images.
+19. **Safe layout and payable crop.** `detect_layout_safe()` is the layout
+    authority. The payable text box is located from detected table geometry and
+    connected components below the last row; if no unique, un-clipped amount
+    cluster is found, payable remains missing and the arithmetic gate routes to
+    REVIEW. The geometric locator has been checked against the four supplied
+    fixtures only; it is not a claim of general-store layout coverage.
+20. **Glyph policy.** E-02 uses the existing Glyph confidence default of 60 and
+    existing distance/margin settings unchanged. `extra_amounts` remains zero
+    for this fixture set; receipts with tax/levies not represented in the
+    detected line totals must not be accepted under that assumption. Integer
+    Rial conversion is strict; decimal strings are not rounded or truncated.
+21. **Description clusters.** E-02 reuses the existing offline dHash
+    normalization and the previously reported fixed Hamming threshold of 1.
+    A `name_cluster_id` is visual sidecar evidence, not a transcription or
+    product-master identity. The frozen Canonical Invoice v0 schema has no
+    `name_cluster_id`; E-02 does not add one or place a hash token in
+    `product_name`.
+22. **Canonical context is caller-owned.** Mode, invoice/display/operation/
+    device/store IDs, public token, customer phone/status, and human-readable
+    product names are not inferred from the numeric OCR or dHash output. They
+    must be explicitly supplied by the producer in `canonical_context`. Without
+    that context, the pipeline returns numeric evidence and canonical blockers,
+    not fabricated identity/customer/name data. A constructed record remains
+    `EXTRACTED`; E-02 never validates, issues, or advances invoice lifecycle.
+23. **Operator corrections.** Corrected fields/values are recorded in
+    adapter-local `operator_confirmed_*` metadata because the frozen v0
+    provenance enum does not include `operator_confirmed`. Corrections rerun
+    the arithmetic gate. E-02 never writes corrected glyphs into a template
+    bank; it marks a correction bank-eligible only when all supplied corrections
+    are strict and the rerun gate passes. Eligibility is not an automatic bank
+    update.
+24. **Template provenance and evaluation.** The new default bank records all
+    four fixture paths and hashes; it is for runtime use on other images and is
+    refused for evaluation against any of its sources. Each LOO fold builds a
+    fresh in-memory bank from the other three fixtures. The legacy
+    `src/templates.json` is not used for LOO; its known sources include full
+    fixtures #29 and #32 and a derived crop from #33, so evaluation also treats
+    #33 as a source through that crop's local parent lineage.
+25. **Ground-truth qualification.** Fixture #31's payable label is marked
+    `DERIVED_FROM_ARITHMETIC`; it is not used as a payable glyph training label
+    and is excluded from independent per-cell wrong-value comparisons. Its
+    extracted payable still must pass the arithmetic gate. Zero observed
+    EXTRACTED-but-wrong values means zero mismatches among independently
+    operator-confirmed labels that the pipeline marked EXTRACTED; it is not an
+    independent visual certification of #31 payable.
+26. **No operational guarantees added.** E-02 does not implement invoice
+    persistence, store/restore, concurrency, DRAFT idempotency, SEC-1 access
+    control, second-factor recovery, SMS delivery, or issuance. It makes no
+    restore/security/concurrency guarantee; any later claim in those areas must
+    be backed by a failing test and the existing E-00b decisions remain in
+    force.
