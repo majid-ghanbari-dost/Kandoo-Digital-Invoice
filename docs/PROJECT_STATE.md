@@ -368,3 +368,64 @@ Test run: 8 tests, all passed. Tesseract was not run.
 #### Tasks NOT Affected
 - E-01, E-02, E-03, E-04, E-09, E-10 (extraction pipeline,
   independent of SMS/hosting/restore/legal)
+
+### Amendment v4.2 (E-00b)
+
+#### D5 Amended (replaces v4.1 version)
+- Testing environment = local Docker Compose with
+  synthetic data.
+- NO free cloud service is recommended (sleep policies,
+  expiring databases, sanctions/sign-up problems).
+- A small domestic or non-US VPS is used ONLY when a
+  public address is required.
+- The portability kit (P-10) stays.
+
+#### D11 Amended (replaces v4.1 version)
+- Abandoned-draft lock timeout default = 5 minutes
+  (configurable), pending the owner's confirmation of
+  its meaning.
+- Sequential purchases with the same number remain
+  allowed.
+
+#### SEC-1 Reframed
+- Goal: the server holds as little readable private
+  store data as possible.
+- MVP: server-side encryption + restricted, logged
+  access.
+- Next stage: end-to-end encryption for private store
+  data with a recovery key.
+- The agreement text never claims anything the code
+  does not do.
+- Developers do not write legal claims.
+- Legal wording is the owner's lawyer's work.
+
+#### E-01 Amended
+- Canonical v0 gets OPTIONAL fields:
+  * tax lines
+  * discount lines
+  * rounding (null allowed)
+- They are NOT computed or validated in the MVP.
+- They only reserve the structure for a future
+  accounting module.
+- This requires a small schema update (E-01b, separate
+  task).
+
+#### NEW Decision ACC-0 (PARKED)
+- Accounting/tax services as an optional store-side
+  module.
+- NOT in the MVP.
+- Before starting:
+  * A tax/accounting expert review
+  * A market and competitor analysis
+  * A legal review of the responsibility change
+
+#### Tasks Affected by v4.2
+- E-01: needs E-01b (add optional tax/discount/rounding
+  fields)
+- P-02: D11 (5 min timeout), SEC-1 reframed
+- P-04: SEC-1 reframed
+- P-08: D4 + D5
+- P-09: D14
+- P-10: D5 (local Docker Compose, no free cloud)
+- P-12: SEC-1 reframed
+- P-16: SEC-1 reframed
