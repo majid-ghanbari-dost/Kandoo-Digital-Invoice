@@ -164,3 +164,13 @@ frozen contracts or extraction implementation.
     does not materialize them. These fields reserve structure for ACC-0, which
     remains parked; E-01b applies only structural type checks and performs no
     accounting computation, sign/rule validation, or arithmetic.
+28. **E-09 CLI producer context and output.** `cli.py` requires a UTF-8 JSON
+    `--context` file containing caller-owned `canonical_context`; it never
+    fabricates identifiers, customer data, or product names. Successful AUTO or
+    REVIEW output is the validated Canonical Invoice object itself, with the
+    process exit code carrying the pipeline status (not a new schema property).
+    REJECT has no Canonical Invoice and therefore returns 20 with stderr details
+    and empty stdout. A REVIEW result without an assemblable Canonical candidate
+    returns 10 with stderr details and empty stdout; it is not wrapped in a
+    non-contract JSON envelope. CLI failures return 30. The command uses local
+    files only and does not require Tesseract or perform network operations.
