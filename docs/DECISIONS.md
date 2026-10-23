@@ -174,3 +174,15 @@ frozen contracts or extraction implementation.
     returns 10 with stderr details and empty stdout; it is not wrapped in a
     non-contract JSON envelope. CLI failures return 30. The command uses local
     files only and does not require Tesseract or perform network operations.
+29. **E-03-kit scope precedence (task-specific).** The current E-03-kit request
+    (2026-10-23) prescribes two learning invoices and two exam invoices, with
+    short/long variants, and requires Persian glyphs `۲` and `۶` at least five
+    times in each invoice. The older Known-Answer summary in
+    `docs/PROJECT_STATE.md` says three learning plus one exam and at least five
+    occurrences of every symbol `۰`–`۹` and comma. For this print kit, follow
+    the newer explicit task specification and do not claim that it supersedes
+    or satisfies the broader historical coverage. Until the owner confirms
+    whether that older coverage remains an E-05/E-06 acceptance requirement,
+    broader symbol coverage is unresolved and must not be reported as passed.
+    All names, items, and amounts in the kit are synthetic; none may be entered
+    into live sales or inventory data.

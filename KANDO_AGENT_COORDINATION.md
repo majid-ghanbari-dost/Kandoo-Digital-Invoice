@@ -13,6 +13,7 @@ Operational coordination between implementation and governance agents. This file
 | `WP-HOLOO-IMAGE-EXTRACTION-05` | Current implementation agent | GEOMETRY-BASED CELL CROPS, PIL PREPROCESSING, AND PSM-7 OCR IMPLEMENTED; benchmark complete; supplied image remains REVIEW_REQUIRED |
 | `WP-HOLOO-IMAGE-EXTRACTION-09` | Current implementation agent | COMPLETE; DYNAMIC PROJECTION TESTED ON 4/5/13-ROW IMAGES; GLYPH EVALUATION FAILS ARITHMETIC GATE |
 | `WP-HOLOO-IMAGE-EXTRACTION-10` | Current implementation agent | COMPLETE; GLYPH INTEGRATED AS PRIMARY NUMERIC-CELL BACKEND; GUARDED 13-ROW E2E RETURNS PAGE-LEVEL REVIEW; NO SUBMIT |
+| `E-03-kit` known-answer print specification | Current implementation agent | PERSIAN DOCUMENTS COMPLETE; OWNER PRINT/SCANS PENDING; NO PIPELINE RUN |
 | Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
 | WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
 | Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
@@ -29,7 +30,13 @@ Operational coordination between implementation and governance agents. This file
 8. Never claim source integration or Holoo accuracy without verifiable artifacts and real-source evidence.
 9. No merge to `main` is authorized by this EOD update.
 
-## Current State — 2026-10-16
+## Current State — 2026-10-23
+
+### E-03-kit — Known-answer print specification
+
+- The three Persian deliverables are `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md`. They specify four synthetic invoice contents (4/11/4/11 rows), at least five Persian `۲` and `۶` glyphs per invoice, and two separate prints each for the exam invoices, for six scans.
+- No live sales/inventory data is used. No invoice was printed or scanned and no OCR, extraction pipeline, or tests were run. The owner must return the six scans before E-05 template-bank work proceeds.
+- The older `docs/PROJECT_STATE.md` summary specifies 3 learning/1 exam and coverage of every digit plus comma; the current task instead gives 2 learning/2 exam and glyphs ۲/۶. This unresolved scope discrepancy is recorded in `docs/DECISIONS.md`; the kit does not claim the broader condition is met.
 
 ### Native Checkout
 
@@ -69,7 +76,7 @@ This is approved for future architecture, not current MVP priority. No Native Ch
 
 ### Next executable work
 
-The technical extraction/review path is implemented through WP-10; the 13-row E2E demonstrates dynamic row detection plus fail-closed handling, not production accuracy. **Next priority:** discuss the Windows App user interface and the Per-Store Calibration process (clustering and operator labeling). Before any accuracy/calibration claims, obtain owner-confirmed labels and independent authorized invoices. Keep uncertain fields in REVIEW and do not use Synthetic fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
+The E-03-kit print specification is ready; the owner must print the six sheets, capture six separate scans, and return them before E-05 template-bank work can start. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, obtain owner-confirmed labels and independent authorized invoices. Keep uncertain fields in REVIEW and do not use Synthetic fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
 
 ## Branch / integration boundary
 

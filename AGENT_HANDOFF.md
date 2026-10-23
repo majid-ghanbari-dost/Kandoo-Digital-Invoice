@@ -93,6 +93,14 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
+### E-03-kit — Known-answer print specification (2026-10-23)
+
+- Created three Persian owner-facing documents: `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md`.
+- The task-specific kit defines four synthetic invoices with exact row counts 4, 11, 4, and 11. Persian glyphs `۲` and `۶` each occur at least five times in every invoice's numeric cells. Exam invoices 3 and 4 are each printed twice on separate sheets, for six scans total.
+- No invoice was entered into a live POS or inventory, and no print, scan, OCR, pipeline, or test execution was performed. Owner printing/scanning remains pending; E-05 must wait for the six authorized scans.
+- The older Known-Answer note in `docs/PROJECT_STATE.md` differs (3 learning + 1 exam; every digit 0–9 and comma at least five times). The task-specific precedence and unresolved broader coverage are recorded in `docs/DECISIONS.md`; do not claim the old broader acceptance is met.
+- `docs/MASTER_HANDOFF.md` is not present in this checkout; `AGENT_HANDOFF.md`, `KANDO_AGENT_COORDINATION.md`, `docs/DECISIONS.md`, `docs/PROJECT_STATE.md`, and the existing pipeline/E-07 docs were consulted.
+
 WP-05 was verified on 2026-10-15; WP-09 and WP-10 verification was added on 2026-10-16 below.
 
 - Work is on the Arena-fixed branch `arena/9dc17500-kandoo-digital-invoice`. `HOLOO-IMAGE-EXTRACTION-05` started from commit `395443ebdc3843767a526151f403170266fd3fbf`; no other branch was used and `main` was not changed.
