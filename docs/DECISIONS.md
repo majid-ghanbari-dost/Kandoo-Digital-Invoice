@@ -186,3 +186,36 @@ frozen contracts or extraction implementation.
     broader symbol coverage is unresolved and must not be reported as passed.
     All names, items, and amounts in the kit are synthetic; none may be entered
     into live sales or inventory data.
+30. **ASM-30 E-04.5 label-derived numeric construction.** The four Canonical
+    Invoice v0 fixtures in `tests/fixtures/real/canonical/` take integer
+    `quantity` and line-total values directly from operator-confirmed
+    `labels.json`. Unit price is synthesized only by exact integer division;
+    subtotal is the sum of line totals. Invoice 31 payable is derived in line
+    with its label note; the other payable values are copied from labels. No
+    rounding, extra amount, or `quantity_millis` conversion is introduced.
+31. **ASM-31 synthetic required context.** Fields absent from labels use the
+    explicitly synthetic context pattern in `docs/cli-contract.md`. Platform
+    IDs, token, customer phone/status, and product names remain synthetic and
+    are not production data. Phone and placeholder product names are `untrusted`
+    and remain in `attention_cells`. Where the frozen v0 validator requires
+    platform identifiers/status to carry `native` provenance, that schema
+    requirement does not make these synthetic fixture values real or issuable.
+32. **ASM-32 synthesis provenance lives in a sidecar.**
+    `synthesized_from_labels: true` is recorded in
+    `tests/fixtures/real/canonical/synthesis-manifest.json` and documented in
+    its README, not added to Canonical Invoice JSON. The frozen v0 schema
+    rejects out-of-schema properties; the manifest additionally records source
+    image hashes and each fixture's E-07 routing context.
+33. **ASM-33 fixture lifecycle projection.** Invoices 29, 31, and 32 are
+    represented as `EXTRACTED` test objects corresponding to E-07
+    `AUTO_CANDIDATE`; they are not pipeline-emitted outputs. Invoice 33 is
+    `DRAFT` because its E-07 fold result was `REVIEW`, as explicitly directed.
+    Canonical v0 has no `REVIEW` state. None of these fixtures is `VALIDATED` or
+    `ISSUED`.
+34. **ASM-34 E-05 template confidence is advisory.** The Python template bank
+    clusters label-supplied spatial geometry and records observed Persian digit
+    and comma-grouping format; it does not call OCR or image extraction. Its
+    default 0.85 weighted match threshold and four-source self-match scores are
+    resubstitution evidence only, not calibrated confidence, independent
+    accuracy, or an AUTO/issuance decision. New layouts and thresholds require
+    held-out owner-authorized validation.

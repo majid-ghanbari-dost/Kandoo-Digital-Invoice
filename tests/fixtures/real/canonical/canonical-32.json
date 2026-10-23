@@ -1,0 +1,158 @@
+{
+  "schema_version": "0",
+  "mode": "B",
+  "invoice_id": "e05-synth-invoice-32",
+  "display_number": "E05-SYN-32",
+  "operation_id": "e05-synth-operation-32",
+  "device_id": "e05-synth-device",
+  "public_token": "QWJjZGVmZ2hpamtsbW5vcHFyc3R1dg",
+  "store_id": "e05-synth-store",
+  "customer": {
+    "phone": "+15551234567",
+    "phone_status": "claimed"
+  },
+  "state": "EXTRACTED",
+  "state_history": [
+    {
+      "from_state": "DRAFT",
+      "to_state": "EXTRACTED",
+      "operation_id": "e05-synth-transition-32",
+      "device_id": "e05-synth-device"
+    }
+  ],
+  "line_items": [
+    {
+      "product_name": "Example product 1",
+      "quantity": 1,
+      "unit_price": 970000,
+      "line_total": 970000
+    },
+    {
+      "product_name": "Example product 2",
+      "quantity": 1,
+      "unit_price": 3950000,
+      "line_total": 3950000
+    },
+    {
+      "product_name": "Example product 3",
+      "quantity": 1,
+      "unit_price": 1870000,
+      "line_total": 1870000
+    },
+    {
+      "product_name": "Example product 4",
+      "quantity": 1,
+      "unit_price": 970000,
+      "line_total": 970000
+    },
+    {
+      "product_name": "Example product 5",
+      "quantity": 1,
+      "unit_price": 90000,
+      "line_total": 90000
+    }
+  ],
+  "summary": {
+    "subtotal": 7850000,
+    "extra_amounts": {},
+    "payable": 7850000
+  },
+  "attention_cells": [
+    {
+      "field": "customer.phone",
+      "raw_value": "+15551234567",
+      "reason": "Synthetic documentation context only; not a real customer value or sourced from labels.json."
+    },
+    {
+      "field": "line.0.product_name",
+      "raw_value": "Example product 1",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.1.product_name",
+      "raw_value": "Example product 2",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.2.product_name",
+      "raw_value": "Example product 3",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.3.product_name",
+      "raw_value": "Example product 4",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.4.product_name",
+      "raw_value": "Example product 5",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    }
+  ],
+  "header": {
+    "captured_at": null,
+    "printed_date": null,
+    "printed_time": null,
+    "invoice_number": null
+  },
+  "provenance": {
+    "image_sha256": "c6389f078c9a487b06620c01f80f86477ffa7d291cab24d3c9639fc72fd5e68e",
+    "template_library_id": null,
+    "engine_version": null,
+    "fields": {
+      "invoice_id": "native",
+      "display_number": "native",
+      "operation_id": "native",
+      "device_id": "native",
+      "public_token": "native",
+      "store_id": "native",
+      "customer": {
+        "phone": "untrusted",
+        "phone_status": "native"
+      },
+      "line_items": [
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        }
+      ],
+      "summary": {
+        "subtotal": "derived",
+        "extra_amounts": {},
+        "payable": "captured"
+      },
+      "header": {
+        "captured_at": "unavailable",
+        "printed_date": "unavailable",
+        "printed_time": "unavailable",
+        "invoice_number": "unavailable"
+      }
+    }
+  }
+}

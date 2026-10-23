@@ -13,7 +13,8 @@ Operational coordination between implementation and governance agents. This file
 | `WP-HOLOO-IMAGE-EXTRACTION-05` | Current implementation agent | GEOMETRY-BASED CELL CROPS, PIL PREPROCESSING, AND PSM-7 OCR IMPLEMENTED; benchmark complete; supplied image remains REVIEW_REQUIRED |
 | `WP-HOLOO-IMAGE-EXTRACTION-09` | Current implementation agent | COMPLETE; DYNAMIC PROJECTION TESTED ON 4/5/13-ROW IMAGES; GLYPH EVALUATION FAILS ARITHMETIC GATE |
 | `WP-HOLOO-IMAGE-EXTRACTION-10` | Current implementation agent | COMPLETE; GLYPH INTEGRATED AS PRIMARY NUMERIC-CELL BACKEND; GUARDED 13-ROW E2E RETURNS PAGE-LEVEL REVIEW; NO SUBMIT |
-| `E-03-kit` known-answer print specification | Current implementation agent | PERSIAN DOCUMENTS COMPLETE; OWNER PRINT/SCANS PENDING; NO PIPELINE RUN |
+| `E-03-kit` known-answer print specification | Current implementation agent | PERSIAN DOCUMENTS COMPLETE; OWNER PRINT/SCANS PENDING; FUTURE CROSS-VALIDATION |
+| `E-04.5 + E-05` label-derived fixtures and template bank | Current implementation agent | IMPLEMENTED AND LOCALLY VERIFIED; 9 FOCUSED TESTS PASS; RELEASE TARGET IS FIXED BRANCH + `stable-e-05` |
 | Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
 | WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
 | Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
@@ -35,8 +36,14 @@ Operational coordination between implementation and governance agents. This file
 ### E-03-kit — Known-answer print specification
 
 - The three Persian deliverables are `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md`. They specify four synthetic invoice contents (4/11/4/11 rows), at least five Persian `۲` and `۶` glyphs per invoice, and two separate prints each for the exam invoices, for six scans.
-- No live sales/inventory data is used. No invoice was printed or scanned and no OCR, extraction pipeline, or tests were run. The owner must return the six scans before E-05 template-bank work proceeds.
+- No live sales/inventory data is used. At E-03-kit completion, no invoice had been printed or scanned and no OCR or extraction pipeline had been run. The PM subsequently authorized E-04.5/E-05 from the existing operator-confirmed labels. The six scans remain pending for future cross-validation; they are not a prerequisite for the label-derived bank.
 - The older `docs/PROJECT_STATE.md` summary specifies 3 learning/1 exam and coverage of every digit plus comma; the current task instead gives 2 learning/2 exam and glyphs ۲/۶. This unresolved scope discrepancy is recorded in `docs/DECISIONS.md`; the kit does not claim the broader condition is met.
+
+### E-04.5 + E-05 — Label-derived fixtures and template bank
+
+- Four Canonical v0 fixtures (29/31/32/33) are synthesized from `labels.json`; the manifest/README mark provenance and identify every synthetic context field. Invoice 33 remains `DRAFT`; no fixture is pipeline-emitted or issuable.
+- The Python package `src/e05_template_bank/` validates label/canonical agreement, groups the four layouts into one reusable profile, and exposes weighted advisory matching/JSON serialization. It does not run OCR or alter the E-02 pipeline.
+- Focused E-05 suite: 9 passed. Existing Canonical Invoice v0 tests: 42 passed plus 39 subtests. Self-match scores are 0.998544 (29), 0.995653 (31), 0.997350 (32), and 0.971928 (33); these are training-set resubstitution only, not independent accuracy. Commit, push, and tag remain pending.
 
 ### Native Checkout
 
@@ -76,7 +83,7 @@ This is approved for future architecture, not current MVP priority. No Native Ch
 
 ### Next executable work
 
-The E-03-kit print specification is ready; the owner must print the six sheets, capture six separate scans, and return them before E-05 template-bank work can start. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, obtain owner-confirmed labels and independent authorized invoices. Keep uncertain fields in REVIEW and do not use Synthetic fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
+E-04.5/E-05 implementation and focused validation are complete; release is limited to the fixed Arena branch and `stable-e-05`, with no merge or PR creation. The E-03-kit scans remain pending for later cross-validation. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, use held-out owner-authorized scans and independent invoices. Keep uncertain fields in REVIEW and do not present these label-derived fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
 
 ## Branch / integration boundary
 

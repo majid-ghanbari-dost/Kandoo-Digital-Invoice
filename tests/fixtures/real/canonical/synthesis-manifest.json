@@ -1,0 +1,104 @@
+{
+  "manifest_version": 1,
+  "source_file": "../labels.json",
+  "synthesis_marker": "synthesized_from_labels",
+  "synthesis_note": "These are schema-valid Canonical Invoice v0 fixtures synthesized from operator-confirmed labels; they were not emitted by pipeline-v0 and contain only clearly marked synthetic context for fields absent from labels.json.",
+  "invoices": [
+    {
+      "source_id": "29",
+      "source_image": "../29.png",
+      "source_image_sha256": "61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a",
+      "canonical_file": "canonical-29.json",
+      "synthesized_from_labels": true,
+      "source_label_status": "OPERATOR_CONFIRMED",
+      "e07_pipeline_status": "AUTO_CANDIDATE",
+      "canonical_state": "EXTRACTED",
+      "note": "Numeric ground-truth values copied from labels.json; non-label context is synthetic and marked untrusted/attention where applicable.",
+      "synthetic_context_fields": [
+        "mode",
+        "invoice_id",
+        "display_number",
+        "operation_id",
+        "device_id",
+        "public_token",
+        "store_id",
+        "customer.phone",
+        "customer.phone_status",
+        "line_items[].product_name"
+      ],
+      "synthetic_context_source": "docs/cli-contract.md example; IDs and product names use explicit E-05 test placeholders"
+    },
+    {
+      "source_id": "31",
+      "source_image": "../31.png",
+      "source_image_sha256": "8ea9e20ca3c7161d14bcc719154e0be27bcaaaf5c4b9e5a26818e4b0c1908a10",
+      "canonical_file": "canonical-31.json",
+      "synthesized_from_labels": true,
+      "source_label_status": "OPERATOR_CONFIRMED",
+      "e07_pipeline_status": "AUTO_CANDIDATE",
+      "canonical_state": "EXTRACTED",
+      "note": "Numeric ground-truth values copied from labels.json; non-label context is synthetic and marked untrusted/attention where applicable.",
+      "synthetic_context_fields": [
+        "mode",
+        "invoice_id",
+        "display_number",
+        "operation_id",
+        "device_id",
+        "public_token",
+        "store_id",
+        "customer.phone",
+        "customer.phone_status",
+        "line_items[].product_name"
+      ],
+      "synthetic_context_source": "docs/cli-contract.md example; IDs and product names use explicit E-05 test placeholders"
+    },
+    {
+      "source_id": "32",
+      "source_image": "../32.png",
+      "source_image_sha256": "c6389f078c9a487b06620c01f80f86477ffa7d291cab24d3c9639fc72fd5e68e",
+      "canonical_file": "canonical-32.json",
+      "synthesized_from_labels": true,
+      "source_label_status": "OPERATOR_CONFIRMED",
+      "e07_pipeline_status": "AUTO_CANDIDATE",
+      "canonical_state": "EXTRACTED",
+      "note": "Numeric ground-truth values copied from labels.json; non-label context is synthetic and marked untrusted/attention where applicable.",
+      "synthetic_context_fields": [
+        "mode",
+        "invoice_id",
+        "display_number",
+        "operation_id",
+        "device_id",
+        "public_token",
+        "store_id",
+        "customer.phone",
+        "customer.phone_status",
+        "line_items[].product_name"
+      ],
+      "synthetic_context_source": "docs/cli-contract.md example; IDs and product names use explicit E-05 test placeholders"
+    },
+    {
+      "source_id": "33",
+      "source_image": "../33.png",
+      "source_image_sha256": "2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80",
+      "canonical_file": "canonical-33.json",
+      "synthesized_from_labels": true,
+      "source_label_status": "OPERATOR_CONFIRMED",
+      "e07_pipeline_status": "REVIEW",
+      "canonical_state": "DRAFT",
+      "note": "Numeric ground-truth values copied from labels.json; non-label context is synthetic and marked untrusted/attention where applicable.",
+      "synthetic_context_fields": [
+        "mode",
+        "invoice_id",
+        "display_number",
+        "operation_id",
+        "device_id",
+        "public_token",
+        "store_id",
+        "customer.phone",
+        "customer.phone_status",
+        "line_items[].product_name"
+      ],
+      "synthetic_context_source": "docs/cli-contract.md example; IDs and product names use explicit E-05 test placeholders"
+    }
+  ]
+}

@@ -1,0 +1,287 @@
+{
+  "schema_version": "0",
+  "mode": "B",
+  "invoice_id": "e05-synth-invoice-33",
+  "display_number": "E05-SYN-33",
+  "operation_id": "e05-synth-operation-33",
+  "device_id": "e05-synth-device",
+  "public_token": "QWJjZGVmZ2hpamtsbW5vcHFyc3R1dg",
+  "store_id": "e05-synth-store",
+  "customer": {
+    "phone": "+15551234567",
+    "phone_status": "claimed"
+  },
+  "state": "DRAFT",
+  "state_history": [],
+  "line_items": [
+    {
+      "product_name": "Example product 1",
+      "quantity": 4,
+      "unit_price": 1970000,
+      "line_total": 7880000
+    },
+    {
+      "product_name": "Example product 2",
+      "quantity": 10,
+      "unit_price": 485000,
+      "line_total": 4850000
+    },
+    {
+      "product_name": "Example product 3",
+      "quantity": 5,
+      "unit_price": 1750000,
+      "line_total": 8750000
+    },
+    {
+      "product_name": "Example product 4",
+      "quantity": 2,
+      "unit_price": 3200000,
+      "line_total": 6400000
+    },
+    {
+      "product_name": "Example product 5",
+      "quantity": 20,
+      "unit_price": 2470000,
+      "line_total": 49400000
+    },
+    {
+      "product_name": "Example product 6",
+      "quantity": 1,
+      "unit_price": 1570000,
+      "line_total": 1570000
+    },
+    {
+      "product_name": "Example product 7",
+      "quantity": 5,
+      "unit_price": 1380000,
+      "line_total": 6900000
+    },
+    {
+      "product_name": "Example product 8",
+      "quantity": 1,
+      "unit_price": 6870000,
+      "line_total": 6870000
+    },
+    {
+      "product_name": "Example product 9",
+      "quantity": 2,
+      "unit_price": 1850000,
+      "line_total": 3700000
+    },
+    {
+      "product_name": "Example product 10",
+      "quantity": 8,
+      "unit_price": 28700000,
+      "line_total": 229600000
+    },
+    {
+      "product_name": "Example product 11",
+      "quantity": 15,
+      "unit_price": 1270000,
+      "line_total": 19050000
+    },
+    {
+      "product_name": "Example product 12",
+      "quantity": 1,
+      "unit_price": 1380000,
+      "line_total": 1380000
+    },
+    {
+      "product_name": "Example product 13",
+      "quantity": 1,
+      "unit_price": 1570000,
+      "line_total": 1570000
+    }
+  ],
+  "summary": {
+    "subtotal": 347920000,
+    "extra_amounts": {},
+    "payable": 347920000
+  },
+  "attention_cells": [
+    {
+      "field": "customer.phone",
+      "raw_value": "+15551234567",
+      "reason": "Synthetic documentation context only; not a real customer value or sourced from labels.json."
+    },
+    {
+      "field": "line.0.product_name",
+      "raw_value": "Example product 1",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.1.product_name",
+      "raw_value": "Example product 2",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.2.product_name",
+      "raw_value": "Example product 3",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.3.product_name",
+      "raw_value": "Example product 4",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.4.product_name",
+      "raw_value": "Example product 5",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.5.product_name",
+      "raw_value": "Example product 6",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.6.product_name",
+      "raw_value": "Example product 7",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.7.product_name",
+      "raw_value": "Example product 8",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.8.product_name",
+      "raw_value": "Example product 9",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.9.product_name",
+      "raw_value": "Example product 10",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.10.product_name",
+      "raw_value": "Example product 11",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.11.product_name",
+      "raw_value": "Example product 12",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    },
+    {
+      "field": "line.12.product_name",
+      "raw_value": "Example product 13",
+      "reason": "Synthetic placeholder; product name is not present in labels.json."
+    }
+  ],
+  "header": {
+    "captured_at": null,
+    "printed_date": null,
+    "printed_time": null,
+    "invoice_number": null
+  },
+  "provenance": {
+    "image_sha256": "2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80",
+    "template_library_id": null,
+    "engine_version": null,
+    "fields": {
+      "invoice_id": "native",
+      "display_number": "native",
+      "operation_id": "native",
+      "device_id": "native",
+      "public_token": "native",
+      "store_id": "native",
+      "customer": {
+        "phone": "untrusted",
+        "phone_status": "native"
+      },
+      "line_items": [
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "untrusted",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        }
+      ],
+      "summary": {
+        "subtotal": "derived",
+        "extra_amounts": {},
+        "payable": "captured"
+      },
+      "header": {
+        "captured_at": "unavailable",
+        "printed_date": "unavailable",
+        "printed_time": "unavailable",
+        "invoice_number": "unavailable"
+      }
+    }
+  }
+}
