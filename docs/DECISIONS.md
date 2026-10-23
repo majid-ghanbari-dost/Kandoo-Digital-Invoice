@@ -219,3 +219,46 @@ frozen contracts or extraction implementation.
     resubstitution evidence only, not calibrated confidence, independent
     accuracy, or an AUTO/issuance decision. New layouts and thresholds require
     held-out owner-authorized validation.
+35. **ASM-35 E-06 confidence bands are fail-closed.** The effective confidence
+    is the minimum of E-05's match score, extraction confidence, and required
+    E-05 layout-component scores; evidence is not averaged to mask a weak
+    signal. Scores `>= 0.95` are only eligible for later acceptance gates,
+    scores `[0.80, 0.95)` require REVIEW, and scores `< 0.80` REJECT as
+    `NO_MATCH`. Missing template/evidence or an explicitly partial invoice
+    remains REVIEW because absence is not proof of a wrong invoice.
+36. **ASM-36 onboarding warm-up and D14 gate.** Ordinary onboarding candidates
+    for a new store (N=4, matching E-03-kit) remain REVIEW during warm-up; a
+    clearly invalid object or known numeric corruption still REJECTS, and no
+    automatic acceptance or online bank updates occur. Later invoices are
+    eligible for evaluation only against an explicitly locked per-store bank.
+    E-06 also requires caller-verified evidence that the D14 store agreement
+    was digitally signed; legal wording itself remains owner/lawyer-controlled.
+37. **ASM-37 stable verdict reasons.** E-06 returns ACCEPT/REVIEW/REJECT with
+    one or more stable machine-readable reason codes. A complete object that
+    fails Canonical validation is REJECT/`SCHEMA_INVALID`; a candidate
+    explicitly marked partial is REVIEW/`PARTIAL_MATCH`. Known numeric
+    disagreement is REJECT/`NUMS_INCONSISTENT`; incomplete evidence and new or
+    ambiguous layouts remain REVIEW. Hard failures cannot be overridden by a
+    later positive signal.
+38. **ASM-38 human confirmation required for ACCEPT.** Because E-05's current
+    scores are resubstitution evidence and OCR confidence is not proof of
+    truth, E-06 does not auto-accept a new invoice. ACCEPT requires all
+    machine-checkable gates plus a timestamped store-owner audit confirming
+    every required invoice field. The library validates audit completeness;
+    authentication and durable audit storage remain the caller's
+    responsibility. Overrides may downgrade but cannot bypass a hard gate.
+39. **ASM-39 E-03 digit coverage is kit-scoped.** For each E-03 known-answer
+    onboarding-kit invoice, Persian `۲` and `۶` must each appear at least five
+    times in the observed numeric-cell text. Failure keeps the kit invoice in
+    REVIEW. This synthetic coverage witness is not imposed on ordinary
+    post-onboarding invoices unless a future decision requires it.
+40. **ASM-40 E-06 mixed-template and raw-number gates.** For a bank with
+    multiple templates, a best-to-runner-up E-05 score difference below 0.03
+    is ambiguous and remains REVIEW; the margin is configurable, not calibrated.
+    Before ACCEPT, raw Persian numeric observations must parse exactly to the
+    Canonical quantities, line totals, and payable, each unit price multiplied
+    by quantity must equal its line total, and the sum of line totals must equal
+    both subtotal and payable. Non-zero extra amounts, tax/discount lines, or
+    rounding remain REVIEW/`ACCOUNTING_ADJUSTMENT_UNSUPPORTED`; E-06 does not
+    guess their meaning. A direct disagreement with the required sum/raw-value
+    checks remains REJECT/`NUMS_INCONSISTENT`.

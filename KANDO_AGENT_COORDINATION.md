@@ -14,7 +14,8 @@ Operational coordination between implementation and governance agents. This file
 | `WP-HOLOO-IMAGE-EXTRACTION-09` | Current implementation agent | COMPLETE; DYNAMIC PROJECTION TESTED ON 4/5/13-ROW IMAGES; GLYPH EVALUATION FAILS ARITHMETIC GATE |
 | `WP-HOLOO-IMAGE-EXTRACTION-10` | Current implementation agent | COMPLETE; GLYPH INTEGRATED AS PRIMARY NUMERIC-CELL BACKEND; GUARDED 13-ROW E2E RETURNS PAGE-LEVEL REVIEW; NO SUBMIT |
 | `E-03-kit` known-answer print specification | Current implementation agent | PERSIAN DOCUMENTS COMPLETE; OWNER PRINT/SCANS PENDING; FUTURE CROSS-VALIDATION |
-| `E-04.5 + E-05` label-derived fixtures and template bank | Current implementation agent | IMPLEMENTED AND LOCALLY VERIFIED; 9 FOCUSED TESTS PASS; RELEASE TARGET IS FIXED BRANCH + `stable-e-05` |
+| `E-04.5 + E-05` label-derived fixtures and template bank | Current implementation agent | COMMITTED/PUSHED; 9 FOCUSED TESTS PASS; `stable-e-05` VERIFIED |
+| `E-06` onboarding verdict | Current implementation agent | IMPLEMENTED AND VALIDATED; COMMIT/PUSH/TAG PENDING; FIXED BRANCH ONLY |
 | Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
 | WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
 | Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
@@ -43,7 +44,14 @@ Operational coordination between implementation and governance agents. This file
 
 - Four Canonical v0 fixtures (29/31/32/33) are synthesized from `labels.json`; the manifest/README mark provenance and identify every synthetic context field. Invoice 33 remains `DRAFT`; no fixture is pipeline-emitted or issuable.
 - The Python package `src/e05_template_bank/` validates label/canonical agreement, groups the four layouts into one reusable profile, and exposes weighted advisory matching/JSON serialization. It does not run OCR or alter the E-02 pipeline.
-- Focused E-05 suite: 9 passed. Existing Canonical Invoice v0 tests: 42 passed plus 39 subtests. Self-match scores are 0.998544 (29), 0.995653 (31), 0.997350 (32), and 0.971928 (33); these are training-set resubstitution only, not independent accuracy. Commit, push, and tag remain pending.
+- Focused E-05 suite: 9 passed. Existing Canonical Invoice v0 tests: 42 passed plus 39 subtests. Self-match scores are 0.998544 (29), 0.995653 (31), 0.997350 (32), and 0.971928 (33); these are training-set resubstitution only, not independent accuracy. Commit `66b4274597471a2837b79f3019f03d13c8ff00e0`, branch push, and `stable-e-05` tag are verified.
+
+### E-06 — Onboarding verdict
+
+- Part A is documented in `docs/E-06-onboarding-verdict.md`; ASM-35 through ASM-40 are in `docs/DECISIONS.md`. The evaluator is fail-closed, uses existing E-05 matching, and requires high confidence, exact raw/canonical numeric agreement, N=4 warm-up, locked bank, D14 signed-agreement evidence, kit-scoped `۲`/`۶` coverage, and audited store-owner field verification before ACCEPT.
+- Part B is implemented under `src/e06_onboarding_verdict/`; bad and partial onboarding fixtures are test-only synthetic data. The bad Canonical-derived fixture has provenance in an adjacent sidecar rather than an out-of-schema Canonical property.
+- Final verification: E-06 tests 18 passed; E-05 tests 9 passed; Canonical Invoice v0 tests 42 passed plus 39 subtests; `py_compile` and `git diff --check` passed. The serialization test confirms compatibility with `TemplateMatch.to_dict()`. E-06 commit, branch remote verification, and `stable-e-06` tag are pending.
+- Continue only on `arena/9dc17500-kandoo-digital-invoice`. Do not create, close, merge, or otherwise manage a PR; existing PR #11 is open and was not changed.
 
 ### Native Checkout
 
@@ -83,7 +91,7 @@ This is approved for future architecture, not current MVP priority. No Native Ch
 
 ### Next executable work
 
-E-04.5/E-05 implementation and focused validation are complete; release is limited to the fixed Arena branch and `stable-e-05`, with no merge or PR creation. The E-03-kit scans remain pending for later cross-validation. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, use held-out owner-authorized scans and independent invoices. Keep uncertain fields in REVIEW and do not present these label-derived fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
+E-06 final compilation, tests, and `git diff --check` have passed. Remove generated caches, stage and review the E-06 task group, then commit it on the fixed branch, push only that branch, verify with `git ls-remote origin`, and create/push `stable-e-06`. Do not merge or manage a PR; the existing PR #11 remains open and untouched. E-03-kit scans remain pending for later cross-validation. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, use held-out owner-authorized scans and independent invoices. Keep uncertain fields in REVIEW and do not present label-derived fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
 
 ## Branch / integration boundary
 

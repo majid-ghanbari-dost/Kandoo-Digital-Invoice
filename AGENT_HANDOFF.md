@@ -107,7 +107,14 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 - `tests/fixtures/real/canonical/README.md` and `synthesis-manifest.json` identify `synthesized_from_labels: true`, source hashes, synthetic context fields, and statuses. Label quantities/totals remain integer v0 values; unit prices/subtotals are derived as documented. No extra Canonical property was added.
 - `src/e05_template_bank/` builds a serializable geometry/numeric-format bank using label measurements and schema-validated canonical pairs. It performs no OCR. Four training observations cluster into one layout template; scores are advisory and resubstitution only.
 - Validation: E-05 tests 9 passed; existing Canonical Invoice v0 tests 42 passed plus 39 subtests; `compileall` and `git diff --check` passed. Pytest/jsonschema were installed in a temporary `/tmp` virtual environment and were not added as repository dependencies.
-- E-03 kit scans remain pending for later cross-validation. No OCR or image-extraction pipeline was run for E-04.5/E-05. The implementation is locally verified and its release target is the fixed Arena branch plus `stable-e-05`; do not merge or create a PR. Existing PR #11 remains open; no PR action was performed.
+- E-03 kit scans remain pending for later cross-validation. No OCR or image-extraction pipeline was run for E-04.5/E-05. E-05 was committed as `66b4274597471a2837b79f3019f03d13c8ff00e0`, pushed to the fixed branch, and tagged `stable-e-05`; remote branch/tag verification passed. Do not merge or create another PR. Existing PR #11 remains open; no PR action was performed.
+
+### E-06 — Onboarding verdict (2026-10-23)
+
+- Part A is documented in `docs/E-06-onboarding-verdict.md`; decisions ASM-35 through ASM-40 are in `docs/DECISIONS.md`. The policy is fail-closed: confidence `>=0.95` only advances to later gates, `[0.80, 0.95)` is REVIEW, `<0.80` is REJECT; N=4 warm-up, locked bank, D14 signed agreement, kit-only digit coverage, exact numeric checks, and audited store-owner verification gate ACCEPT.
+- Part B is in `src/e06_onboarding_verdict/` with E-05-backed scoring, stable reason enums, configurable thresholds, and tests. Canonical-derived label fixtures are not used as kit scans; bad/partial fixtures are synthetic test-only, and bad fixture provenance is recorded by sidecar.
+- Final verification: E-06 suite 18 passed; E-05 suite 9 passed; Canonical Invoice v0 suite 42 passed plus 39 subtests; `py_compile` and `git diff --check` passed. `TemplateMatch.to_dict()` compatibility is asserted through `VerdictResult.to_dict()`.
+- The E-06 task commit, branch push/remote verification, and `stable-e-06` tag are pending. Work remains on `arena/9dc17500-kandoo-digital-invoice`; do not merge, force-push, create, or otherwise manage a PR. Existing PR #11 remains open and untouched.
 
 WP-05 was verified on 2026-10-15; WP-09 and WP-10 verification was added on 2026-10-16 below.
 
