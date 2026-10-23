@@ -262,3 +262,36 @@ frozen contracts or extraction implementation.
     rounding remain REVIEW/`ACCOUNTING_ADJUSTMENT_UNSUPPORTED`; E-06 does not
     guess their meaning. A direct disagreement with the required sum/raw-value
     checks remains REJECT/`NUMS_INCONSISTENT`.
+41. **ASM-41 E-08 new-type detection is gated by integrity and onboarding.**
+    Only a store with at least four previously owner-accepted onboarding
+    invoices and a locked bank may create a new-type candidate. Detection uses
+    E-05 `score_bank()` and its configured threshold; a below-threshold score
+    is only a hypothesis. Canonical validation and E-06 numeric arithmetic
+    must pass, and all observed quantities, line totals, and payable must parse
+    and match Canonical values. Schema/numeric hard failures remain
+    REJECT/`SCHEMA_INVALID` or `NUMS_INCONSISTENT`; missing or unreadable
+    evidence remains REVIEW without a candidate. A qualifying new type is
+    REVIEW/`NEW_LAYOUT`, never automatically accepted.
+42. **ASM-42 candidates are separate, human-gated records.** E-08 template
+    candidates are stored outside the production E-05 bank and begin PROPOSED.
+    Only PROPOSED→REVIEWED→ACCEPTED/REJECTED is allowed, with reviewer,
+    timestamp, and reason recorded. Candidate approval alone never mutates the
+    bank; rejected candidates are not promoted.
+43. **ASM-43 new-type mini-onboarding remains N=4.** A human-accepted candidate
+    starts a distinct four-invoice cycle. Every cycle invoice remains REVIEW
+    and counts only once after required fields are reviewed and audited. Four
+    valid records produce READY_TO_LOCK; the caller must create and explicitly
+    lock a versioned E-05 bank snapshot before any use in production.
+44. **ASM-44 escalation placeholder is three unresolved detections in 24h.**
+    Three distinct invoice detections for one store within a rolling 24-hour
+    window set a support-escalation flag while their candidate is unresolved.
+    REVIEWED is not terminal; ACCEPTED or REJECTED resolves the candidate.
+    E-08 does not create tickets or contact support.
+45. **ASM-45 serialize unresolved candidates per store.** At most one
+    PROPOSED/REVIEWED candidate may be active for a store. Repeated detections
+    of its same signature reuse the record; a different signature remains
+    REVIEW, is logged, and waits until the active candidate is resolved rather
+    than creating or merging a concurrent candidate. E-08 does not create
+    candidates while the store remains in initial E-06 onboarding; those
+    invoices stay on the E-06 review path until N=4 owner-accepted invoices
+    and a locked bank are established.

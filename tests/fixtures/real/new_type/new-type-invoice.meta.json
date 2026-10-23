@@ -1,0 +1,46 @@
+{
+  "fixture_id": "e08-synthetic-new-type-a4-persian-ungrouped-numerals",
+  "canonical_file": "new-type-invoice.json",
+  "synthetic": true,
+  "test_only": true,
+  "production_data": false,
+  "derived_from": "../canonical/canonical-29.json (itself a label-derived synthetic test fixture)",
+  "construction": "Created new synthetic Canonical values, ungrouped Persian-digit OCR amounts, and materially different A4-like geometry. Geometry and OCR strings are sidecar test observations only; no invoice image or customer record exists.",
+  "expected_detection": "NEW_TYPE",
+  "expected_verdict": "REVIEW",
+  "layout_observation": {
+    "source_id": "e08-new-type-layout-a4",
+    "image_width": 1200,
+    "image_height": 1697,
+    "column_boundaries": [
+      90,
+      320,
+      480,
+      900,
+      1120
+    ],
+    "row_bands": [
+      [
+        350,
+        405
+      ],
+      [
+        470,
+        525
+      ]
+    ],
+    "payable_bbox": [
+      610,
+      1450,
+      430,
+      55
+    ],
+    "field_values": {
+      "line.0.quantity": "۲",
+      "line.0.total": "۲۴۰۰",
+      "line.1.quantity": "۳",
+      "line.1.total": "۲۴۰۰",
+      "invoice.payable": "۴۸۰۰"
+    }
+  }
+}
