@@ -1,0 +1,403 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:mode-b:new-type-candidate:1",
+  "title": "Kandoo Mode B New-Type Candidate Artifact v1",
+  "description": "Versioned envelope around the E-08 TemplateCandidate.to_dict() lifecycle record. A candidate remains separate from the active E-05 template bank until the existing human-gated workflow accepts it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "mode",
+    "store_id",
+    "exported_at",
+    "candidate"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "kandoo.mode-b.new-type-candidate"
+    },
+    "artifact_version": {
+      "const": "1"
+    },
+    "mode": {
+      "const": "B"
+    },
+    "store_id": {
+      "$ref": "#/$defs/opaqueId"
+    },
+    "exported_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "candidate": {
+      "$ref": "#/$defs/candidate"
+    }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": ".*\\S.*"
+    },
+    "fingerprintId": {
+      "type": "string",
+      "pattern": "^e08-candidate-[a-f0-9]{20}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "singleCharacter": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1
+    },
+    "characterSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/singleCharacter"
+      }
+    },
+    "oneNumber": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "number"
+      }
+    },
+    "layoutSignature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page_aspect_ratio",
+        "normalized_column_boundaries",
+        "row_heights_over_width",
+        "row_pitches_over_width",
+        "table_top_over_width",
+        "payable_gap_over_width",
+        "payable_bbox_over_width"
+      ],
+      "properties": {
+        "page_aspect_ratio": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "normalized_column_boundaries": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "row_heights_over_width": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "row_pitches_over_width": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "table_top_over_width": {
+          "$ref": "#/$defs/oneNumber"
+        },
+        "payable_gap_over_width": {
+          "$ref": "#/$defs/oneNumber"
+        },
+        "payable_bbox_over_width": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          ],
+          "items": false
+        }
+      }
+    },
+    "normalizedSpan": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "normalizedBox": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "fieldPositions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "column_0",
+        "column_1",
+        "column_2",
+        "column_3",
+        "payable_bbox_over_width"
+      ],
+      "properties": {
+        "column_0": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "column_1": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "column_2": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "column_3": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "payable_bbox_over_width": {
+          "$ref": "#/$defs/normalizedBox"
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "store_id",
+        "layout_signature",
+        "field_positions",
+        "numeric_digit_alphabet",
+        "numeric_separators",
+        "numeric_group_sizes",
+        "observed_numeric_fields",
+        "source_invoice_ids",
+        "proposed_at",
+        "state",
+        "reviewer_id",
+        "reviewed_at",
+        "review_reason",
+        "decision_by",
+        "decided_at",
+        "decision_reason"
+      ],
+      "properties": {
+        "candidate_id": {
+          "$ref": "#/$defs/fingerprintId"
+        },
+        "store_id": {
+          "$ref": "#/$defs/opaqueId"
+        },
+        "layout_signature": {
+          "$ref": "#/$defs/layoutSignature"
+        },
+        "field_positions": {
+          "$ref": "#/$defs/fieldPositions"
+        },
+        "numeric_digit_alphabet": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/singleCharacter"
+          }
+        },
+        "numeric_separators": {
+          "$ref": "#/$defs/characterSet"
+        },
+        "numeric_group_sizes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/positiveInteger"
+          }
+        },
+        "observed_numeric_fields": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/opaqueId"
+          }
+        },
+        "source_invoice_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/opaqueId"
+          }
+        },
+        "proposed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "state": {
+          "enum": ["PROPOSED", "REVIEWED", "ACCEPTED", "REJECTED"]
+        },
+        "reviewer_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/opaqueId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewed_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "review_reason": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decision_by": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/opaqueId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decided_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decision_reason": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "PROPOSED"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "reviewer_id": {"type": "null"},
+              "reviewed_at": {"type": "null"},
+              "review_reason": {"type": "null"},
+              "decision_by": {"type": "null"},
+              "decided_at": {"type": "null"},
+              "decision_reason": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "REVIEWED"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "reviewer_id": {"$ref": "#/$defs/opaqueId"},
+              "reviewed_at": {"type": "string", "format": "date-time"},
+              "review_reason": {"type": "string", "minLength": 1},
+              "decision_by": {"type": "null"},
+              "decided_at": {"type": "null"},
+              "decision_reason": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "enum": ["ACCEPTED", "REJECTED"]
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "reviewer_id": {"$ref": "#/$defs/opaqueId"},
+              "reviewed_at": {"type": "string", "format": "date-time"},
+              "review_reason": {"type": "string", "minLength": 1},
+              "decision_by": {"$ref": "#/$defs/opaqueId"},
+              "decided_at": {"type": "string", "format": "date-time"},
+              "decision_reason": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

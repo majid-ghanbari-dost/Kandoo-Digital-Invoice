@@ -1,0 +1,340 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:mode-b:layout-font-fingerprint:1",
+  "title": "Kandoo Mode B Layout/Font Fingerprint Artifact v1",
+  "description": "Versioned E-08 layout and numeric-script signature plus the existing GlyphTemplateSet feature profiles. Font evidence is the measured glyph feature set, not a font-family name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "mode",
+    "store_id",
+    "fingerprint_id",
+    "observed_at",
+    "source_invoice_ids",
+    "layout_signature",
+    "field_positions",
+    "numeric_digit_alphabet",
+    "numeric_separators",
+    "numeric_group_sizes",
+    "observed_numeric_fields",
+    "glyph_profile"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "kandoo.mode-b.layout-font-fingerprint"
+    },
+    "artifact_version": {
+      "const": "1"
+    },
+    "mode": {
+      "const": "B"
+    },
+    "store_id": {
+      "$ref": "#/$defs/opaqueId"
+    },
+    "fingerprint_id": {
+      "$ref": "#/$defs/fingerprintId"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_invoice_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/opaqueId"
+      }
+    },
+    "layout_signature": {
+      "$ref": "#/$defs/layoutSignature"
+    },
+    "field_positions": {
+      "$ref": "#/$defs/fieldPositions"
+    },
+    "numeric_digit_alphabet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/singleCharacter"
+      }
+    },
+    "numeric_separators": {
+      "$ref": "#/$defs/characterSet"
+    },
+    "numeric_group_sizes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/positiveInteger"
+      }
+    },
+    "observed_numeric_fields": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/opaqueId"
+      }
+    },
+    "glyph_profile": {
+      "$ref": "#/$defs/glyphProfile"
+    }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": ".*\\S.*"
+    },
+    "fingerprintId": {
+      "type": "string",
+      "pattern": "^e08-candidate-[a-f0-9]{20}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "singleCharacter": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1
+    },
+    "characterSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/singleCharacter"
+      }
+    },
+    "oneNumber": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "number"
+      }
+    },
+    "layoutSignature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page_aspect_ratio",
+        "normalized_column_boundaries",
+        "row_heights_over_width",
+        "row_pitches_over_width",
+        "table_top_over_width",
+        "payable_gap_over_width",
+        "payable_bbox_over_width"
+      ],
+      "properties": {
+        "page_aspect_ratio": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "normalized_column_boundaries": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "row_heights_over_width": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "row_pitches_over_width": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "table_top_over_width": {
+          "$ref": "#/$defs/oneNumber"
+        },
+        "payable_gap_over_width": {
+          "$ref": "#/$defs/oneNumber"
+        },
+        "payable_bbox_over_width": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          ],
+          "items": false
+        }
+      }
+    },
+    "fieldPositions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "column_0",
+        "column_1",
+        "column_2",
+        "column_3",
+        "payable_bbox_over_width"
+      ],
+      "properties": {
+        "column_0": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "column_1": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "column_2": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "column_3": {
+          "$ref": "#/$defs/normalizedSpan"
+        },
+        "payable_bbox_over_width": {
+          "$ref": "#/$defs/normalizedBox"
+        }
+      }
+    },
+    "normalizedSpan": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "normalizedBox": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "glyphProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "grid",
+        "training_sources",
+        "profiles"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "grid": {
+          "const": [10, 14]
+        },
+        "training_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/trainingSource"
+          }
+        },
+        "profiles": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["row", "payable"],
+          "properties": {
+            "row": {
+              "$ref": "#/$defs/glyphTemplates"
+            },
+            "payable": {
+              "$ref": "#/$defs/glyphTemplates"
+            }
+          }
+        }
+      }
+    },
+    "trainingSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invoice_id", "image_sha256"],
+      "properties": {
+        "invoice_id": {
+          "$ref": "#/$defs/opaqueId"
+        },
+        "image_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "glyphTemplates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/glyphTemplate"
+      }
+    },
+    "glyphTemplate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "geometry", "grid"],
+      "properties": {
+        "label": {
+          "enum": ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", ","]
+        },
+        "geometry": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number"
+          }
+        },
+        "grid": {
+          "type": "array",
+          "minItems": 140,
+          "maxItems": 140,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    }
+  }
+}

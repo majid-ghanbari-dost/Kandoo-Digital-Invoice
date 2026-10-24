@@ -1,0 +1,61 @@
+{
+  "artifact_type": "kandoo.mode-b.onboarding-verdict",
+  "artifact_version": "1",
+  "evaluated_at": "2026-10-24T00:00:00Z",
+  "evaluation_context": {
+    "d14_agreement_signed": false,
+    "extraction_confidence": 0.99,
+    "missing_fields": [],
+    "processed_invoice_count": 0,
+    "require_kit_digit_coverage": false,
+    "template_bank_locked": false
+  },
+  "invoice_id": "e05-synth-invoice-29",
+  "mode": "B",
+  "result": {
+    "audit_record": null,
+    "confidence_score": 0.99,
+    "details": [
+      "Observation is one of the bank's training sources; resubstitution cannot qualify onboarding acceptance"
+    ],
+    "owner_acceptance_eligible": false,
+    "reason_codes": [
+      "STRUCTURE_VALID",
+      "NUMS_CONSISTENT",
+      "SELF_MATCH_RESUBSTITUTION",
+      "ATTENTION_REQUIRED",
+      "ONBOARDING_WARMUP",
+      "TEMPLATE_BANK_UNLOCKED",
+      "D14_AGREEMENT_REQUIRED",
+      "TEMPLATE_MATCH_HIGH",
+      "EXTRACTION_CONFIDENCE_HIGH",
+      "LAYOUT_SIMILARITY_HIGH"
+    ],
+    "template_match": {
+      "components": {
+        "columns": 1.0,
+        "numeric_format": 1.0,
+        "payable_anchor": 1.0,
+        "row_count": 1.0,
+        "row_rhythm": 0.9919088226967722,
+        "table_anchor": 1.0
+      },
+      "confidence_score": 0.998543588085419,
+      "matched": true,
+      "numeric_evidence_present": true,
+      "reasons": [
+        "all supplied layout and numeric-format evidence is consistent"
+      ],
+      "source_invoice_ids": [
+        "29",
+        "31",
+        "32",
+        "33"
+      ],
+      "template_id": "e05-layout-01"
+    },
+    "verdict": "REVIEW"
+  },
+  "store_id": "e05-synth-store",
+  "template_bank_sha256": "3fe4be40b4c31ca65498214806e3d0b86a3c121d19dce05c58884cdabc1ef2fd"
+}
