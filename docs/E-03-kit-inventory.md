@@ -1,3 +1,5 @@
+> **Kit v1 is OBSOLETE per Director, do not use.** Reason: v1 used the incorrect print source and phone-scanned capture, assumed a unit-price column, and had incomplete digit coverage. Preserve this file for audit only; use `docs/E-03-kit-v2/`.
+
 # کیت E-03 — فهرست برگه‌های ساختگی برای چاپ
 
 ## هدف و مرز استفاده

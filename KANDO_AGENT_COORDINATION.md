@@ -13,9 +13,9 @@ Operational coordination between implementation and governance agents. This file
 | `WP-HOLOO-IMAGE-EXTRACTION-05` | Current implementation agent | GEOMETRY-BASED CELL CROPS, PIL PREPROCESSING, AND PSM-7 OCR IMPLEMENTED; benchmark complete; supplied image remains REVIEW_REQUIRED |
 | `WP-HOLOO-IMAGE-EXTRACTION-09` | Current implementation agent | COMPLETE; DYNAMIC PROJECTION TESTED ON 4/5/13-ROW IMAGES; GLYPH EVALUATION FAILS ARITHMETIC GATE |
 | `WP-HOLOO-IMAGE-EXTRACTION-10` | Current implementation agent | COMPLETE; GLYPH INTEGRATED AS PRIMARY NUMERIC-CELL BACKEND; GUARDED 13-ROW E2E RETURNS PAGE-LEVEL REVIEW; NO SUBMIT |
-| `E-03-kit` known-answer print specification | Current implementation agent | PERSIAN DOCUMENTS COMPLETE; OWNER PRINT/SCANS PENDING; FUTURE CROSS-VALIDATION |
+| `E-03-kit-v2` print-extraction kit | Current implementation agent | 3+1 PAGES, VALUES, COVERAGE, AND CAPTURE CONTRACT COMPLETE; ACTUAL WINDOWS HELLO CAPTURE OWNER-VERIFICATION PENDING; V1 PRESERVED/OBSOLETE |
 | `E-04.5 + E-05` label-derived fixtures and template bank | Current implementation agent | COMMITTED/PUSHED; 9 FOCUSED TESTS PASS; `stable-e-05` VERIFIED |
-| `E-06` onboarding verdict | Current implementation agent | IMPLEMENTED AND VALIDATED; COMMIT/PUSH/TAG PENDING; FIXED BRANCH ONLY |
+| `E-06` onboarding verdict | Current implementation agent | COMPLETE; COMMIT `91f5b04` WITH `stable-e-06` PRESENT IN LOCAL HISTORY |
 | Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
 | WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
 | Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
@@ -32,13 +32,20 @@ Operational coordination between implementation and governance agents. This file
 8. Never claim source integration or Holoo accuracy without verifiable artifacts and real-source evidence.
 9. No merge to `main` is authorized by this EOD update.
 
-## Current State — 2026-10-23
+## Current State — 2026-10-24
 
-### E-03-kit — Known-answer print specification
+### E-03-kit-v1 — archived and obsolete
 
-- The three Persian deliverables are `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md`. They specify four synthetic invoice contents (4/11/4/11 rows), at least five Persian `۲` and `۶` glyphs per invoice, and two separate prints each for the exam invoices, for six scans.
-- No live sales/inventory data is used. At E-03-kit completion, no invoice had been printed or scanned and no OCR or extraction pipeline had been run. The PM subsequently authorized E-04.5/E-05 from the existing operator-confirmed labels. The six scans remain pending for future cross-validation; they are not a prerequisite for the label-derived bank.
-- The older `docs/PROJECT_STATE.md` summary specifies 3 learning/1 exam and coverage of every digit plus comma; the current task instead gives 2 learning/2 exam and glyphs ۲/۶. This unresolved scope discrepancy is recorded in `docs/DECISIONS.md`; the kit does not claim the broader condition is met.
+- The original v1 files `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md` remain preserved for audit history and now carry the exact warning “Kit v1 is OBSOLETE per Director, do not use.”
+- V1 must not be printed or used: it specified the incorrect print source, phone-scanned capture, an assumed unit-price column, and incomplete digit coverage.
+
+### E-03-kit-v2 — active print-extraction kit
+
+- `docs/E-03-kit-v2/` contains exactly three learning pages and one exam page, a combined 0–9/comma coverage matrix, and expected values restricted to quantities, line totals, and invoice-level payable; no unit-price field is assumed or included.
+- Combined counts from controlled value strings are `۰` 10, `۱` 14, `۲` 23, `۳` 9, `۴` 12, `۵` 11, `۶` 20, `۷` 6, `۸` 8, `۹` 7, and comma 20. Each page also satisfies the existing E-06 minimum of five Persian `۲` and `۶` glyphs.
+- Owner-confirmed safety boundary: Hello test invoices contain fabricated data only; no real customer, sale, or stock movement occurs; nothing needs cancellation, deletion, or rollback; the print job itself is the test artifact and the fake invoice may be discarded.
+- Required capture uses an actual Hello Windows print job: KandooPrintProbe captures its SPL, converts to PNG for downstream OCR/extraction, and writes adjacent `Report.txt` metadata (printer, spool job ID, timestamp, page count). Phone scans and word-processor prints are prohibited. Actual Windows SPL capture/conversion is not available in Arena and remains owner verification; no local verification is claimed.
+- See `docs/E-03-kit-v2/README.md`, `scripts/verify_e03_kit_v2.py`, and `tests/test_e03_kit_v2.py` for the workflow, checker, and tests. Local validation passed: 5 focused tests, all eleven glyph thresholds, `py_compile`, and `git diff --check`; capture mode was not run because no real owner capture is available in Arena.
 
 ### E-04.5 + E-05 — Label-derived fixtures and template bank
 
@@ -50,7 +57,7 @@ Operational coordination between implementation and governance agents. This file
 
 - Part A is documented in `docs/E-06-onboarding-verdict.md`; ASM-35 through ASM-40 are in `docs/DECISIONS.md`. The evaluator is fail-closed, uses existing E-05 matching, and requires high confidence, exact raw/canonical numeric agreement, N=4 warm-up, locked bank, D14 signed-agreement evidence, kit-scoped `۲`/`۶` coverage, and audited store-owner field verification before ACCEPT.
 - Part B is implemented under `src/e06_onboarding_verdict/`; bad and partial onboarding fixtures are test-only synthetic data. The bad Canonical-derived fixture has provenance in an adjacent sidecar rather than an out-of-schema Canonical property.
-- Final verification: E-06 tests 18 passed; E-05 tests 9 passed; Canonical Invoice v0 tests 42 passed plus 39 subtests; `py_compile` and `git diff --check` passed. The serialization test confirms compatibility with `TemplateMatch.to_dict()`. E-06 commit, branch remote verification, and `stable-e-06` tag are pending.
+- Final verification: E-06 tests 18 passed; E-05 tests 9 passed; Canonical Invoice v0 tests 42 passed plus 39 subtests; `py_compile` and `git diff --check` passed. The serialization test confirms compatibility with `TemplateMatch.to_dict()`. E-06 is complete at commit `91f5b04`; the local `stable-e-06` tag is present.
 - Continue only on `arena/9dc17500-kandoo-digital-invoice`. Do not create, close, merge, or otherwise manage a PR; existing PR #11 is open and was not changed.
 
 ### Native Checkout
@@ -91,8 +98,8 @@ This is approved for future architecture, not current MVP priority. No Native Ch
 
 ### Next executable work
 
-E-06 final compilation, tests, and `git diff --check` have passed. Remove generated caches, stage and review the E-06 task group, then commit it on the fixed branch, push only that branch, verify with `git ls-remote origin`, and create/push `stable-e-06`. Do not merge or manage a PR; the existing PR #11 remains open and untouched. E-03-kit scans remain pending for later cross-validation. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, use held-out owner-authorized scans and independent invoices. Keep uncertain fields in REVIEW and do not present label-derived fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
+The only remaining E-03-kit-v2 evidence action is for the owner to run the four fabricated pages through Hello on Windows and provide the actual KandooPrintProbe SPL→PNG captures with adjacent `Report.txt` files. Arena cannot run this Windows print-capture verification. Do not substitute scans or word-processor prints, and do not claim capture success until the owner reviews the actual outputs. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, use held-out owner-authorized prints and independent invoices. Keep uncertain fields in REVIEW and do not present label-derived fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
 
 ## Branch / integration boundary
 
-WP-09 (`e5ff46d`) and WP-10 (`76a37f0`) are pushed to `arena/9dc17500-kandoo-digital-invoice`. Continue using that fixed branch. Do not force-push or overwrite remote work if a non-fast-forward condition is encountered; report the blocker. No merge to `main` is part of this task.
+Continue using only `arena/9dc17500-kandoo-digital-invoice`; E-03-kit-v2 started from remote-verified commit `d70fb3778b6f69de23740ec9f16cbb4ac221445b` (`stable-e-08`). Push only this fixed branch and verify its remote SHA before creating the annotated `stable-e-03-kit-v2` tag. Do not force-push or overwrite remote work if a non-fast-forward condition is encountered; report the blocker. Do not merge or operate on PR #11, which remains open and untouched.

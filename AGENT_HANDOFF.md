@@ -93,13 +93,23 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
-### E-03-kit — Known-answer print specification (2026-10-23)
+### E-03-kit-v1 — archived and obsolete (2026-10-23)
 
-- Created three Persian owner-facing documents: `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md`.
-- The task-specific kit defines four synthetic invoices with exact row counts 4, 11, 4, and 11. Persian glyphs `۲` and `۶` each occur at least five times in every invoice's numeric cells. Exam invoices 3 and 4 are each printed twice on separate sheets, for six scans total.
-- No invoice was entered into a live POS or inventory, and no print, scan, OCR, or pipeline execution was performed for the kit. Owner printing/scanning remains pending. The PM later authorized E-04.5/E-05 using the existing operator-confirmed `labels.json`; the six kit scans remain future cross-validation evidence, not a blocker to this label-derived template-bank task.
-- The older Known-Answer note in `docs/PROJECT_STATE.md` differs (3 learning + 1 exam; every digit 0–9 and comma at least five times). The task-specific precedence and unresolved broader coverage are recorded in `docs/DECISIONS.md`; do not claim the old broader acceptance is met.
-- `docs/MASTER_HANDOFF.md` is not present in this checkout; `AGENT_HANDOFF.md`, `KANDO_AGENT_COORDINATION.md`, `docs/DECISIONS.md`, `docs/PROJECT_STATE.md`, and the existing pipeline/E-07 docs were consulted.
+- The original files `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md` are preserved for audit history. Each now begins with: “Kit v1 is OBSOLETE per Director, do not use.”
+- V1's incorrect print source, phone-scanned capture, assumed unit-price column, and incomplete digit coverage are the reasons it must not be used. The old workflow is not a source of instructions for v2.
+- The PM's earlier authorization to use the existing operator-confirmed `labels.json` for E-04.5/E-05 remains historical and separate from the v2 print evidence.
+
+### E-03-kit-v2 — active print-extraction kit (2026-10-24)
+
+- `docs/E-03-kit-v2/` contains exactly three learning pages and one exam page, a README coverage matrix, and an `expected-values.json` limited to quantities, line totals, and invoice-level payable. No unit-price field/value is assumed.
+- Combined controlled-value coverage is `۰` 10, `۱` 14, `۲` 23, `۳` 9, `۴` 12, `۵` 11, `۶` 20, `۷` 6, `۸` 8, `۹` 7, comma 20; all meet the minimum of five. Every page also preserves ASM-39's per-page Persian `۲`/`۶` coverage.
+- The owner-confirmed safety decision is fabricated Hello data only: no real customer, sale, or stock movement; nothing to cancel, delete, or roll back; the print job is the test artifact and the fake invoice may be discarded.
+- Required capture is an actual Hello Windows print job captured by KandooPrintProbe as SPL, converted to PNG for downstream OCR/extraction, and accompanied by `Report.txt` identifying printer, spool job ID, timestamp, and page count. Phone scans and word-processor prints are prohibited. Arena has no Windows printer/Hello job, so no actual SPL capture or conversion is claimed; owner verification remains pending.
+- `scripts/verify_e03_kit_v2.py` checks page-file count, page/answer-key consistency, arithmetic, glyph coverage, and README matrix; optional capture mode checks only file/metadata shape, not Hello origin or conversion correctness. Local verification passed: the checker reported all eleven glyph counts at or above five, the focused unittest suite passed (5 tests), `py_compile` passed, and `git diff --check` passed. Capture mode was not run because no actual owner Windows capture exists in Arena. Focused tests are in `tests/test_e03_kit_v2.py`.
+
+### E-08 — new-layout review flow (2026-10-24)
+
+- E-08 was committed as `d70fb3778b6f69de23740ec9f16cbb4ac221445b`; `stable-e-08` was pushed and verified at that commit before E-03-kit-v2 began.
 
 ### E-04.5 + E-05 — Label-derived fixtures and template bank (2026-10-23)
 
@@ -107,14 +117,14 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 - `tests/fixtures/real/canonical/README.md` and `synthesis-manifest.json` identify `synthesized_from_labels: true`, source hashes, synthetic context fields, and statuses. Label quantities/totals remain integer v0 values; unit prices/subtotals are derived as documented. No extra Canonical property was added.
 - `src/e05_template_bank/` builds a serializable geometry/numeric-format bank using label measurements and schema-validated canonical pairs. It performs no OCR. Four training observations cluster into one layout template; scores are advisory and resubstitution only.
 - Validation: E-05 tests 9 passed; existing Canonical Invoice v0 tests 42 passed plus 39 subtests; `compileall` and `git diff --check` passed. Pytest/jsonschema were installed in a temporary `/tmp` virtual environment and were not added as repository dependencies.
-- E-03 kit scans remain pending for later cross-validation. No OCR or image-extraction pipeline was run for E-04.5/E-05. E-05 was committed as `66b4274597471a2837b79f3019f03d13c8ff00e0`, pushed to the fixed branch, and tagged `stable-e-05`; remote branch/tag verification passed. Do not merge or create another PR. Existing PR #11 remains open; no PR action was performed.
+- No E-03 kit capture was used for E-04.5/E-05. The old v1 six-phone-scan plan is now obsolete and must not be produced; the four v2 Hello SPL→PNG captures remain future owner-provided evidence. No OCR or image-extraction pipeline was run for E-04.5/E-05. E-05 was committed as `66b4274597471a2837b79f3019f03d13c8ff00e0`, pushed to the fixed branch, and tagged `stable-e-05`; remote branch/tag verification passed. Do not merge or create another PR. Existing PR #11 remains open; no PR action was performed.
 
 ### E-06 — Onboarding verdict (2026-10-23)
 
 - Part A is documented in `docs/E-06-onboarding-verdict.md`; decisions ASM-35 through ASM-40 are in `docs/DECISIONS.md`. The policy is fail-closed: confidence `>=0.95` only advances to later gates, `[0.80, 0.95)` is REVIEW, `<0.80` is REJECT; N=4 warm-up, locked bank, D14 signed agreement, kit-only digit coverage, exact numeric checks, and audited store-owner verification gate ACCEPT.
 - Part B is in `src/e06_onboarding_verdict/` with E-05-backed scoring, stable reason enums, configurable thresholds, and tests. Canonical-derived label fixtures are not used as kit scans; bad/partial fixtures are synthetic test-only, and bad fixture provenance is recorded by sidecar.
 - Final verification: E-06 suite 18 passed; E-05 suite 9 passed; Canonical Invoice v0 suite 42 passed plus 39 subtests; `py_compile` and `git diff --check` passed. `TemplateMatch.to_dict()` compatibility is asserted through `VerdictResult.to_dict()`.
-- The E-06 task commit, branch push/remote verification, and `stable-e-06` tag are pending. Work remains on `arena/9dc17500-kandoo-digital-invoice`; do not merge, force-push, create, or otherwise manage a PR. Existing PR #11 remains open and untouched.
+- E-06 is complete at commit `91f5b04`; the local `stable-e-06` tag is present. It is not pending. Work continues only on `arena/9dc17500-kandoo-digital-invoice`; do not merge, force-push, create, or otherwise manage a PR. Existing PR #11 remains open and untouched.
 
 WP-05 was verified on 2026-10-15; WP-09 and WP-10 verification was added on 2026-10-16 below.
 

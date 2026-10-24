@@ -295,3 +295,22 @@ frozen contracts or extraction implementation.
     candidates while the store remains in initial E-06 onboarding; those
     invoices stay on the E-06 review path until N=4 owner-accepted invoices
     and a locked bank are established.
+46. **ASM-46 E-03-kit-v2 supersedes the obsolete v1 print kit.** E-03 v2 has
+    exactly three learning pages and one exam page. Its controlled numeric
+    values contain only per-item quantity and line total plus invoice-level
+    payable; no unit-price field/value is assumed or included. Across those
+    four pages' controlled value strings, each target print glyph `۰`–`۹`
+    and comma appears at least five times, as shown by the README coverage matrix. The supplied values
+    also preserve ASM-39's kit-scoped minimum of five Persian `۲` and `۶`
+    occurrences on each page. The owner-confirmed safety boundary is that
+    Hello test invoices contain fabricated data only: no real customer, sale,
+    or stock movement occurs, and nothing needs cancellation, deletion, or
+    rollback; the print job is the test artifact and the fake invoice may be
+    discarded. Capture must come from an actual Hello Windows print job:
+    KandooPrintProbe captures its SPL, converts that SPL to PNG for downstream
+    OCR/extraction, and emits adjacent `Report.txt` metadata for printer, spool
+    job ID, timestamp, and page count. Phone scans and word-processor prints
+    are not acceptable evidence. Actual Windows capture has not been verified
+    in Arena and remains an owner action. The existing E-03 v1 files are
+    preserved but marked obsolete. ASM-29 remains historical v1 task context;
+    this decision defines the active v2 kit scope without deleting that record.

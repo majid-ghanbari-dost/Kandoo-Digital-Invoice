@@ -1,3 +1,5 @@
+> **Kit v1 is OBSOLETE per Director, do not use.** Reason: v1 used the incorrect print source and phone-scanned capture, assumed a unit-price column, and had incomplete digit coverage. Preserve this file for audit only; use `docs/E-03-kit-v2/`.
+
 # چک‌لیست چاپ و اسکن کیت E-03
 
 راهنمای جزئیات چاپ، برچسب‌گذاری و نام فایل‌ها: `docs/E-03-kit-guide-fa.md`؛ فهرست تعداد ردیف و پوشش رقم‌ها: `docs/E-03-kit-inventory.md`

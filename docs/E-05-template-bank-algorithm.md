@@ -151,15 +151,21 @@ its anchor component, but the match remains above the threshold. These are
 accuracy result or a generalization estimate. A production evaluation must use
 separate invoices not present in the bank.
 
-## 7. Relationship to E-03-kit scans and E-02
+## 7. Relationship to E-03-kit-v2 capture evidence and E-02
 
-The six owner-authorized E-03-kit scans remain a separate future evidence set;
-the kit pages are synthetic known-answer documents, not live Holoo invoices.
-When scans are available, run the existing local E-02 pipeline with explicitly
-synthetic test context, preserve its AUTO/REVIEW/REJECT result, and compare the
-pipeline output with the known labels. Keep those outputs separate from these
-label-derived Canonical fixtures. Do not treat the synthetic identifiers,
-phone, product names, or fixture lifecycle state as caller context.
+The earlier E-03-kit-v1 plan for six phone-scanned pages is obsolete; its
+archived documents must not be printed or used. The active E-03-kit-v2 evidence
+set is four fabricated Hello pages (three learning and one exam), each printed
+from the actual Hello Windows application and captured by KandooPrintProbe as
+SPL, converted to PNG, and accompanied by `Report.txt`. No v2 Windows print
+job has been captured or verified in Arena. These four v2 captures, when
+provided by the owner, are a separate future evidence set; do not count or
+recreate the obsolete v1 phone scans. Run the existing local E-02 pipeline on
+the v2 PNGs with explicitly synthetic test context, preserve its
+AUTO/REVIEW/REJECT result, and compare output with the v2 expected values. Keep
+those outputs separate from these label-derived Canonical fixtures. Do not
+treat synthetic identifiers, phone, product names, or fixture lifecycle state
+as caller context.
 
 New observations may be scored against the bank as layout evidence, but the
 score cannot bypass E-02's numeric-cell and arithmetic gates, Canonical

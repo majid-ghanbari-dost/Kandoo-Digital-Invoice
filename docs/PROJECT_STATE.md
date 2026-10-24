@@ -272,11 +272,47 @@ Test run: 8 tests, all passed. Tesseract was not run.
   receipt, not an official tax document" (wording needs
   owner approval).
 
-#### Known-Answer Onboarding
-- E-03 will provide 4 test invoices (3 learning + 1 exam)
-  with fully prescribed items.
-- Every symbol 0-9 and comma appears >= 5 times.
-- Exam printed twice (print-to-print variance).
+#### Known-Answer Onboarding — E-03-kit-v2 (2026-10-24)
+- The active kit is `docs/E-03-kit-v2/`: exactly three learning pages
+  plus one exam page. The four page files are the controlled Hello entry
+  guides; the expected-values file contains only each page's quantities,
+  line totals, and invoice-level payable. No unit-price column or value is
+  assumed or included.
+- Across the four pages' controlled numeric values, each target print glyph
+  `۰`–`۹` and comma occurs at least five times. Coverage matrix:
+
+  | Numeric digit | Target glyph | Count | Meets minimum of 5? |
+  |---:|---:|---:|---|
+  | 0 | `۰` | 10 | Yes |
+  | 1 | `۱` | 14 | Yes |
+  | 2 | `۲` | 23 | Yes |
+  | 3 | `۳` | 9 | Yes |
+  | 4 | `۴` | 12 | Yes |
+  | 5 | `۵` | 11 | Yes |
+  | 6 | `۶` | 20 | Yes |
+  | 7 | `۷` | 6 | Yes |
+  | 8 | `۸` | 8 | Yes |
+  | 9 | `۹` | 7 | Yes |
+  | comma | `,` | 20 | Yes |
+
+  Each page also preserves the existing E-06 kit-scoped minimum of five
+  Persian `۲` and `۶` glyphs each.
+- The owner-confirmed safety decision is that Hello test invoices contain
+  fabricated data only; no real customer, sale, or stock movement occurs,
+  and there is nothing to cancel, delete, or roll back. The print job is the
+  test artifact; the fake invoice may be discarded.
+- Required evidence is an actual Hello Windows print job captured by
+  KandooPrintProbe as SPL, converted to PNG for downstream OCR/extraction,
+  with `Report.txt` beside the PNG identifying printer, spool job ID,
+  timestamp, and page count. Phone scans and word-processor prints are not
+  acceptable. No Windows Hello printer/job is available in Arena, so actual
+  SPL capture/conversion remains unverified and requires the owner.
+- E-03 v1 files are preserved and explicitly marked obsolete; do not print
+  or use them. See the v2 README for the coverage matrix and capture contract.
+- Local data-only validation passed: all eleven glyph counts, page/answer-key
+  checks, and arithmetic pass; the focused suite passed (5 tests), as did
+  `py_compile` and `git diff --check`. Actual Windows capture validation was
+  not run and remains an owner action.
 
 #### Local-First Principle
 - No image leaves a store without explicit approval.
