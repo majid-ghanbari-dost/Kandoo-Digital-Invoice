@@ -1,0 +1,90 @@
+fixture.label=Synthetic (fa)
+fixture.path=src/image_extraction_adapter/tests/fixtures/synthetic_invoice_fa.png
+source_image.sha256=df0e79c5acef87a6f2bcd3c9d36c6afadfb612a7210afadc0ea717c08856d782
+ocr.engine=tesseract 5.5.1
+ocr.language=fas+eng
+ocr.word_count=47
+ocr.mean_confidence=91.04255319148936
+ocr.minimum_confidence=65.0
+ocr.raw_text.begin
+فاکتور مصنوعی
+
+SYNTHETIC TEST ONLY
+
+INVOICE NO: 1001
+DATE: 2026-10-14
+
+شرح کالا: ساندویچ کالباس
+تعداد: ۲
+
+قیمت واحد: 500.00
+جمع ردیف: 1000.00
+
+شرح کالا: دستمال سفره تم
+تعداد: 1
+
+قیمت واحد: 300.00
+جمع ردیف: 300.00
+
+NET TOTAL: 1,300.00
+104.00 ‏مالیات:‎
+
+مبلغ قابل پرداخت: 1,404.00
+ocr.raw_text.end
+ocr.value_comparison=
+  invoice.number: expected='1001' actual='1001' match=True
+  invoice.date: expected='2026-10-14' actual='2026-10-14' match=True
+  total.net: expected='1300.00' actual='1300.00' match=True
+  tax.amount: expected='104.00' actual='104.00' match=True
+  invoice.payable: expected='1404.00' actual='1404.00' match=True
+  line.0.description: expected='ساندویچ کالباس' actual='ساندویچ کالباس' match=True
+  line.0.quantity: expected='2' actual='2' match=True
+  line.0.unit_price: expected='500.00' actual='500.00' match=True
+  line.0.total: expected='1000.00' actual='1000.00' match=True
+  line.1.description: expected='دستمال سفره تم' actual='دستمال سفره تم' match=True
+  line.1.quantity: expected='1' actual='1' match=True
+  line.1.unit_price: expected='300.00' actual='300.00' match=True
+  line.1.total: expected='300.00' actual='300.00' match=True
+issuance.submit.completed=True
+pipeline.result=PipelineCompleted
+pipeline.outcomes=capture:IngestCompleted, capture_read:ReadSuccess, reconstruct:ReconstructCompleted, extract:ExtractionCompleted, bind:BindingCompleted, normalize:NormalizationCompleted, derive:DerivationCompleted, validate:ValidationCompleted, validate:ValidationCompleted, validate:ValidationCompleted, validate:ValidationCompleted, project:DomainStateProjected, gate:CanonicalizationAccepted, gate_read:GateDecisionReadSuccess, assemble:AssemblyCompleted, invoice_read:AssemblyReadSuccess, invoice_trace:AssemblyTraceSuccess
+validation.kandoo-val-total-gross-consistency=VALID (exact-match)
+validation.kandoo-val-total-gross-rounded=VALID (exact-match)
+validation.kandoo-val-total-gross-tolerance=VALID (exact-match)
+validation.kandoo-val-total-net-present=VALID (exact-match)
+validation_domain=VALID/CLEAR valid=4 invalid=0 deferred=0
+canonicalization.decision=ACCEPTED
+canonical_invoice_id=8cab57b0e0684f5889d3f5dd379c9030
+canonical.field_count=14
+canonical.line_count=2
+canonical.fields=
+  invoice.number=1001 [EXTRACTED]
+  invoice.date=2026-10-14 [EXTRACTED]
+  total.net=1300.00 [EXTRACTED]
+  tax.amount=104.00 [EXTRACTED]
+  invoice.payable=1404.00 [EXTRACTED]
+  line.0.description=ساندویچ کالباس [EXTRACTED]
+  line.0.quantity=2 [EXTRACTED]
+  line.0.unit_price=500.00 [EXTRACTED]
+  line.0.total=1000.00 [EXTRACTED]
+  line.1.description=دستمال سفره تم [EXTRACTED]
+  line.1.quantity=1 [EXTRACTED]
+  line.1.unit_price=300.00 [EXTRACTED]
+  line.1.total=300.00 [EXTRACTED]
+  total.gross=1404 [DERIVED]
+canonical.line_fields=
+  line.0.LINE_QUANTITY=2
+  line.0.LINE_UNIT_PRICE=500.00
+  line.0.LINE_TOTAL=1000.00
+  line.1.LINE_QUANTITY=1
+  line.1.LINE_UNIT_PRICE=300.00
+  line.1.LINE_TOTAL=300.00
+lifecycle.open_digital_invoice=DRAFT
+lifecycle.mark_extracted=EXTRACTED
+lifecycle.mark_validated=VALIDATED
+lifecycle.issue=ISSUED
+digital_invoice_id=19b527b2432542d5b1dc7c62354bf8ea
+digital_invoice.state=ISSUED
+digital_invoice.verified=True
+digital_invoice.trace=DigitalInvoiceTraceSuccess links=24
+IMAGE OCR E2E fas+eng OK — synthetic fixture only

@@ -1,0 +1,75 @@
+evidence.class=User-supplied image; benchmark only; no issuance
+image.path=deliveries/image-extraction-ocr/holo_row_detection.png
+image.sha256=61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a
+ocr.language=fas+eng
+ocr.minimum_field_confidence=60.0
+outcome=ImageExtractionReviewRequired
+ocr.engine=tesseract 5.5.1
+ocr.word_count=85
+ocr.mean_confidence=71.06630628235297
+ocr.minimum_confidence=0.0
+spatial.column_boundaries=(113.5, 241.5, 290.5, 484.5, 524.5)
+spatial.row_bands=((520.75, 588.25), (588.25, 656.0), (656.0, 724.0), (724.0, 792.0))
+reference.provenance=manual visual transcription; not user-confirmed; scoring only
+reference.values=
+  line.0.quantity=۱
+  line.0.total=۱,۴۵۰,۰۰۰
+  line.1.quantity=۱
+  line.1.total=۴,۸۷۰,۰۰۰
+  line.2.quantity=۱
+  line.2.total=۵۷۰,۰۰۰
+  line.3.quantity=۱
+  line.3.total=۵۷۰,۰۰۰
+  invoice.payable=۷,۴۶۰,۰۰۰
+adapter.original_numeric_fields=
+  line.0.quantity='|' [REVIEW]
+  line.0.total='۴۵۰و' [REVIEW]
+  line.1.quantity='٩\u200f' [REVIEW]
+  line.1.total='دره۴,۸۷' [REVIEW]
+  line.2.quantity='!|' [REVIEW]
+  line.2.total='۵۷۰,۰۰' [REVIEW]
+  line.3.quantity='!|' [REVIEW]
+  line.3.total='۵۷۰,۰۰' [REVIEW]
+  invoice.payable='۰۰۰و ۷,۴۶۰\u200f' [REVIEW]
+numeric_cell_variants=
+  line.0.total|none|raw='۱'|confidence=41.0|status=REVIEW|unrestricted='دم'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 41.00 is below 60.00; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.0.total|otsu|raw='۱ ۵۰'|confidence=60.0|status=REVIEW|unrestricted='دم'|line_pixels_removed=58|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='raw cell OCR does not match the declared numeric format; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.0.total|adaptive|raw='۱ ۵۰'|confidence=60.0|status=REVIEW|unrestricted='دم'|line_pixels_removed=58|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='raw cell OCR does not match the declared numeric format; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.0.quantity|none|raw='۱'|confidence=81.0|status=REVIEW|unrestricted='۱'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.0.quantity|otsu|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='۱'|line_pixels_removed=58|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.0.quantity|adaptive|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='۱'|line_pixels_removed=58|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.1.total|none|raw='۴۷۰'|confidence=0.0|status=REVIEW|unrestricted='و۷۰ پا ۴'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 0.00 is below 60.00; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.1.total|otsu|raw='۴۷۰'|confidence=0.0|status=REVIEW|unrestricted='و۷۰ پا ۴'|line_pixels_removed=297|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 0.00 is below 60.00; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.1.total|adaptive|raw='۴۷۰'|confidence=0.0|status=REVIEW|unrestricted='و۷۰ پا ۴'|line_pixels_removed=297|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 0.00 is below 60.00; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.1.quantity|none|raw='7'|confidence=31.0|status=REVIEW|unrestricted='7'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 31.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.1.quantity|otsu|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='7'|line_pixels_removed=139|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.1.quantity|adaptive|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='7'|line_pixels_removed=139|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.2.total|none|raw='۸۷۰'|confidence=49.0|status=REVIEW|unrestricted='۸۷۰ gett'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 49.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.2.total|otsu|raw='۸۷۰'|confidence=49.0|status=REVIEW|unrestricted='۸۷۰ gett'|line_pixels_removed=297|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 49.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.2.total|adaptive|raw='۸۷۰'|confidence=49.0|status=REVIEW|unrestricted='۸۷۰ gett'|line_pixels_removed=297|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 49.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.2.quantity|none|raw='7'|confidence=31.0|status=REVIEW|unrestricted='7'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 31.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.2.quantity|otsu|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='7'|line_pixels_removed=139|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.2.quantity|adaptive|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='7'|line_pixels_removed=139|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.3.total|none|raw='۸۷۰'|confidence=49.0|status=REVIEW|unrestricted='۸۷۰ gett'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 49.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.3.total|otsu|raw='۸۷۰'|confidence=49.0|status=REVIEW|unrestricted='۸۷۰ gett'|line_pixels_removed=297|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 49.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.3.total|adaptive|raw='۸۷۰'|confidence=49.0|status=REVIEW|unrestricted='۸۷۰ gett'|line_pixels_removed=297|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 49.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.3.quantity|none|raw='7'|confidence=31.0|status=REVIEW|unrestricted='7'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 31.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.3.quantity|otsu|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='7'|line_pixels_removed=139|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  line.3.quantity|adaptive|raw='۱'|confidence=91.0|status=REVIEW|unrestricted='7'|line_pixels_removed=139|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=True|reason='whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  invoice.payable|none|raw='۷۳۶۰'|confidence=42.0|status=REVIEW|unrestricted='۷ ۳۶۰'|line_pixels_removed=0|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 42.00 is below 60.00; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  invoice.payable|otsu|raw='۷۳۰'|confidence=25.0|status=REVIEW|unrestricted='۷ ۳۶۰'|line_pixels_removed=43|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 25.00 is below 60.00; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+  invoice.payable|adaptive|raw='۷۳۰'|confidence=25.0|status=REVIEW|unrestricted='۷ ۳۶۰'|line_pixels_removed=43|psm=7|whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'|digits_match_reference=False|reason='cell OCR confidence 25.00 is below 60.00; whitelisted OCR differs from unrestricted diagnostic OCR; full-page spatial assessment remains REVIEW; cell OCR is supplementary'
+text_cell_config=
+  line.0.description|raw='\u200edowd y\u200f تم'|confidence=72.0|status=REVIEW|psm=7|whitelist=None
+  line.1.description|raw='دود رنقی \u200egoed\u200f'|confidence=61.0|status=REVIEW|psm=7|whitelist=None
+  line.2.description|raw='جنکال تم'|confidence=71.0|status=REVIEW|psm=7|whitelist=None
+  line.3.description|raw='\u200eole\u200f نم'|confidence=67.0|status=REVIEW|psm=7|whitelist=None
+metric.definition=exact match and CER on digit strings after Persian/Arabic/ASCII digit-script mapping; separators ignored for scoring only
+metric.note=OCR output itself is preserved unchanged; these scores never repair or replace a field
+metrics.none.exact_digit_cells=1/9 exact_cell_error_rate=88.89% digit_CER=67.57%
+metrics.otsu.exact_digit_cells=4/9 exact_cell_error_rate=55.56% digit_CER=56.76%
+metrics.adaptive.exact_digit_cells=4/9 exact_cell_error_rate=55.56% digit_CER=56.76%
+metrics.full_page_spatial_baseline.exact_digit_cells=0/9 exact_cell_error_rate=100.00% digit_CER=54.05%
+tesseract.numeric_whitelist='0123456789۰۱۲۳۴۵۶۷۸۹.,'
+issuance.submit_calls=0
+digital_invoice=NONE
