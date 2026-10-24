@@ -639,7 +639,7 @@ def remove_morphological_table_lines(
             foreground, vertical_kernel, horizontal=False)
     line_mask = image_chops.lighter(horizontal_mask, vertical_mask)
     cleaned_foreground = image_chops.subtract(foreground, line_mask)
-    removed_pixels = sum(1 for value in line_mask.getdata() if value > 0)
+    removed_pixels = sum(1 for value in line_mask.get_flattened_data() if value > 0)
     return image_ops.invert(cleaned_foreground), removed_pixels
 
 

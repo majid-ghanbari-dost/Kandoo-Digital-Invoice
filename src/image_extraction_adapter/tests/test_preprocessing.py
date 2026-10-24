@@ -206,7 +206,7 @@ class CellPreprocessingTests(unittest.TestCase):
 
         self.assertEqual([item.mode for item in outputs], ["none", "otsu", "adaptive"])
         self.assertTrue(all(item.image.size == source.size for item in outputs))
-        self.assertEqual(list(source.getdata()), list(original.getdata()))
+        self.assertEqual(source.get_flattened_data(), original.get_flattened_data())
 
     def test_numeric_review_rejects_pipe_bang_and_unrestricted_disagreement(self):
         self.assertIn(
