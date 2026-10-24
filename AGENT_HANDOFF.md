@@ -93,6 +93,24 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
+### Dispatch closeout — E-03-kit-v3 and E-15–E-18 (2026-10-24)
+
+This dated closeout supersedes earlier status snapshots below wherever they conflict. All listed changes were made serially on `arena/9dc17500-kandoo-digital-invoice`; `main` was not changed, PR #11 remains open, and frozen E-11 files under `contracts/` remain untouched.
+
+| Task | Commit SHA | Annotated tag | Verified output |
+|---|---|---|---|
+| E-03-kit-v3 | `84c4c92872b838ecc5bc6a3cbf3c98a7cc206078` | `stable-e-03-kit-v3` | Checker passed; combined v2/v3 regression tests: 9 passed, 4 subtests. V2 files were not changed. |
+| E-15 | `261817e17ed5b3fd1aca3d5d5712bb1dd78069df` | `stable-e-15` | `deliveries/e15-robustness/report.md`: 28 deterministic perturbation runs; final E-06 verdicts 14 REVIEW / 14 REJECT, zero ACCEPT, and zero EXTRACTED-but-wrong. Each of seven perturbation types was fail-closed in 4/4 runs. The report also discloses upstream E-02 AUTO_CANDIDATE results for some small shifts, blur, and noise. |
+| E-16 | `62d439092bf10c5581b65c7fa9d74a604473817c` | `stable-e-16` | Four Draft 2020-12 schemas, docs, generated golden examples and reproducibility tests; targeted tests: 4 passed. |
+| E-17 | `fd1c8461a7544c067a99905839944b807f5e4de6` | `stable-e-17` | Ubuntu GitHub Actions matrix for Python 3.11/3.12; no Tesseract installation or requirement on the Glyph path. Local Python 3.11 suite: 1,898 passed, 82 subtests. |
+| E-18 | recorded in the commit carrying this handoff update | `stable-e-18` | Handoff records the owner/verifier's CI relay below. |
+
+**Owner/verifier CI relay — GREEN (reported 2026-10-24; independently verified on GitHub by the owner/verifier):** E-17 workflow “ci: add Python 3.11 and 3.12 test matrix” at `fd1c846` succeeded on Ubuntu for Python 3.11 and 3.12. The PR #11 smoke workflow run was green and PR #11 remained open. E-15 and E-16 predate the workflow; the successful E-17 workflow run covers their cumulative repository state. The owner/verifier also relayed the sandbox suite result of 1,898 passed plus 82 subtests. The agent did not inspect GitHub Actions results; this paragraph records the owner's relay.
+
+The E-03-kit-v3 report explicitly limits its claim: no actual Holo/Windows print, KandooPrintProbe spool capture, or SPL-to-PNG conversion was performed in Arena. No physical print-capture verification is claimed. The E-16 schemas and examples are separate from the frozen `contracts/` package.
+
+**Sequence status:** E-03-kit-v3, E-15, E-16, E-17, and E-18 are complete. PR #11 remains open; no merge or `main` change is authorized by this closeout. Any future physical Holo/Windows print-and-capture validation requires owner-provided Windows evidence and is outside the completed Arena checks.
+
 ### E-03-kit-v1 — archived and obsolete (2026-10-23)
 
 - The original files `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md` are preserved for audit history. Each now begins with: “Kit v1 is OBSOLETE per Director, do not use.”
