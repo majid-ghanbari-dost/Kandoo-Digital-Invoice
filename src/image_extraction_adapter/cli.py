@@ -7,13 +7,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import tempfile
 import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Sequence
 
 from .canonical_invoice import validate_canonical_invoice
+from .capture_folder import extract_capture_folder, status_exit_code
 from .multi_evidence import evaluate_multi_evidence
 from .pipeline_v0 import DEFAULT_TEMPLATE_BANK_PATH, extract_pipeline_v0
 
@@ -39,21 +42,39 @@ class _ArgumentParser(argparse.ArgumentParser):
 def _build_parser() -> _ArgumentParser:
     parser = _ArgumentParser(
         prog="python -m image_extraction_adapter.cli",
-        description="Run local E-02 extraction and emit a Canonical Invoice v0 candidate.",
+        description="Run local E-02 extraction or adapt a KandooPrintProbe capture folder.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     extract = subparsers.add_parser(
         "extract",
-        help="extract one local image",
-        description="Extract one image and emit its schema-valid Canonical Invoice candidate.",
+        help="extract one image or adapt a local capture folder",
+        description="Extract one image or run the E-02/E-05/E-06 capture-folder adapter.",
     )
-    extract.add_argument("--image", type=Path, required=True, metavar="PATH")
+    source = extract.add_mutually_exclusive_group(required=True)
+    source.add_argument("--image", type=Path, metavar="PATH")
+    source.add_argument(
+        "--capture-folder",
+        type=Path,
+        metavar="PATH",
+        help="KandooPrintProbe folder containing SPL, one or more PNG pages, and Report.txt",
+    )
     extract.add_argument(
         "--context",
         type=Path,
-        required=True,
         metavar="PATH",
-        help="UTF-8 JSON object with producer-supplied canonical_context fields",
+        help="UTF-8 JSON object with producer-supplied canonical_context fields (required with --image)",
+    )
+    extract.add_argument(
+        "--out",
+        type=Path,
+        metavar="PATH",
+        help="write the capture-folder result JSON to PATH instead of stdout",
+    )
+    extract.add_argument(
+        "--e05-bank",
+        type=Path,
+        metavar="PATH",
+        help="optional approved E-05 layout bank; default uses the repository's fixture-derived bank",
     )
     extract.add_argument(
         "--captured-at",
@@ -126,7 +147,168 @@ def _pipeline_diagnostics(result: Any) -> list[str]:
     return details
 
 
+def _capture_human_summary(result: dict[str, Any]) -> str:
+    status = str(result.get("status", "ERROR"))
+    verdict = str(result.get("verdict", "REJECT"))
+    pages = result.get("pages", [])
+    artifacts = result.get("artifacts", {})
+    numeric = result.get("numeric_candidates", {})
+    candidate_count = sum(len(numeric.get(name, [])) for name in ("quantity", "line_total", "payable"))
+    e05_matches = sum(page.get("e05", {}).get("status") == "MATCH" for page in pages)
+    lines = [
+        f"{status} / {verdict}: {len(pages)} page(s); {candidate_count} numeric candidate(s); "
+        f"E-05 matches {e05_matches}/{len(pages)}."
+    ]
+    if artifacts.get("extra_files"):
+        lines.append(f"Ignored extra files: {', '.join(artifacts['extra_files'])}")
+    for error in result.get("errors", []):
+        lines.append(f"{error.get('code', 'ERROR')}: {error.get('message', '')}")
+    for page in pages:
+        if page.get("error"):
+            lines.append(
+                f"Page {page.get('page_index')}: {page['error'].get('code')}: "
+                f"{page['error'].get('message')}"
+            )
+        else:
+            e02 = page.get("e02")
+            if isinstance(e02, dict) and e02.get("reason"):
+                lines.append(f"Page {page.get('page_index')} E-02: {e02['reason']}")
+    e06 = result.get("e06")
+    if isinstance(e06, dict):
+        reasons = ", ".join(e06.get("reason_codes", []))
+        if reasons:
+            lines.append(f"E-06: {e06.get('verdict', 'REVIEW')} ({reasons})")
+    return "\n".join(lines)
+
+
+def _write_capture_result(result: dict[str, Any], output_path: Path | None) -> bool:
+    payload = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    if output_path is None:
+        _write_canonical_json(result)
+        return True
+
+    target = output_path.expanduser().absolute()
+    parent = target.parent
+    if not parent.is_dir():
+        raise OSError(f"output parent directory does not exist: {parent}")
+
+    capture_root_text = result.get("capture_folder")
+    if isinstance(capture_root_text, str):
+        capture_root = Path(capture_root_text).resolve(strict=False)
+        if capture_root.is_dir():
+            for candidate in capture_root.iterdir():
+                if not (candidate.is_file() or candidate.is_symlink()):
+                    continue
+                if (
+                    candidate.suffix.casefold() in {".spl", ".png"}
+                    or candidate.name.casefold() == "report.txt"
+                ) and candidate.resolve(strict=False) == target.resolve(strict=False):
+                    raise OSError("--out must not overwrite a required capture artifact")
+
+    temporary_path: Path | None = None
+    try:
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix=f".{target.name}.", suffix=".tmp", dir=parent
+        )
+        temporary_path = Path(temporary_name)
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary_path, target)
+        return True
+    finally:
+        if temporary_path is not None and temporary_path.exists():
+            temporary_path.unlink()
+
+
+def _run_capture_folder(args: argparse.Namespace) -> int:
+    if args.context is not None or args.captured_at is not None or args.multi_evidence:
+        result = {
+            "result_version": "capture-folder-result-v1",
+            "status": "ERROR",
+            "verdict": "REJECT",
+            "verdict_source": "cli-option-validation",
+            "capture_folder": str(args.capture_folder),
+            "errors": [{
+                "code": "UNSUPPORTED_CAPTURE_OPTION",
+                "message": "--context, --captured-at, and --multi-evidence are not used by --capture-folder mode",
+            }],
+            "scoring_fields": ["quantity", "line_total", "payable"],
+            "accuracy": {
+                "status": "NOT_SCORED",
+                "expected_values_available": False,
+                "fields": ["quantity", "line_total", "payable"],
+                "reason": "capture folders do not carry expected-value labels",
+            },
+            "pages": [],
+            "numeric_candidates": {name: [] for name in ("quantity", "line_total", "payable")},
+            "e06": None,
+        }
+    else:
+        try:
+            result = extract_capture_folder(
+                args.capture_folder,
+                templates_path=args.templates,
+                e05_bank_path=args.e05_bank,
+            )
+        except Exception as exc:
+            result = {
+                "result_version": "capture-folder-result-v1",
+                "status": "ERROR",
+                "verdict": "REJECT",
+                "verdict_source": "capture-adapter-exception",
+                "capture_folder": str(args.capture_folder),
+                "errors": [{
+                    "code": "CAPTURE_ADAPTER_ERROR",
+                    "message": f"{type(exc).__name__}: {exc}",
+                }],
+                "scoring_fields": ["quantity", "line_total", "payable"],
+                "accuracy": {
+                    "status": "NOT_SCORED",
+                    "expected_values_available": False,
+                    "fields": ["quantity", "line_total", "payable"],
+                    "reason": "capture folders do not carry expected-value labels",
+                },
+                "pages": [],
+                "numeric_candidates": {
+                    name: [] for name in ("quantity", "line_total", "payable")
+                },
+                "e06": None,
+            }
+
+    try:
+        _write_capture_result(result, args.out)
+    except (OSError, TypeError, ValueError) as exc:
+        result = {
+            **result,
+            "status": "ERROR",
+            "verdict": "REJECT",
+            "verdict_source": "capture-result-output",
+            "errors": [
+                *result.get("errors", []),
+                {"code": "OUTPUT_WRITE_FAILED", "message": f"{type(exc).__name__}: {exc}"},
+            ],
+        }
+        try:
+            _write_capture_result(result, None)
+        except Exception as fallback_exc:  # pragma: no cover - broken stdout
+            print(f"ERROR / REJECT: could not emit result JSON: {fallback_exc}", file=sys.stderr)
+            return EXIT_ERROR
+        print(_capture_human_summary(result), file=sys.stderr)
+        return EXIT_ERROR
+
+    print(_capture_human_summary(result), file=sys.stderr)
+    return status_exit_code(result)
+
+
 def _run_extract(args: argparse.Namespace) -> int:
+    if args.capture_folder is not None:
+        return _run_capture_folder(args)
+    if args.context is None:
+        raise _CLIInputError("--context is required when using --image")
+    if args.out is not None or args.e05_bank is not None:
+        raise _CLIInputError("--out and --e05-bank are only supported with --capture-folder")
     _require_file(args.image, "--image")
     _require_file(args.templates, "--templates")
     _require_file(args.context, "--context")
