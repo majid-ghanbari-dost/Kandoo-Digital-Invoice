@@ -320,6 +320,21 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
         report["failure"] = f"{type(exc).__name__}: {exc}"
     finally:
         _write_reports(report_json, report_md, report)
+    fixtures_summary = ",".join(
+        f"{item['fixture_id']}:{item.get('numeric_match', False)}"
+        for item in report.get("fixtures", [])
+    ) or "none"
+    notice = (
+        f"status={report['status']}; bundle_bytes={report.get('bundle_size_bytes', 'n/a')}; "
+        f"bundle_mib={report.get('bundle_size_mib', 'n/a')}; "
+        f"startup_median_s={report.get('startup_median_seconds', 'n/a')}; "
+        f"startup_min_s={report.get('startup_min_seconds', 'n/a')}; "
+        f"startup_max_s={report.get('startup_max_seconds', 'n/a')}; "
+        f"fixtures={fixtures_summary}; "
+        f"tesseract_present={report.get('tesseract_executable_present', 'n/a')}; "
+        f"tesserocr_present={report.get('tesserocr_importable', 'n/a')}"
+    )
+    print(f"::notice title=Windows one-folder evidence::{notice}")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["status"] == "PASS" else 1
 
