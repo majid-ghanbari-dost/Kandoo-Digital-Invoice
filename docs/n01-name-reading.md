@@ -2,7 +2,7 @@
 
 **Measured:** 2026-10-25, locally on Debian 12 / Python 3.11.2 / Pillow 13.0.0 / x86-64, CPU inference.
 
-**Reproducer:** [`scripts/run_n01_name_reading.py`](../scripts/run_n01_name_reading.py); pinned engine dependencies are in [`scripts/n01-ocr-requirements.txt`](../scripts/n01-ocr-requirements.txt), and the manual CI workflow is [`.github/workflows/n01-name-reading.yml`](../.github/workflows/n01-name-reading.yml).
+**Reproducer:** [`scripts/run_n01_name_reading.py`](../scripts/run_n01_name_reading.py); pinned engine dependencies are in [`scripts/n01-ocr-requirements.txt`](../scripts/n01-ocr-requirements.txt). The `n01-name-reading` CI job is in [`.github/workflows/python-tests.yml`](../.github/workflows/python-tests.yml) and runs on pushes with an `N-01:` commit message.
 
 **Raw machine-readable evidence:** [`docs/n01-name-reading.json`](n01-name-reading.json).
 
