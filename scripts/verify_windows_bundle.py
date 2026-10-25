@@ -129,7 +129,9 @@ def _write_reports(
         f"- Status: **{report['status']}**",
         f"- Python: `{report.get('python_version', 'not recorded')}`",
         f"- PyInstaller: `{report.get('pyinstaller_version', 'not recorded')}`",
-        f"- Bundle size: {report.get('bundle_size_bytes', 'not recorded')} bytes "
+        f"- Executable size: {report.get('executable_size_bytes', 'not recorded')} bytes "
+        f"({report.get('executable_size_mib', 'not recorded')} MiB)",
+        f"- One-folder bundle size: {report.get('bundle_size_bytes', 'not recorded')} bytes "
         f"({report.get('bundle_size_mib', 'not recorded')} MiB)",
         f"- Bundle files: {report.get('bundle_file_count', 'not recorded')}",
         f"- Startup (`extract --help`, {len(report.get('startup_seconds', []))} launches): "
@@ -209,6 +211,9 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
                 "Tesseract or tesserocr is present on the runner; the no-Tesseract build proof is inconclusive"
             )
 
+        executable_size = exe.stat().st_size
+        report["executable_size_bytes"] = executable_size
+        report["executable_size_mib"] = round(executable_size / (1024 * 1024), 3)
         bundle_dir = exe.parent
         bundle_files = [path for path in bundle_dir.rglob("*") if path.is_file()]
         bundle_size = sum(path.stat().st_size for path in bundle_files)
@@ -325,7 +330,9 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
         for item in report.get("fixtures", [])
     ) or "none"
     notice = (
-        f"status={report['status']}; bundle_bytes={report.get('bundle_size_bytes', 'n/a')}; "
+        f"status={report['status']}; exe_bytes={report.get('executable_size_bytes', 'n/a')}; "
+        f"exe_mib={report.get('executable_size_mib', 'n/a')}; "
+        f"bundle_bytes={report.get('bundle_size_bytes', 'n/a')}; "
         f"bundle_mib={report.get('bundle_size_mib', 'n/a')}; "
         f"startup_median_s={report.get('startup_median_seconds', 'n/a')}; "
         f"startup_min_s={report.get('startup_min_seconds', 'n/a')}; "
