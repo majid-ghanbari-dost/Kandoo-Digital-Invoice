@@ -4,7 +4,9 @@
 
 ## Scope and reproducible workflow
 
-The [`Windows one-folder build`](../.github/workflows/windows-build.yml) workflow runs on `windows-latest` with Python 3.11. It installs `pytest`, Pillow, `jsonschema>=4.18,<5`, and PyInstaller 6.22.3; runs the full Python test suite; builds the `kandoo-extract.exe` one-folder CLI; and runs the frozen executable's `extract` command on real fixtures 29, 31, 32, and 33. The default Glyph template bank and E-01 schema are placed at the source-relative paths expected by the current modules. The resulting bundle and machine-readable/human-readable evidence are uploaded as the `windows-onefolder-<run-id>` artifact.
+The [`Windows one-folder build`](../.github/workflows/windows-build.yml) workflow runs on `windows-latest` with Python 3.11. It installs `pytest`, Pillow, `jsonschema>=4.18,<5`, and PyInstaller 6.22.3; runs the Windows extraction/runtime and E-11 contract tests; builds the `kandoo-extract.exe` one-folder CLI; and runs the frozen executable's `extract` command on real fixtures 29, 31, 32, and 33. The full cross-repository suite remains covered by the existing Ubuntu matrix in `python-tests.yml`.
+
+The first attempt to run the entire 1,898-test suite on Windows exceeded the workflow's 45-minute job limit while still in the pytest step; GitHub did not provide a completed test summary, so this is recorded as a timeout, not as a test failure diagnosis. The Windows job is therefore scoped to the product/runtime and contract tests relevant to the native package. The default Glyph template bank and E-01 schema are placed at the source-relative paths expected by the current modules. The resulting bundle and machine-readable/human-readable evidence are uploaded as the `windows-onefolder-<run-id>` artifact.
 
 The workflow does **not** install Tesseract or `tesserocr`. The smoke script records and asserts that neither the Tesseract executable nor `tesserocr` is available before invoking the built CLI. It does not pass `--templates`, so a successful extraction also verifies the bundled default Glyph bank.
 

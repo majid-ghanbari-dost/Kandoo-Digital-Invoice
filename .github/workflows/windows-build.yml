@@ -35,8 +35,17 @@ jobs:
 
       # Deliberately do not install Tesseract or tesserocr. The CLI product
       # path uses the local Glyph classifier only.
-      - name: Run the full Python test suite
-        run: python -m pytest -q
+      # The full cross-repository suite runs on Ubuntu in python-tests.yml.
+      # Windows validates the product/package path and its contract boundaries;
+      # the unrelated full suite exceeded GitHub's 45-minute Windows job limit.
+      - name: Run Windows extraction and contract tests
+        run: >-
+          python -m pytest -q
+          tests/test_pipeline_v0.py
+          src/image_extraction_adapter/tests
+          src/e05_template_bank/tests
+          src/e06_onboarding_verdict/tests
+          tests/test_e11_contract_package.py
 
       - name: Build the Windows one-folder CLI
         shell: pwsh
