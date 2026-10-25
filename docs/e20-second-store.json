@@ -1,0 +1,398 @@
+{
+  "acceptance": {
+    "all_exam_symbols_covered_by_learning_values": true,
+    "e05_exam_observation_matched": true,
+    "e06_did_not_accept": true,
+    "passed": true,
+    "thresholds_tuned": false,
+    "zero_extracted_but_wrong_observed": true,
+    "zero_extracted_but_wrong_required": true
+  },
+  "e03_kit_v3": {
+    "controlled_exam_symbol_counts": {
+      ",": 5,
+      "۰": 3,
+      "۱": 3,
+      "۲": 6,
+      "۳": 4,
+      "۴": 2,
+      "۵": 3,
+      "۶": 5,
+      "۷": 1,
+      "۸": 3,
+      "۹": 2
+    },
+    "controlled_learning_symbol_counts": {
+      ",": 20,
+      "۰": 10,
+      "۱": 14,
+      "۲": 26,
+      "۳": 3,
+      "۴": 8,
+      "۵": 11,
+      "۶": 20,
+      "۷": 7,
+      "۸": 5,
+      "۹": 4
+    },
+    "exam_symbols_missing_from_learning_pages": [],
+    "symbols_missing_from_learning_pages": [],
+    "verified": true
+  },
+  "e05": {
+    "exam_match": {
+      "components": {
+        "columns": 1.0,
+        "numeric_format": 1.0,
+        "payable_anchor": 0.9909577546296297,
+        "row_count": 1.0,
+        "row_rhythm": 1.0,
+        "table_anchor": 1.0
+      },
+      "confidence_score": 0.9990053530092593,
+      "matched": true,
+      "numeric_evidence_present": true,
+      "reasons": [
+        "all supplied layout and numeric-format evidence is consistent"
+      ],
+      "source_invoice_ids": [
+        "learning-1",
+        "learning-2",
+        "learning-3"
+      ],
+      "template_id": "e05-layout-01"
+    },
+    "exam_observation_basis": "pixel-detected geometry/payable plus E-03 answer-key values",
+    "learning_source_ids": [
+      "learning-1",
+      "learning-2",
+      "learning-3"
+    ],
+    "match_passed": true,
+    "synthetic_training_method": "Existing E-05 layout cluster aggregator, applied directly to pixel-detected observations carrying E-03 controlled labels; no synthetic source was marked operator-confirmed.",
+    "template_count": 1
+  },
+  "e06": {
+    "confidence_score": null,
+    "details": [
+      "Missing fields: invoice.payable is unavailable or not a valid integer-Rial amount, line.0.quantity is not a valid positive integer, line.0.total is not a valid integer-Rial amount, line.1.total is not a valid integer-Rial amount"
+    ],
+    "input_candidate_source": "actual E-02 pipeline candidate; absent candidates are passed as None",
+    "owner_acceptance_eligible": false,
+    "processed_invoice_count": 0,
+    "reason_codes": [
+      "PARTIAL_MATCH"
+    ],
+    "template_match": null,
+    "thresholds_tuned": false,
+    "verdict": "REVIEW"
+  },
+  "font": {
+    "family": "DejaVu Sans Mono",
+    "glyph_mask_validation": {
+      "all_masks_nonempty": true,
+      "comma_mask_distinct_from_digits": true,
+      "ten_digit_masks_distinct": true,
+      "tested_symbols": [
+        "۰",
+        "۱",
+        "۲",
+        "۳",
+        "۴",
+        "۵",
+        "۶",
+        "۷",
+        "۸",
+        "۹",
+        ","
+      ]
+    },
+    "path": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+    "sha256": "0f5db4f1749979d961019838b160bec74abdf7f9eca69553fe1aa856bbff49a4",
+    "size_pixels": {
+      "body": 17,
+      "numeric": 18,
+      "title": 20
+    },
+    "style": "Book",
+    "substitution_policy": "No font download, installation, or fallback substitution."
+  },
+  "glyph_training": {
+    "exam_symbols_missing_from_row_templates": [],
+    "labelled_numeric_cells": 27,
+    "learning_page_ids": [
+      "learning-1",
+      "learning-2",
+      "learning-3"
+    ],
+    "missing_symbols_by_template_profile": {
+      "payable": [
+        "۱",
+        "۳",
+        "۸"
+      ],
+      "row": []
+    },
+    "skipped_cells": [],
+    "template_counts_by_profile": {
+      "payable": {
+        ",": 1,
+        "۰": 1,
+        "۲": 1,
+        "۴": 1,
+        "۵": 1,
+        "۶": 1,
+        "۷": 1,
+        "۹": 1
+      },
+      "row": {
+        ",": 1,
+        "۰": 1,
+        "۱": 1,
+        "۲": 1,
+        "۳": 1,
+        "۴": 1,
+        "۵": 1,
+        "۶": 1,
+        "۷": 1,
+        "۸": 1,
+        "۹": 1
+      }
+    },
+    "used_cell_count": 27
+  },
+  "notice": "Synthetic mechanics test only: not a Holo capture, not real-store evidence, and not a claim of production OCR accuracy.",
+  "pages": [
+    {
+      "detected_column_boundaries": [
+        116.5,
+        244.5,
+        293.5,
+        487.5,
+        527.5
+      ],
+      "detected_layout_reason": "Complete table geometry detected.",
+      "detected_layout_status": "OK",
+      "detected_payable_bbox": [
+        142,
+        768,
+        126,
+        17
+      ],
+      "detected_row_count": 4,
+      "height": 872,
+      "mode": "1",
+      "page_id": "learning-1",
+      "role": "learning",
+      "sha256": "4d45529d5ea556b23d557ebfe53d5b4343ba0705bb34fd22ac45cbcee933964a",
+      "synthetic": true,
+      "threshold": 180,
+      "width": 576
+    },
+    {
+      "detected_column_boundaries": [
+        116.5,
+        244.5,
+        293.5,
+        487.5,
+        527.5
+      ],
+      "detected_layout_reason": "Complete table geometry detected.",
+      "detected_layout_status": "OK",
+      "detected_payable_bbox": [
+        161,
+        768,
+        88,
+        17
+      ],
+      "detected_row_count": 4,
+      "height": 872,
+      "mode": "1",
+      "page_id": "learning-2",
+      "role": "learning",
+      "sha256": "bad385c6f6a5c0ecc5b481530d846b4966b806977fd2544cb09f2c7208dc62af",
+      "synthetic": true,
+      "threshold": 180,
+      "width": 576
+    },
+    {
+      "detected_column_boundaries": [
+        116.5,
+        244.5,
+        293.5,
+        487.5,
+        527.5
+      ],
+      "detected_layout_reason": "Complete table geometry detected.",
+      "detected_layout_status": "OK",
+      "detected_payable_bbox": [
+        161,
+        768,
+        84,
+        17
+      ],
+      "detected_row_count": 4,
+      "height": 872,
+      "mode": "1",
+      "page_id": "learning-3",
+      "role": "learning",
+      "sha256": "2a5b48b9397c802f485698b2d3c11c3713099dc3249086db644d37404c3fcb51",
+      "synthetic": true,
+      "threshold": 180,
+      "width": 576
+    },
+    {
+      "detected_column_boundaries": [
+        116.5,
+        244.5,
+        293.5,
+        487.5,
+        527.5
+      ],
+      "detected_layout_reason": "Complete table geometry detected.",
+      "detected_layout_status": "OK",
+      "detected_payable_bbox": [
+        160,
+        768,
+        89,
+        17
+      ],
+      "detected_row_count": 4,
+      "height": 872,
+      "mode": "1",
+      "page_id": "exam",
+      "role": "exam",
+      "sha256": "574e229b93821b5723c3fd06af5ae94b3d0f16de5c73db71e31f60cf5c4ee808",
+      "synthetic": true,
+      "threshold": 180,
+      "width": 576
+    }
+  ],
+  "pipeline_exam": {
+    "arithmetic_gate": {
+      "line_sum": null,
+      "passed": false,
+      "payable": null,
+      "reason": "line.0.total '۱??,۶??' is not a well-formed amount"
+    },
+    "canonical_blockers": [
+      "line.0.quantity is not a valid positive integer",
+      "line.0.total is not a valid integer-Rial amount",
+      "line.1.total is not a valid integer-Rial amount",
+      "invoice.payable is unavailable or not a valid integer-Rial amount"
+    ],
+    "canonical_candidate_emitted": false,
+    "cell_counts": {
+      "extracted_correct": 3,
+      "extracted_wrong": 0,
+      "review_or_blocked": 6,
+      "total": 9
+    },
+    "cells": [
+      {
+        "confidence": 0.0,
+        "exact_numeric_match_after_normalization": false,
+        "expected_value": "۱۲۲,۶۲۲",
+        "field": "line.0.total",
+        "raw_value": "۱??,۶??",
+        "reason": "glyph 2 not accepted: ambiguous: margin 0.091 below 0.150; glyph 3 not accepted: ambiguous: margin 0.091 below 0.150; glyph 6 not accepted: ambiguous: margin 0.091 below 0.150; glyph 7 not accepted: ambiguous: margin 0.091 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+        "status": "REVIEW"
+      },
+      {
+        "confidence": 0.0,
+        "exact_numeric_match_after_normalization": false,
+        "expected_value": "۳",
+        "field": "line.0.quantity",
+        "raw_value": "?",
+        "reason": "glyph 1 not accepted: ambiguous: margin 0.091 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format",
+        "status": "REVIEW"
+      },
+      {
+        "confidence": 0.0,
+        "exact_numeric_match_after_normalization": false,
+        "expected_value": "۱۲۶,۲۶۰",
+        "field": "line.1.total",
+        "raw_value": "۱?۶,?۶۰",
+        "reason": "glyph 2 not accepted: ambiguous: margin 0.091 below 0.150; glyph 5 not accepted: ambiguous: margin 0.091 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+        "status": "REVIEW"
+      },
+      {
+        "confidence": 99.99333333333334,
+        "exact_numeric_match_after_normalization": true,
+        "expected_value": "۴",
+        "field": "line.1.quantity",
+        "raw_value": "۴",
+        "reason": null,
+        "status": "EXTRACTED"
+      },
+      {
+        "confidence": 99.98,
+        "exact_numeric_match_after_normalization": true,
+        "expected_value": "۸۶,۴۱۵",
+        "field": "line.2.total",
+        "raw_value": "۸۶,۴۱۵",
+        "reason": "arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+        "status": "REVIEW"
+      },
+      {
+        "confidence": 99.99333333333334,
+        "exact_numeric_match_after_normalization": true,
+        "expected_value": "۷",
+        "field": "line.2.quantity",
+        "raw_value": "۷",
+        "reason": null,
+        "status": "EXTRACTED"
+      },
+      {
+        "confidence": 99.98,
+        "exact_numeric_match_after_normalization": true,
+        "expected_value": "۵۰,۰۹۶",
+        "field": "line.3.total",
+        "raw_value": "۵۰,۰۹۶",
+        "reason": "arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+        "status": "REVIEW"
+      },
+      {
+        "confidence": 100.0,
+        "exact_numeric_match_after_normalization": true,
+        "expected_value": "۸",
+        "field": "line.3.quantity",
+        "raw_value": "۸",
+        "reason": null,
+        "status": "EXTRACTED"
+      },
+      {
+        "confidence": 0.0,
+        "exact_numeric_match_after_normalization": false,
+        "expected_value": "۳۸۵,۳۹۳",
+        "field": "invoice.payable",
+        "raw_value": "?۸۵,?۹?",
+        "reason": "glyph 1 not accepted: ambiguous: margin 0.062 below 0.150; glyph 5 not accepted: ambiguous: margin 0.062 below 0.150; glyph 7 not accepted: ambiguous: margin 0.062 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+        "status": "REVIEW"
+      }
+    ],
+    "extracted_but_wrong_fields": [],
+    "layout_reason": "Complete table geometry detected.",
+    "layout_status": "OK",
+    "pipeline_status": "REVIEW",
+    "reason": "Canonical context did not produce a valid v0 candidate.",
+    "row_count": 4
+  },
+  "platform": {
+    "machine": "x86_64",
+    "pillow": "13.0.0",
+    "python": "3.11.2",
+    "release": "6.1.158+",
+    "system": "Linux"
+  },
+  "rendering": {
+    "bit_depth": 1,
+    "layout": "synthetic Holo-inspired 4-row invoice table",
+    "real_store_evidence": false,
+    "threshold_rule": "grayscale pixel < 180 becomes black; otherwise white",
+    "width_pixels": 576
+  },
+  "status": "PASS",
+  "synthetic_only": true,
+  "task": "E-20"
+}

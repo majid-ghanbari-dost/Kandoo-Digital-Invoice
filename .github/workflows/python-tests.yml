@@ -13,6 +13,47 @@ permissions:
   contents: read
 
 jobs:
+  synthetic-e20:
+    name: Synthetic second-store mechanics / Python 3.11
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: src:scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install E-20 runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install Pillow 'jsonschema>=4.18,<5'
+
+      # This step selects only an already-installed font with distinct masks
+      # for Persian digits ۰–۹ and comma. If none exists, it reports the block
+      # and fails without downloading or substituting a font.
+      - name: Run E-20 synthetic mechanics check
+        run: |
+          python scripts/run_e20_second_store.py \
+            --report-json "$RUNNER_TEMP/e20-second-store-evidence.json" \
+            --report-md "$RUNNER_TEMP/e20-second-store-evidence.md"
+
+      - name: Upload E-20 synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e20-synthetic-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e20-second-store-evidence.json
+            ${{ runner.temp }}/e20-second-store-evidence.md
+          if-no-files-found: warn
+          retention-days: 14
+
   pytest:
     name: Ubuntu / Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
