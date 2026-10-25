@@ -166,17 +166,12 @@ def _page_layout(page_id: str, row_count: int, variant: str | None) -> tuple[
     boundaries = list(BASE_COLUMN_BOUNDARIES)
     table_top = TABLE_TOP
     extra_verticals: tuple[int, ...] = ()
-    if variant == "swapped-columns":
-        # Give the quantity column the wider second slot and the amount column
-        # the narrower first slot. Text stays legible while E-02's fixed
-        # interpretation reads the fields in the opposite order.
-        boundaries = [116.0, 165.0, 293.0, 487.0, 527.0]
-    elif variant == "different-table-position":
+    if variant == "different-table-position":
         boundaries = [value + 28 for value in boundaries]
         table_top += 34
     elif variant == "extra-column":
         extra_verticals = (390,)
-    elif variant not in (None, "no-vertical-rules", "three-columns"):
+    elif variant not in (None, "no-vertical-rules", "three-columns", "swapped-columns"):
         raise ValueError(f"unknown synthetic layout variant: {variant}")
 
     header_bottom = table_top + HEADER_HEIGHT

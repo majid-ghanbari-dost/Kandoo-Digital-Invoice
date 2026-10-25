@@ -54,6 +54,45 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+  synthetic-e21:
+    name: Synthetic unknown-layout safety / Python 3.11
+    runs-on: ubuntu-latest
+    needs: synthetic-e20
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: src:scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install E-21 runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install Pillow 'jsonschema>=4.18,<5'
+
+      - name: Run E-21 synthetic unknown-layout checks
+        run: |
+          python scripts/run_e21_unknown_layout.py \
+            --report-json "$RUNNER_TEMP/e21-unknown-layout-evidence.json" \
+            --report-md "$RUNNER_TEMP/e21-unknown-layout-evidence.md"
+
+      - name: Upload E-21 synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e21-synthetic-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e21-unknown-layout-evidence.json
+            ${{ runner.temp }}/e21-unknown-layout-evidence.md
+          if-no-files-found: warn
+          retention-days: 14
+
   pytest:
     name: Ubuntu / Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
