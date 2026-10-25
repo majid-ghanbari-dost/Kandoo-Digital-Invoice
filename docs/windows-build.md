@@ -22,14 +22,14 @@ This projection exists only in the smoke-test process; it does not modify CLI ou
 
 ## CI evidence
 
-- **Passing Windows run:** [40176368539](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40176368539), verified commit `d927945430db0fb6b45016e3a561d1fb2b284cff`.
+- **Passing Windows run:** [40176606025](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40176606025), verified commit `be083056cc7f1f7d75944d4adec63c1b5d257b99`.
 - **Windows test groups:** all five passed (`pipeline_v0`, extraction adapter, E-05, E-06, E-11 contract package).
 - **Executable size:** 3,671,939 bytes (3.502 MiB).
 - **One-folder directory size:** 34,117,267 bytes (32.537 MiB, including the executable, dependencies, Glyph bank, and E-01 schema).
-- **Startup timing:** `kandoo-extract.exe extract --help`, five fresh process launches; minimum 0.1497 s, median 0.1508 s, maximum 0.1919 s.
+- **Startup timing:** `kandoo-extract.exe extract --help`, five fresh process launches; minimum 0.1604 s, median 0.1749 s, maximum 0.1927 s.
 - **Real fixtures:** 29 (4 rows), 31 (3 rows), 32 (5 rows), and 33 (13 rows) all exited 0; every row quantity/line total and both summary totals matched its fixture-specific canonical golden. No template path was passed.
 - **Tesseract:** executable absent; `tesserocr` absent. No Tesseract dependency was installed.
-- **Artifact:** `windows-onefolder-40176368539`, uploaded by the passing run; it contains the one-folder build and the JSON/Markdown evidence report (14-day retention).
+- **Artifact:** `windows-onefolder-40176606025`, uploaded by the passing run; it contains the one-folder build and the JSON/Markdown evidence report (14-day retention).
 
 ### Failures and deviations recorded
 
