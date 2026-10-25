@@ -1,0 +1,78 @@
+name: Windows one-folder build
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-build:
+    name: Windows / Python 3.11 / PyInstaller onedir
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: src
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test and packaging dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest Pillow 'jsonschema>=4.18,<5' 'pyinstaller==6.22.3'
+
+      # Deliberately do not install Tesseract or tesserocr. The CLI product
+      # path uses the local Glyph classifier only.
+      - name: Run the full Python test suite
+        run: python -m pytest -q
+
+      - name: Build the Windows one-folder CLI
+        shell: pwsh
+        run: |
+          python -m PyInstaller --clean --noconfirm --onedir --console `
+            --name kandoo-extract `
+            --distpath dist `
+            --workpath "$env:RUNNER_TEMP/pyinstaller-work" `
+            --specpath "$env:RUNNER_TEMP/pyinstaller-spec" `
+            --paths src `
+            --hidden-import run_name_cluster_experiment `
+            scripts/windows_cli_entry.py
+          New-Item -ItemType Directory -Force -Path dist/kandoo-extract/src | Out-Null
+          New-Item -ItemType Directory -Force -Path dist/kandoo-extract/schemas | Out-Null
+          Copy-Item src/templates_bank_default.json dist/kandoo-extract/src/templates_bank_default.json -Force
+          Copy-Item schemas/canonical_invoice_v0.json dist/kandoo-extract/schemas/canonical_invoice_v0.json -Force
+          if (-not (Test-Path dist/kandoo-extract/kandoo-extract.exe)) {
+            throw 'PyInstaller did not produce dist/kandoo-extract/kandoo-extract.exe'
+          }
+
+      - name: Verify frozen CLI, E-01 fixture values, and E-11 contract crosswalk
+        shell: pwsh
+        run: |
+          python scripts/verify_windows_bundle.py `
+            --exe dist/kandoo-extract/kandoo-extract.exe `
+            --report-json "$env:RUNNER_TEMP/windows-build-evidence.json" `
+            --report-md "$env:RUNNER_TEMP/windows-build-evidence.md"
+
+      - name: Upload the one-folder build and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-onefolder-${{ github.run_id }}
+          path: |
+            dist/kandoo-extract
+            ${{ runner.temp }}/windows-build-evidence.json
+            ${{ runner.temp }}/windows-build-evidence.md
+          if-no-files-found: warn
+          retention-days: 14
