@@ -37,52 +37,19 @@ jobs:
       # Windows validates the product/package path and its contract boundaries;
       # the unrelated full suite exceeded GitHub's 45-minute Windows job limit.
       - name: Windows tests - pipeline v0
-        id: test_pipeline
-        continue-on-error: true
         run: python -m pytest -q tests/test_pipeline_v0.py
 
       - name: Windows tests - extraction adapter
-        id: test_adapter
-        continue-on-error: true
         run: python -m pytest -q src/image_extraction_adapter/tests
 
       - name: Windows tests - E-05 template bank
-        id: test_e05
-        continue-on-error: true
         run: python -m pytest -q src/e05_template_bank/tests
 
       - name: Windows tests - E-06 verdict
-        id: test_e06
-        continue-on-error: true
         run: python -m pytest -q src/e06_onboarding_verdict/tests
 
       - name: Windows tests - frozen E-11 contract package
-        id: test_e11
-        continue-on-error: true
         run: python -m pytest -q tests/test_e11_contract_package.py
-
-      - name: Summarize Windows test groups
-        if: always()
-        shell: pwsh
-        env:
-          PIPELINE_RESULT: ${{ steps.test_pipeline.outcome }}
-          ADAPTER_RESULT: ${{ steps.test_adapter.outcome }}
-          E05_RESULT: ${{ steps.test_e05.outcome }}
-          E06_RESULT: ${{ steps.test_e06.outcome }}
-          E11_RESULT: ${{ steps.test_e11.outcome }}
-        run: |
-          $lines = @(
-            '## Windows extraction and contract tests',
-            "pipeline_v0: $env:PIPELINE_RESULT",
-            "image_extraction_adapter: $env:ADAPTER_RESULT",
-            "E-05 template bank: $env:E05_RESULT",
-            "E-06 verdict: $env:E06_RESULT",
-            "E-11 contract package: $env:E11_RESULT"
-          )
-          $lines | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-          if (@($env:PIPELINE_RESULT, $env:ADAPTER_RESULT, $env:E05_RESULT, $env:E06_RESULT, $env:E11_RESULT) -contains 'failure') {
-            throw 'One or more Windows test groups failed; see each group step.'
-          }
 
       # Deliberately do not install Tesseract or tesserocr. The CLI product
       # path uses the local Glyph classifier only.
