@@ -1,14 +1,12 @@
 # Windows one-folder CLI build (E-19)
 
-**Status:** implementation is ready; Windows CI evidence is pending the first `windows-build.yml` run.
+**Status:** complete. Native Windows build, focused tests, and frozen-executable smoke passed.
 
 ## Scope and reproducible workflow
 
-The [`Windows one-folder build`](../.github/workflows/windows-build.yml) workflow runs on `windows-latest` with Python 3.11. It installs `pytest`, Pillow, `jsonschema>=4.18,<5`, and PyInstaller 6.22.3; runs the Windows extraction/runtime and E-11 contract tests; builds the `kandoo-extract.exe` one-folder CLI; and runs the frozen executable's `extract` command on real fixtures 29, 31, 32, and 33. The full cross-repository suite remains covered by the existing Ubuntu matrix in `python-tests.yml`.
+The [`Windows one-folder build`](../.github/workflows/windows-build.yml) workflow runs on `windows-latest` with Python 3.11. It installs `pytest`, Pillow, `jsonschema>=4.18,<5`, and PyInstaller 6.22.3; runs Windows tests for `pipeline_v0`, the extraction adapter, E-05, E-06, and the frozen E-11 contract package; builds the `kandoo-extract.exe` one-folder CLI; and runs the frozen executable's `extract` command on real fixtures 29, 31, 32, and 33. The default Glyph template bank and E-01 schema are placed at the source-relative paths expected by the current modules. The full cross-repository suite remains covered by the existing Ubuntu matrix in `python-tests.yml`.
 
-The first attempt to run the entire 1,898-test suite on Windows exceeded the workflow's 45-minute job limit while still in the pytest step; GitHub did not provide a completed test summary, so this is recorded as a timeout, not as a test failure diagnosis. The Windows job is therefore scoped to the product/runtime and contract tests relevant to the native package. The default Glyph template bank and E-01 schema are placed at the source-relative paths expected by the current modules. The resulting bundle and machine-readable/human-readable evidence are uploaded as the `windows-onefolder-<run-id>` artifact.
-
-The workflow does **not** install Tesseract or `tesserocr`. The smoke script records and asserts that neither the Tesseract executable nor `tesserocr` is available before invoking the built CLI. It does not pass `--templates`, so a successful extraction also verifies the bundled default Glyph bank.
+The workflow does **not** install Tesseract or `tesserocr`. Before each frozen smoke run, the verifier asserts that neither the Tesseract executable nor the `tesserocr` module is available. It does not pass `--templates`, so successful extraction also verifies the bundled default Glyph bank.
 
 ## Canonical comparison boundary
 
@@ -24,15 +22,19 @@ This projection exists only in the smoke-test process; it does not modify CLI ou
 
 ## CI evidence
 
-Populate this section from the first successful Windows workflow run:
+- **Passing Windows run:** [40176368539](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40176368539), verified commit `d927945430db0fb6b45016e3a561d1fb2b284cff`.
+- **Windows test groups:** all five passed (`pipeline_v0`, extraction adapter, E-05, E-06, E-11 contract package).
+- **Executable size:** 3,671,939 bytes (3.502 MiB).
+- **One-folder directory size:** 34,117,267 bytes (32.537 MiB, including the executable, dependencies, Glyph bank, and E-01 schema).
+- **Startup timing:** `kandoo-extract.exe extract --help`, five fresh process launches; minimum 0.1497 s, median 0.1508 s, maximum 0.1919 s.
+- **Real fixtures:** 29 (4 rows), 31 (3 rows), 32 (5 rows), and 33 (13 rows) all exited 0; every row quantity/line total and both summary totals matched its fixture-specific canonical golden. No template path was passed.
+- **Tesseract:** executable absent; `tesserocr` absent. No Tesseract dependency was installed.
+- **Artifact:** `windows-onefolder-40176368539`, uploaded by the passing run; it contains the one-folder build and the JSON/Markdown evidence report (14-day retention).
 
-- Workflow run / commit: pending.
-- Full-suite result: pending.
-- Bundle size: pending.
-- `extract --help` process-startup timing (five launches; min/median/max): pending.
-- Real fixture 29/31/32/33 results: pending.
-- Tesseract absence check: pending.
-- Failures or deviations: pending.
-- Artifact: pending.
+### Failures and deviations recorded
 
-The workflow's uploaded `windows-build-evidence.md` and `.json` are the raw per-run record; this document is the checked-in handoff summary. A Linux build is not a substitute for the native Windows result.
+- The initial Windows attempt to run the entire 1,898-test suite exceeded the 45-minute job limit while still in pytest. It timed out without a completed test summary; this is not diagnosed as an assertion failure. Windows CI was narrowed to the extraction/runtime and contract tests above, while the full suite remains on the Ubuntu Python 3.11/3.12 workflow. The local full suite passed with 1,898 tests and 82 subtests.
+- The first focused Windows run's E-11 byte-stability group failed. After the workflow explicitly disabled `core.autocrlf` and restored the frozen `contracts/` files from Git, that test group passed in subsequent runs. No files under `contracts/` were changed.
+- A non-blocking GitHub Actions warning notes that the checked-out `actions/*@v4/v5` steps are being forced to Node.js 24; it did not affect the passing build.
+
+The passing run's uploaded `windows-build-evidence.md` and `.json` are the raw per-run record. A Linux build is not a substitute for the native Windows result.
