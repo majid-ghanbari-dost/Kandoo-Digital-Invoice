@@ -1,0 +1,304 @@
+{
+  "candidates": [
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-0b2bf75669699696",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row11.png",
+      "source_crop_ids": [
+        "33_row11"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-24a4e495d6ce2d2d",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 20,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row4.png",
+      "source_crop_ids": [
+        "33_row4"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-2c2c68696b6b8a8a",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 4,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row0.png",
+      "source_crop_ids": [
+        "33_row0"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-45c1cbedd515243e",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 8,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row9.png",
+      "source_crop_ids": [
+        "33_row9"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-49424f4d5a52d171",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row7.png",
+      "source_crop_ids": [
+        "33_row7"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-4c2e2f4c46563135",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 2,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row8.png",
+      "source_crop_ids": [
+        "33_row8"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-32"
+      ],
+      "name_crop_cluster_id": "name-dhash-565612931557eaaa",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/32_row1.png",
+      "source_crop_ids": [
+        "32_row1"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-6bcb854d495b92d2",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row12.png",
+      "source_crop_ids": [
+        "33_row12"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-31",
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-95b496c726a66969",
+      "occurrence_count": 2,
+      "price_observations": [],
+      "quantity_sum": 11,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/31_row2.png",
+      "source_crop_ids": [
+        "31_row2",
+        "33_row1"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-29"
+      ],
+      "name_crop_cluster_id": "name-dhash-989b5bcb9b933535",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/29_row1.png",
+      "source_crop_ids": [
+        "29_row1"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-31",
+        "e05-synth-invoice-32"
+      ],
+      "name_crop_cluster_id": "name-dhash-a828a9ad26245a5a",
+      "occurrence_count": 2,
+      "price_observations": [],
+      "quantity_sum": 2,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/31_row0.png",
+      "source_crop_ids": [
+        "31_row0",
+        "32_row0"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-31",
+        "e05-synth-invoice-32"
+      ],
+      "name_crop_cluster_id": "name-dhash-b4e5b4346e6ecddd",
+      "occurrence_count": 2,
+      "price_observations": [],
+      "quantity_sum": 2,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/31_row1.png",
+      "source_crop_ids": [
+        "31_row1",
+        "32_row3"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-29"
+      ],
+      "name_crop_cluster_id": "name-dhash-b5b4b2b31cba636b",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/29_row2.png",
+      "source_crop_ids": [
+        "29_row2"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-c696c6c7d2d23424",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 5,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row2.png",
+      "source_crop_ids": [
+        "33_row2"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-ca88a2a7589633b3",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row5.png",
+      "source_crop_ids": [
+        "33_row5"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-cac91b36c958d1e0",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 15,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row10.png",
+      "source_crop_ids": [
+        "33_row10"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-29"
+      ],
+      "name_crop_cluster_id": "name-dhash-d0f6c624b1950757",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/29_row0.png",
+      "source_crop_ids": [
+        "29_row0"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-d8dbaa4ee4e6d6cc",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 5,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row6.png",
+      "source_crop_ids": [
+        "33_row6"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-29"
+      ],
+      "name_crop_cluster_id": "name-dhash-d8dcd85b15963723",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/29_row3.png",
+      "source_crop_ids": [
+        "29_row3"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-33"
+      ],
+      "name_crop_cluster_id": "name-dhash-da9893d7b636266f",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 2,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/33_row3.png",
+      "source_crop_ids": [
+        "33_row3"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-32"
+      ],
+      "name_crop_cluster_id": "name-dhash-dad294d545a5a501",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/32_row4.png",
+      "source_crop_ids": [
+        "32_row4"
+      ]
+    },
+    {
+      "invoice_ids": [
+        "e05-synth-invoice-32"
+      ],
+      "name_crop_cluster_id": "name-dhash-e464cdc5a5a52b2a",
+      "occurrence_count": 1,
+      "price_observations": [],
+      "quantity_sum": 1,
+      "reference_crop_file": "tests/fixtures/real/n02-reference-crops/32_row2.png",
+      "source_crop_ids": [
+        "32_row2"
+      ]
+    }
+  ],
+  "price_observation_date_source": "header.printed_date",
+  "schema_version": "n02.product-candidates.v1",
+  "source_fixture_files": [
+    "tests/fixtures/real/canonical/canonical-29.json",
+    "tests/fixtures/real/canonical/canonical-31.json",
+    "tests/fixtures/real/canonical/canonical-32.json",
+    "tests/fixtures/real/canonical/canonical-33.json"
+  ]
+}
