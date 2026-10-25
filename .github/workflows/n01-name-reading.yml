@@ -1,0 +1,70 @@
+name: N-01 offline name OCR
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-name-reading:
+    name: Offline Persian name OCR / Python 3.11
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: src
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/n01-ocr-requirements.txt
+
+      - name: Install the pinned local OCR runtimes
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r scripts/n01-ocr-requirements.txt
+
+      - name: Fetch only the pinned Persian Tesseract model
+        shell: bash
+        run: |
+          set -euo pipefail
+          model_repo="$RUNNER_TEMP/tessdata-fast"
+          tessdata="$RUNNER_TEMP/tessdata"
+          mkdir -p "$model_repo" "$tessdata"
+          git -C "$model_repo" init -q
+          git -C "$model_repo" remote add origin https://github.com/tesseract-ocr/tessdata_fast.git
+          git -C "$model_repo" config core.sparseCheckout true
+          git -C "$model_repo" config core.sparseCheckoutCone false
+          printf 'fas.traineddata\n' > "$model_repo/.git/info/sparse-checkout"
+          git -C "$model_repo" fetch --no-tags --depth=1 --filter=blob:none origin 87416418657359cb625c412a48b6e1d6d41c29bd
+          git -C "$model_repo" checkout FETCH_HEAD
+          cp "$model_repo/fas.traineddata" "$tessdata/fas.traineddata"
+          sha256sum "$tessdata/fas.traineddata"
+
+      - name: Run the local-only N-01 OCR evaluation
+        run: |
+          python scripts/run_n01_name_reading.py \
+            --tessdata-dir "$RUNNER_TEMP/tessdata" \
+            --output-json "$RUNNER_TEMP/n01-name-reading.json" \
+            --output-markdown "$RUNNER_TEMP/n01-name-reading.md"
+          cat "$RUNNER_TEMP/n01-name-reading.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload N-01 raw outputs and metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: n01-name-reading-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/n01-name-reading.json
+            ${{ runner.temp }}/n01-name-reading.md
+          if-no-files-found: warn
+          retention-days: 14
