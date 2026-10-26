@@ -12,11 +12,15 @@ import hashlib
 import importlib.metadata
 import json
 import math
+import os
 import re
+import sys
 import time
+import types
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath, PureWindowsPath
-from typing import Any, Protocol
+from typing import Any, Iterator, Protocol
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_SCHEMA_VERSION = "n02.product-candidates.v1"
@@ -56,6 +60,39 @@ class NameSuggester(Protocol):
 
     def suggest(self, crop_path: Path) -> NameRecognition:
         """Recognize a crop and return zero, one, or multiple ordered text lines."""
+
+
+def _make_windows_resource_stub() -> types.ModuleType:
+    """Supply only the POSIX import seam ParisaOCR evaluates on Windows.
+
+    ParisaOCR 0.7.2 imports ``resource`` from its PDF-page module even when
+    only the image-line API is used. The image-only wrapper never calls the
+    PDF subprocess memory limiter; make an accidental call fail explicitly.
+    """
+    module = types.ModuleType("resource")
+    module.RLIMIT_AS = 0
+
+    def unsupported_setrlimit(*_args: Any, **_kwargs: Any) -> None:
+        raise RuntimeError(
+            "ParisaOCR's PDF subprocess memory limit requires POSIX resource APIs")
+
+    module.setrlimit = unsupported_setrlimit
+    return module
+
+
+@contextmanager
+def _windows_resource_import_compatibility() -> Iterator[None]:
+    """Temporarily satisfy ParisaOCR's unconditional POSIX-only module import."""
+    if os.name != "nt" or "resource" in sys.modules:
+        yield
+        return
+    shim = _make_windows_resource_stub()
+    sys.modules["resource"] = shim
+    try:
+        yield
+    finally:
+        if sys.modules.get("resource") is shim:
+            del sys.modules["resource"]
 
 
 @dataclass(frozen=True)
@@ -108,7 +145,15 @@ class ParisaOCRNameSuggester:
         try:
             import torch
             import parisaocr
-            from parisaocr import OCR
+            if os.name == "nt":
+                # ParisaOCR 0.7.2's image-only API imports a PDF helper that
+                # unconditionally imports POSIX ``resource``. The shim is
+                # limited to API import; its PDF memory-limit operation fails
+                # explicitly and is not part of this crop-only wrapper.
+                with _windows_resource_import_compatibility():
+                    from parisaocr import OCR
+            else:
+                from parisaocr import OCR
         except Exception as exc:  # pragma: no cover - optional runtime dependency
             raise RuntimeError(
                 "install the optional, pinned N-04 ParisaOCR requirements") from exc

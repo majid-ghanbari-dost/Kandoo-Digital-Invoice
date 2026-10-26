@@ -10,6 +10,7 @@ from scripts.n04_name_suggestions import (
     SCHEMA_VERSION,
     SOURCE_SCHEMA_VERSION,
     NameRecognition,
+    _make_windows_resource_stub,
     enrich_product_candidates,
 )
 
@@ -147,6 +148,12 @@ class N04NameSuggestionTests(unittest.TestCase):
             with self.subTest(value=value):
                 with self.assertRaises(ValueError):
                     NameRecognition(("نام",), value)
+
+    def test_windows_compatibility_stub_refuses_posix_only_memory_limit_calls(self) -> None:
+        resource_stub = _make_windows_resource_stub()
+        self.assertEqual(resource_stub.RLIMIT_AS, 0)
+        with self.assertRaisesRegex(RuntimeError, "requires POSIX resource APIs"):
+            resource_stub.setrlimit(resource_stub.RLIMIT_AS, (1024, 1024))
 
     def test_source_version_and_preexisting_suggestions_are_not_silently_overwritten(self) -> None:
         wrong_version = _source_document(("29_row0",))
