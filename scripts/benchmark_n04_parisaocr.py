@@ -166,7 +166,7 @@ def _emit_github_notice(title: str, payload: Any) -> None:
 
 
 def _chunk_github_notice_items(
-    items: list[Any], max_message_chars: int = 3000
+    items: list[Any], max_message_chars: int = 2500
 ) -> list[list[Any]]:
     """Split list data below the Actions annotation message-size limit."""
     chunks: list[list[Any]] = []
@@ -443,7 +443,7 @@ def main(argv: list[str] | None = None) -> int:
             key: distribution[key]
             for key in (
                 "name", "version", "license_expression", "license",
-                "license_classifiers", "license_files",
+                "license_classifiers",
             )
         }
         for distribution in result["license_inventory"]
