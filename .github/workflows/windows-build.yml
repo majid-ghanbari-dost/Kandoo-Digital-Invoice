@@ -13,6 +13,78 @@ permissions:
   contents: read
 
 jobs:
+  n04-parisaocr-windows:
+    name: N-04 optional ParisaOCR CPU measurements / Windows-latest
+    # Run the heavyweight optional stack only for N-04 task commits. The normal
+    # Windows CLI job below remains OCR-free and does not acquire these dependencies.
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'N-04:') }}
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: src;scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Create isolated OCR venv and measure baseline
+        shell: pwsh
+        run: |
+          $venv = Join-Path $env:RUNNER_TEMP 'n04-parisaocr-venv'
+          python -m venv $venv
+          $n04Python = Join-Path $venv 'Scripts/python.exe'
+          & $n04Python -m pip install --upgrade pip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $baseline = Join-Path $env:RUNNER_TEMP 'n04-site-packages-before.json'
+          & $n04Python scripts/benchmark_n04_parisaocr.py --snapshot-site-packages $baseline
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "N04_PYTHON=$n04Python" >> $env:GITHUB_ENV
+          "N04_INSTALL_BASELINE=$baseline" >> $env:GITHUB_ENV
+
+      - name: Install pinned optional ParisaOCR and Kraken runtime
+        shell: pwsh
+        run: |
+          $report = Join-Path $env:RUNNER_TEMP 'n04-pip-install-report.json'
+          $started = Get-Date
+          & $env:N04_PYTHON -m pip install --report $report -r scripts/n04-parisaocr-requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $elapsed = ((Get-Date) - $started).TotalSeconds
+          Write-Output ("N04_PIP_INSTALL_SECONDS={0:N3}" -f $elapsed)
+
+      - name: Run N-04 Windows CPU benchmark and suggestion pass
+        shell: pwsh
+        run: |
+          $json = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions.json'
+          $markdown = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions.md'
+          & $env:N04_PYTHON scripts/benchmark_n04_parisaocr.py `
+            --repo-root . `
+            --install-baseline $env:N04_INSTALL_BASELINE `
+            --output-json $json `
+            --output-markdown $markdown
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload raw N-04 Windows metrics and resolved dependency report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: n04-name-suggestions-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/n04-name-suggestions.json
+            ${{ runner.temp }}/n04-name-suggestions.md
+            ${{ runner.temp }}/n04-site-packages-before.json
+            ${{ runner.temp }}/n04-pip-install-report.json
+          if-no-files-found: warn
+          retention-days: 14
+
   windows-build:
     name: Windows / Python 3.11 / PyInstaller onedir
     runs-on: windows-latest
