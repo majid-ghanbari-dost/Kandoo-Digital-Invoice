@@ -129,7 +129,24 @@ The sole new annotated tag for the task is `stable-n-04`, targeting the N-04 clo
 
 **Intermediate CI evidence retained:** Windows push runs [40307573911](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40307573911) and [40308376556](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40308376556) failed because ParisaOCR imported POSIX-only `resource` on Windows; the narrow shim fixed the image-only path. Run [40308983293](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40308983293) had a separate red E-11 step in the ordinary Windows job while its N-04 measurement job passed; the same-SHA PR Windows run [40308988488](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40308988488) passed. The later measurement run 40311286720 was green on push.
 
-**Next serial work:** N-05 (versioned JSON Schema and four-fixture golden examples), then E-24, N-06, and E-25 per dispatch. N-01/N-04 evaluation references remain provisional and owner-unconfirmed. PR #11 remains open; `main` is unchanged.
+**Next serial work:** N-05 is complete; see its closeout below. Continue serially with E-24 → N-06 → E-25. N-01/N-04 evaluation references remain provisional and owner-unconfirmed. PR #11 remains open; `main` is unchanged.
+
+### N-05 closeout — versioned ProductCandidate and NameSuggestion examples (2026-10-26)
+
+N-05 adds [`schemas/n05/product_candidate_v1.schema.json`](schemas/n05/product_candidate_v1.schema.json), versioned as `n05.product-candidate.v1`, plus four real-fixture golden examples under `tests/fixtures/real/n05-goldens/` and a deterministic generator in `scripts/generate_n05_candidate_goldens.py`. The full scope and limitations are in [`docs/n05-product-candidate-contract.md`](docs/n05-product-candidate-contract.md).
+
+| Work group | Commit / tag | Result |
+|---|---|---|
+| N-05 schema, generator, tests, docs, and four goldens | `3f5a26e7add23d188163188ba61cfba6d802b691` | Adds a versioned sample envelope around the existing N-02 candidate fields; preserves N-02/N-04 output contracts and does not edit frozen `contracts/` or `adapter.py`. |
+| N-05 handoff closeout | The commit containing this N-05 section | `stable-n-05` is the sole N-05 annotated tag and targets this final closeout commit after its push checks pass. |
+
+The goldens use the recorded unprocessed ParisaOCR 0.7.2 outputs in `docs/n01-name-reading.json`, with model `parisaocr-fa-0.1`; suggestions preserve confidence, ordered lines (including the real two-line result for `33_row10`), engine/model versions, crop ID/path/SHA-256, and `accepted: false`. The selected `31_row0` ProductCandidate retains its existing N-02 aggregate with `32_row0` rather than splitting or rewriting that cluster. Raw OCR strings remain suggestions only; N-01/N-04 references are provisional and owner-unconfirmed.
+
+All four canonical fixtures have `header.printed_date: null`, so the real-fixture `price_observations` arrays remain empty. The schema defines explicit ISO-dated rials observations and tests a separate synthetic schema probe; no date is inferred or added to a real golden. The generator does not run OCR. Its same-input/same-output behavior is tested by generating twice from the same canonical inputs and pinned N-01 OCR output and comparing exact serialized bytes with all four committed goldens.
+
+**Verification:** full local suite **1,924 passed, 115 subtests passed**; focused N-05/N-04/N-02 tests **22 passed, 33 subtests passed**. On implementation commit `3f5a26e7add23d188163188ba61cfba6d802b691`, the push Python workflow [40315532534](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40315532534) and Windows workflow [40315532561](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40315532561) both succeeded. Final N-05 closeout CI is required to pass before `stable-n-05` is applied.
+
+**Next serial work:** E-24 → N-06 → E-25, per dispatch. PR #11 remains open; `main` is unchanged.
 
 ### Dispatch closeout — E-03-kit-v3 and E-15–E-18 (2026-10-24)
 

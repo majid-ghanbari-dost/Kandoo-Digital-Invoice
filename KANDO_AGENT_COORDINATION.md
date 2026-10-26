@@ -32,7 +32,14 @@ Operational coordination between implementation and governance agents. This file
 8. Never claim source integration or Holoo accuracy without verifiable artifacts and real-source evidence.
 9. No merge to `main` is authorized by this EOD update.
 
-## Current State — 2026-10-24
+## Current Serial Dispatch — 2026-10-26
+
+- Work remains on `arena/9dc17500-kandoo-digital-invoice`; PR #11 is open and `main` is unchanged. No merge, force-push, or frozen-contract edit is authorized.
+- N-04 is complete. N-05 schema, four-fixture examples, deterministic generator, tests, and documentation are implemented at `3f5a26e7add23d188163188ba61cfba6d802b691`. Its push Python run [40315532534](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40315532534) and Windows run [40315532561](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40315532561) both passed.
+- The N-05 handoff closeout commit receives the only N-05 annotated tag, `stable-n-05`, after its final Python and Windows push workflows pass. Evaluation references stay provisional and owner-unconfirmed; dated price observations are not inferred from the four null-date fixtures.
+- Next serial work: **E-24 → N-06 → E-25**.
+
+## Historical State — 2026-10-24
 
 ### E-03-kit-v1 — archived and obsolete
 
