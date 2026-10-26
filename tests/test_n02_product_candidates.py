@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 from jsonschema import Draft202012Validator, FormatChecker
 from PIL import Image
@@ -19,11 +23,18 @@ from run_n02_product_candidates import (  # noqa: E402
     aggregate_candidate_occurrences,
     build_product_candidates,
     collect_candidate_occurrences,
+    main as n02_main,
+    _read_canonical_fixtures,
     serialize_document,
 )
 
 SCHEMA_PATH = ROOT / "schemas" / "product_candidate_prototype_v1.json"
 GOLDEN_PATH = ROOT / "tests" / "fixtures" / "real" / "canonical" / "product-candidates.golden.json"
+DATED_GOLDEN_PATH = (
+    ROOT / "tests" / "fixtures" / "real" / "canonical"
+    / "product-candidates-captured-at.golden.json"
+)
+SYNTHETIC_CAPTURED_AT = "2099-01-02T03:04:05+03:30"
 
 
 class N02ProductCandidateTests(unittest.TestCase):
@@ -87,8 +98,104 @@ class N02ProductCandidateTests(unittest.TestCase):
         self.assertNotIn("دستمال", serialized)
         self.assertNotIn("رد پا", serialized)
         self.assertNotIn("خلال", serialized)
-        self.assertEqual(output["price_observation_date_source"], "header.printed_date")
+        self.assertEqual(output["price_observation_date_source"], "probe.captured_at")
         self.assertTrue(all(not item["price_observations"] for item in output["candidates"]))
+
+    def test_probe_capture_timestamp_dates_all_golden_fixture_observations(self) -> None:
+        output = build_product_candidates(
+            ROOT,
+            captured_at=SYNTHETIC_CAPTURED_AT,
+            write_reference_crops=False,
+        )
+        self.validator.validate(output)
+        expected = json.loads(DATED_GOLDEN_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(output, expected)
+        self.assertEqual(
+            serialize_document(output),
+            DATED_GOLDEN_PATH.read_text(encoding="utf-8"),
+        )
+        observations = [
+            observation
+            for candidate in output["candidates"]
+            for observation in candidate["price_observations"]
+        ]
+        self.assertEqual(len(observations), 25)
+        self.assertEqual(
+            {observation["observed_on"] for observation in observations},
+            {"2099-01-02"},
+        )
+        self.assertEqual(
+            {observation["source_crop_id"] for observation in observations},
+            {
+                f"{fixture_id}_row{row_index}"
+                for fixture_id, row_count in (("29", 4), ("31", 3), ("32", 5), ("33", 13))
+                for row_index in range(row_count)
+            },
+        )
+
+    def test_canonical_probe_captured_at_is_used_when_no_cli_override_is_given(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="n02-header-captured-at-") as temp:
+            temp_root = Path(temp)
+            canonical_dir = temp_root / "tests/fixtures/real/canonical"
+            canonical_dir.mkdir(parents=True)
+            for filename in (
+                "synthesis-manifest.json",
+                *(f"canonical-{fixture_id}.json" for fixture_id in ("29", "31", "32", "33")),
+            ):
+                source = ROOT / "tests/fixtures/real/canonical" / filename
+                data = json.loads(source.read_text(encoding="utf-8"))
+                if filename.startswith("canonical-"):
+                    data["header"]["captured_at"] = SYNTHETIC_CAPTURED_AT
+                (canonical_dir / filename).write_text(
+                    json.dumps(data, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+
+            fixtures = _read_canonical_fixtures(temp_root)
+
+        self.assertEqual(
+            {fixture["_n02_observed_on"] for fixture in fixtures.values()},
+            {"2099-01-02"},
+        )
+
+    def test_capture_timestamp_requires_an_explicit_offset(self) -> None:
+        with self.assertRaisesRegex(ValueError, "UTC offset"):
+            build_product_candidates(
+                ROOT,
+                captured_at="2026-10-26T11:12:13",
+                write_reference_crops=False,
+            )
+
+    def test_n02_cli_passes_captured_at_to_the_builder(self) -> None:
+        document = {
+            "schema_version": "n02.product-candidates.v1",
+            "source_fixture_files": [],
+            "price_observation_date_source": "probe.captured_at",
+            "candidates": [],
+        }
+        with tempfile.TemporaryDirectory(prefix="n02-captured-at-cli-") as temp:
+            output_path = Path(temp) / "candidates.json"
+            stdout = io.StringIO()
+            with patch(
+                "run_n02_product_candidates.build_product_candidates",
+                return_value=document,
+            ) as builder, contextlib.redirect_stdout(stdout):
+                code = n02_main([
+                    "--repo-root",
+                    str(ROOT),
+                    "--output-json",
+                    str(output_path),
+                    "--captured-at",
+                    SYNTHETIC_CAPTURED_AT,
+                ])
+
+            builder.assert_called_once_with(ROOT, captured_at=SYNTHETIC_CAPTURED_AT)
+            self.assertEqual(code, 0)
+            self.assertEqual(
+                json.loads(output_path.read_text(encoding="utf-8")),
+                document,
+            )
+            self.assertIn('"dated_price_observation_count": 0', stdout.getvalue())
 
     def test_reference_crop_files_exist_and_are_readable(self) -> None:
         output = build_product_candidates(ROOT, write_reference_crops=False)
@@ -114,7 +221,7 @@ class N02ProductCandidateTests(unittest.TestCase):
             invoice_id="e05-synth-invoice-34",
             quantity=4,
             unit_price_rials=123456,
-            printed_date="2099-12-31",  # Synthetic sentinel for the date serialization path.
+            observed_on="2099-12-31",  # Synthetic sentinel for the date serialization path.
         )
 
         after = aggregate_candidate_occurrences([*occurrences, added])

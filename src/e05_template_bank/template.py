@@ -342,11 +342,17 @@ class LayoutTemplate:
 
 @dataclass(frozen=True)
 class TemplateBank:
-    """A serializable collection of layout templates and match policy."""
+    """Serializable layout policy with an explicit, fail-closed currency setting.
+
+    ``currency_unit`` is onboarding metadata, not a conversion instruction.
+    E-06 accepts only ``"rial"`` or ``"toman"``; missing or unsupported values
+    are retained on load so the verdict layer can route the candidate to REVIEW.
+    """
 
     templates: tuple[LayoutTemplate, ...]
     confidence_threshold: float = 0.85
     algorithm_version: str = "e05-template-bank-v1"
+    currency_unit: str | None = None
 
     def __post_init__(self) -> None:
         if not self.templates:
@@ -362,6 +368,7 @@ class TemplateBank:
         return {
             "algorithm_version": self.algorithm_version,
             "confidence_threshold": self.confidence_threshold,
+            "currency_unit": self.currency_unit,
             "templates": [template.to_dict() for template in self.templates],
         }
 
@@ -373,6 +380,7 @@ class TemplateBank:
             templates=tuple(
                 LayoutTemplate.from_dict(item) for item in value["templates"]
             ),
+            currency_unit=value.get("currency_unit"),
         )
 
 

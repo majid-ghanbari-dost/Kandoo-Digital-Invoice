@@ -330,8 +330,13 @@ def build_template_bank(
     labels_path: str | Path | None = None,
     *,
     confidence_threshold: float = 0.85,
+    currency_unit: str | None = None,
 ) -> TemplateBank:
-    """Validate label-derived Canonical fixtures and build clustered templates."""
+    """Build clustered templates and retain the caller's onboarding currency.
+
+    The builder never infers or converts the unit from fixture values. Omitted
+    and unsupported values remain on the bank for E-06 to route to REVIEW.
+    """
     observations = load_training_observations(canonical_dir, labels_path)
     clusters: list[list[LayoutObservation]] = []
     for observation in observations:
@@ -345,7 +350,11 @@ def build_template_bank(
         _aggregate_cluster(cluster, index)
         for index, cluster in enumerate(clusters, start=1)
     )
-    return TemplateBank(templates=templates, confidence_threshold=confidence_threshold)
+    return TemplateBank(
+        templates=templates,
+        confidence_threshold=confidence_threshold,
+        currency_unit=currency_unit,
+    )
 
 
 def match_observation(

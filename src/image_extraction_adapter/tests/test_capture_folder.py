@@ -59,6 +59,10 @@ class CaptureFolderAdapterTests(unittest.TestCase):
         self.assertEqual(set(result["numeric_candidates"]), ALLOWED_KINDS)
         self.assertEqual(result["accuracy"]["status"], "NOT_SCORED")
         self.assertEqual(set(result["accuracy"]["fields"]), ALLOWED_KINDS)
+        self.assertEqual(result["captured_at"], None)
+        self.assertEqual(result["e05_bank"]["currency_unit"], None)
+        self.assertEqual(result["e05_bank"]["currency_unit_status"], "UNCONFIRMED")
+        self.assertIn("CURRENCY_UNIT_UNCONFIRMED", result["e06"]["reason_codes"])
         self.assertTrue(result["numeric_candidates"]["quantity"])
         self.assertTrue(result["numeric_candidates"]["line_total"])
         self.assertTrue(result["numeric_candidates"]["payable"])
@@ -176,6 +180,44 @@ class CaptureFolderAdapterTests(unittest.TestCase):
         self.assertEqual(payload["verdict"], "REVIEW")
         self.assertIn("REVIEW", stderr.getvalue())
         self.assertIn("E-06", stderr.getvalue())
+
+    def test_cli_passes_probe_capture_timestamp_through_capture_folder_mode(self):
+        timestamp = "2026-10-26T11:12:13+03:30"
+        with tempfile.TemporaryDirectory(prefix="e12-capture-captured-at-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                exit_code = main([
+                    "extract",
+                    "--capture-folder",
+                    str(folder),
+                    "--captured-at",
+                    timestamp,
+                ])
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(exit_code, 10)
+        self.assertEqual(payload["captured_at"], timestamp)
+        self.assertEqual(payload["status"], "REVIEW")
+
+    def test_cli_rejects_capture_timestamp_without_explicit_offset(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-invalid-timestamp-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                exit_code = main([
+                    "extract",
+                    "--capture-folder",
+                    str(folder),
+                    "--captured-at",
+                    "2026-10-26T11:12:13",
+                ])
+
+        self.assertEqual(exit_code, 30)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("--captured-at", stderr.getvalue())
 
     def test_cli_writes_error_json_to_out_and_keeps_summary_on_stderr(self):
         with tempfile.TemporaryDirectory(prefix="e12-capture-out-") as temp:

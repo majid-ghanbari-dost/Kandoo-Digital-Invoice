@@ -272,7 +272,7 @@ def run_dry_run() -> tuple[list[dict[str, Any]], dict[str, int]]:
         raise RuntimeError(f"Pillow and jsonschema are required for the dry-run: {exc}") from exc
 
     entries, by_id = _read_inputs()
-    bank = build_template_bank(CANONICAL_DIR, LABELS_PATH)
+    bank = build_template_bank(CANONICAL_DIR, LABELS_PATH, currency_unit="rial")
     records: list[dict[str, Any]] = []
     totals = {"correct": 0, "not_extracted": 0, "wrong": 0, "expected": 0}
 

@@ -123,7 +123,7 @@ def _candidate_invoice(invoice: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_artifacts() -> dict[str, dict[str, Any]]:
-    bank = build_template_bank(CANONICAL_DIR, LABELS_PATH)
+    bank = build_template_bank(CANONICAL_DIR, LABELS_PATH, currency_unit="rial")
     observations = load_training_observations(CANONICAL_DIR, LABELS_PATH)
     observation = next(item for item in observations if item.source_id == SOURCE_FIXTURE_ID)
     invoice = _load_canonical(SOURCE_FIXTURE_ID)

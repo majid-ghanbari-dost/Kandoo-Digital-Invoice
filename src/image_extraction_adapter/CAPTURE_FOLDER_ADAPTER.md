@@ -6,14 +6,22 @@ From the repository root, with `src/` on `PYTHONPATH`:
 
 ```sh
 PYTHONPATH=src python -m image_extraction_adapter.cli extract \
-  --capture-folder <capture-folder> [--out <result.json>]
+  --capture-folder <capture-folder> [--captured-at <ISO-8601>] [--out <result.json>]
 ```
 
 The adapter module is `image_extraction_adapter.capture_folder`.
 `--templates <path>` may select an alternate E-02/Glyph bank; `--e05-bank <path>` may select an approved serialized E-05 layout bank. If no E-05 bank is
 specified, the local default is built from the repository's existing fixture
 labels and Canonical fixtures; this is a development proxy, not a store's
-production bank.
+production bank. E-05 bank artifacts store a `currency_unit` field; only the
+explicit values `rial` and `toman` are confirmed. Unset or unsupported values
+are reported as unconfirmed and keep E-06 in REVIEW. No currency conversion is
+performed.
+
+`--captured-at` accepts the offset-aware ISO 8601 `captured_at` value supplied
+by KandooPrintProbe. The caller must pass it explicitly; the adapter records it
+and forwards it to E-02. The raw `Report.txt` remains inventoried, not parsed,
+because the real Probe report format has not been supplied.
 
 The machine-readable result is JSON on stdout unless `--out` is supplied, in
 which case it is written atomically to that file. A concise human summary is

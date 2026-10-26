@@ -376,13 +376,19 @@ def _page_observation(
         return None, f"E-05 observation could not be built: {type(exc).__name__}: {exc}"
 
 
-def _error_result(folder: str | Path, problems: tuple[CaptureProblem, ...]) -> dict[str, Any]:
+def _error_result(
+    folder: str | Path,
+    problems: tuple[CaptureProblem, ...],
+    *,
+    captured_at: str | None = None,
+) -> dict[str, Any]:
     return {
         "result_version": RESULT_VERSION,
         "status": "ERROR",
         "verdict": Verdict.REJECT.value,
         "verdict_source": "capture-artifact-validation",
         "capture_folder": str(Path(folder).expanduser()),
+        "captured_at": captured_at,
         "errors": [problem.to_dict() for problem in problems],
         "scoring_fields": list(SCORING_FIELDS),
         "accuracy": {
@@ -402,18 +408,21 @@ def extract_capture_folder(
     *,
     templates_path: str | Path = DEFAULT_TEMPLATE_BANK_PATH,
     e05_bank_path: str | Path | None = None,
+    captured_at: str | None = None,
 ) -> dict[str, Any]:
     """Run E-02, E-05, and fail-closed E-06 on one capture folder.
 
     The result is JSON-serializable. It never produces ACCEPT because the
     capture-folder contract does not contain producer-owned Canonical Invoice
     context (identities, customer and product-name mapping). This missing
-    context is surfaced as an E-06 REVIEW rather than invented.
+    context is surfaced as an E-06 REVIEW rather than invented. An optional
+    offset-aware ``captured_at`` value is passed to E-02 and retained in the
+    result; Probe ``Report.txt`` content itself is not parsed.
     """
     try:
         capture = inspect_capture_folder(folder)
     except CaptureFolderValidationError as exc:
-        return _error_result(exc.folder, exc.problems)
+        return _error_result(exc.folder, exc.problems, captured_at=captured_at)
 
     bank: TemplateBank | None = None
     bank_error: str | None = None
@@ -428,7 +437,11 @@ def extract_capture_folder(
     blocked_pages: list[int] = []
     for page in capture.pages:
         try:
-            pipeline = extract_pipeline_v0(page.path, templates_path=templates_path)
+            pipeline = extract_pipeline_v0(
+                page.path,
+                templates_path=templates_path,
+                captured_at=captured_at,
+            )
         except Exception as exc:
             page_results.append({
                 **page.to_dict(),
@@ -557,12 +570,17 @@ def extract_capture_folder(
         status = Verdict.REJECT.value
     else:
         status = overall_verdict
+    currency_unit = getattr(bank, "currency_unit", None) if bank is not None else None
+    currency_unit_confirmed = (
+        type(currency_unit) is str and currency_unit in ("rial", "toman")
+    )
     return {
         "result_version": RESULT_VERSION,
         "status": status,
         "verdict": overall_verdict,
         "verdict_source": "E-06 with E-02 block override" if has_blocked_pages else "E-06",
         "capture_folder": str(capture.path),
+        "captured_at": captured_at,
         "artifacts": capture.artifacts_dict(),
         "scoring_fields": list(SCORING_FIELDS),
         "accuracy": {
@@ -580,6 +598,12 @@ def extract_capture_folder(
         "pages": page_results,
         "e05_bank": {
             "status": "AVAILABLE" if bank is not None else "UNAVAILABLE",
+            "currency_unit": currency_unit,
+            "currency_unit_status": (
+                "UNAVAILABLE"
+                if bank is None
+                else "CONFIRMED" if currency_unit_confirmed else "UNCONFIRMED"
+            ),
             "template_count": len(bank.templates) if bank is not None else 0,
             "source_invoice_ids": sorted({
                 source_id

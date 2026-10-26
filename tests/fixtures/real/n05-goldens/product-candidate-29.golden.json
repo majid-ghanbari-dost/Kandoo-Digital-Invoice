@@ -31,7 +31,7 @@
     ]
   },
   "name_suggestions_enabled": true,
-  "price_observation_date_source": "header.printed_date",
+  "price_observation_date_source": "probe.captured_at",
   "schema_version": "n05.product-candidate.v1",
   "source_fixture_file": "tests/fixtures/real/canonical/canonical-29.json",
   "source_fixture_id": "29",

@@ -17,10 +17,12 @@ reviewed before Canonical validation; a complete but invalid Canonical object
 is rejected.
 
 Output is `ACCEPT`, `REVIEW`, or `REJECT` plus one or more stable machine-readable
-reason codes. The result is advisory and non-mutating. **ACCEPT is never based
-on template score alone**: the owner-verification record is required because the
-available E-05 scores are training-set resubstitution and OCR confidence is not
-a proof of correctness.
+reason codes. The E-05 bank must also contain the explicit onboarding
+`currency_unit` (`rial` or `toman`). A missing or unsupported value keeps a
+candidate in REVIEW; E-06 never guesses a unit or converts an amount. The result
+is advisory and non-mutating. **ACCEPT is never based on template score alone**:
+the owner-verification record is required because the available E-05 scores are
+training-set resubstitution and OCR confidence is not a proof of correctness.
 
 ## 2. Decision thresholds
 
@@ -48,7 +50,11 @@ not statistically calibrated production error rates.
 ## 3. Multi-signal decision (defense in depth)
 
 E-06 consumes E-05's scoring rather than recomputing geometry. It evaluates all
-available gates and never silently repairs or normalizes an input:
+available gates and never silently repairs or normalizes an input. Before a
+candidate can become eligible for acceptance, the bank's `currency_unit` must
+be exactly `rial` or `toman`; old banks without the field and banks with invalid
+values remain reviewable but cannot pass this gate. No numeric values are
+scaled, multiplied, or otherwise converted.
 
 1. **Template match:** use E-05's best `TemplateMatch`, score, matched flag, and
    `component_scores`. A score below 0.80 is `REJECT/NO_MATCH`; a score from
@@ -109,9 +115,10 @@ before the current candidate.
   No automatic acceptance or online template update occurs during this phase.
   The owner/operator reviews the known-answer kit and records confirmed values.
 - After four invoices have been processed, the onboarding workflow may lock an
-  immutable per-store template-bank snapshot. `processed_invoice_count >= 4`
-  alone is not evidence that the bank is locked; the caller must set the
-  explicit locked state after its review procedure succeeds.
+  immutable per-store template-bank snapshot, including the explicitly selected
+  currency unit. `processed_invoice_count >= 4` alone is not evidence that the
+  bank is locked; the caller must set the explicit locked state after its review
+  procedure succeeds.
 - Subsequent invoices are evaluated against that locked bank. A changed or
   unlocked bank returns REVIEW; E-06 never silently learns from a production
   invoice. Even after N, score thresholds do not bypass the D14 gate or the
@@ -145,6 +152,7 @@ never hidden by a later passing signal.
 | ACCEPT | `OWNER_VERIFICATION_AUDITED` | A store-owner audit verifies every required field for this invoice. |
 | REVIEW | `LOW_CONFIDENCE` | Effective confidence is from 0.80 to below 0.95, or a confidence value is missing. |
 | REVIEW | `ACCOUNTING_ADJUSTMENT_UNSUPPORTED` | Non-zero extra/tax/discount/rounding data needs accounting semantics E-06 does not model. |
+| REVIEW | `CURRENCY_UNIT_UNCONFIRMED` | The bank's `currency_unit` is missing or not exactly `rial`/`toman`; no guess or conversion is made. |
 | REVIEW | `PARTIAL_MATCH` | Candidate/observations are incomplete or a declared extraction field is missing. |
 | REVIEW | `NEW_LAYOUT` | No usable template is present, or the candidate appears to use an unfamiliar layout. |
 | REVIEW | `MULTI_TEMPLATE_AMBIGUOUS` | The top two E-05 template scores differ by less than the configured ambiguity margin. |
@@ -189,6 +197,9 @@ warm-up, numeric evidence, legal gate, or owner verification.
 
 - **First invoice / no template:** always REVIEW with `NEW_LAYOUT`; no score is
   fabricated and no empty bank is treated as a zero-confidence rejection.
+- **Missing/invalid currency unit:** REVIEW with
+  `CURRENCY_UNIT_UNCONFIRMED`, even when all layout and amount checks pass. Do
+  not guess rial/toman from digits, labels, or magnitudes, and do not convert.
 - **Mixed templates:** use E-05 `score_bank()`; if the top two results are
   separated by less than the configured margin, REVIEW with
   `MULTI_TEMPLATE_AMBIGUOUS`. Do not guess a template or update the bank.

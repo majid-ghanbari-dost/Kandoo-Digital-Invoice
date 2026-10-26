@@ -223,7 +223,7 @@ def _write_capture_result(result: dict[str, Any], output_path: Path | None) -> b
 
 
 def _run_capture_folder(args: argparse.Namespace) -> int:
-    if args.context is not None or args.captured_at is not None or args.multi_evidence:
+    if args.context is not None or args.multi_evidence:
         result = {
             "result_version": "capture-folder-result-v1",
             "status": "ERROR",
@@ -232,7 +232,7 @@ def _run_capture_folder(args: argparse.Namespace) -> int:
             "capture_folder": str(args.capture_folder),
             "errors": [{
                 "code": "UNSUPPORTED_CAPTURE_OPTION",
-                "message": "--context, --captured-at, and --multi-evidence are not used by --capture-folder mode",
+                "message": "--context and --multi-evidence are not used by --capture-folder mode",
             }],
             "scoring_fields": ["quantity", "line_total", "payable"],
             "accuracy": {
@@ -246,11 +246,13 @@ def _run_capture_folder(args: argparse.Namespace) -> int:
             "e06": None,
         }
     else:
+        _validate_captured_at(args.captured_at)
         try:
             result = extract_capture_folder(
                 args.capture_folder,
                 templates_path=args.templates,
                 e05_bank_path=args.e05_bank,
+                captured_at=args.captured_at,
             )
         except Exception as exc:
             result = {

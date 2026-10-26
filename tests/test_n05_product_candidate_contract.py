@@ -79,8 +79,8 @@ class N05ProductCandidateContractTests(unittest.TestCase):
                 fixture_path = ROOT / example["source_fixture_file"]
                 self.assertTrue(fixture_path.is_file())
                 fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
-                self.assertIsNone(fixture["header"]["printed_date"])
-                self.assertEqual(example["price_observation_date_source"], "header.printed_date")
+                self.assertIsNone(fixture["header"]["captured_at"])
+                self.assertEqual(example["price_observation_date_source"], "probe.captured_at")
 
                 candidate = example["candidate"]
                 _validate_example_relationships(example)
@@ -146,8 +146,8 @@ class N05ProductCandidateContractTests(unittest.TestCase):
             self.validator.validate(example)
 
     def test_price_observation_schema_accepts_only_explicitly_dated_records(self) -> None:
-        # Synthetic schema probe only. Real fixture goldens remain empty because
-        # all four source fixtures have a null printed_date.
+        # Synthetic schema probe only. The committed examples remain empty
+        # because the canonical fixtures carry no Probe captured_at value.
         example = copy.deepcopy(self._golden("29"))
         example["candidate"]["price_observations"] = [{
             "observed_on": "2099-01-02",

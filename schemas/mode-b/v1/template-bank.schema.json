@@ -61,6 +61,7 @@
       "required": [
         "algorithm_version",
         "confidence_threshold",
+        "currency_unit",
         "templates"
       ],
       "properties": {
@@ -72,6 +73,9 @@
           "type": "number",
           "exclusiveMinimum": 0,
           "maximum": 1
+        },
+        "currency_unit": {
+          "enum": ["rial", "toman", null]
         },
         "templates": {
           "type": "array",

@@ -293,7 +293,7 @@
       ]
     }
   ],
-  "price_observation_date_source": "header.printed_date",
+  "price_observation_date_source": "probe.captured_at",
   "schema_version": "n02.product-candidates.v1",
   "source_fixture_files": [
     "tests/fixtures/real/canonical/canonical-29.json",

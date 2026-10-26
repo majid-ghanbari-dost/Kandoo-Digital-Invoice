@@ -43,7 +43,7 @@ NOW = "2026-10-23T12:00:00Z"
 
 @pytest.fixture(scope="module")
 def e05_context():
-    bank = build_template_bank(CANONICAL_DIR, LABELS_PATH)
+    bank = build_template_bank(CANONICAL_DIR, LABELS_PATH, currency_unit="rial")
     observations = load_training_observations(CANONICAL_DIR, LABELS_PATH)
     existing_layout = next(observation for observation in observations if observation.source_id == "29")
     new_meta = json.loads((FIXTURE_DIR / "new-type-invoice.meta.json").read_text(encoding="utf-8"))

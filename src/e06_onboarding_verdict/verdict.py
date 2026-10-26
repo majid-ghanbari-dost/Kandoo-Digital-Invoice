@@ -389,6 +389,18 @@ def _required_component_scores(
     return normalized, ()
 
 
+_CURRENCY_UNIT_REVIEW_DETAIL = (
+    "Template-bank currency_unit is missing or unsupported; E-06 never guesses or converts amounts."
+)
+
+
+def _currency_unit_confirmed(template_bank: TemplateBank | None) -> bool:
+    if template_bank is None:
+        return False
+    currency_unit = getattr(template_bank, "currency_unit", None)
+    return type(currency_unit) is str and currency_unit in ("rial", "toman")
+
+
 def _schema_validation(invoice: Mapping[str, Any]) -> tuple[bool, tuple[str, ...]]:
     try:
         valid, errors = validate_canonical_invoice(dict(invoice))
@@ -420,12 +432,18 @@ def evaluate_verdict(
     """
     if not isinstance(thresholds, VerdictThresholds):
         raise TypeError("thresholds must be VerdictThresholds")
+    currency_unit_confirmed = _currency_unit_confirmed(template_bank)
     if type(processed_invoice_count) is not int or processed_invoice_count < 0:
+        reasons = [ReasonCode.ONBOARDING_WARMUP]
+        details = ["processed_invoice_count must be a non-negative integer"]
+        if template_bank is not None and not currency_unit_confirmed:
+            reasons.append(ReasonCode.CURRENCY_UNIT_UNCONFIRMED)
+            details.append(_CURRENCY_UNIT_REVIEW_DETAIL)
         return _apply_manual_override(
             _result(
                 Verdict.REVIEW,
-                (ReasonCode.ONBOARDING_WARMUP,),
-                details=("processed_invoice_count must be a non-negative integer",),
+                reasons,
+                details=details,
             ),
             manual_override,
             required_fields=(),
@@ -434,13 +452,19 @@ def evaluate_verdict(
     if missing_fields or invoice is None:
         missing = tuple(sorted({str(field) for field in missing_fields if str(field)}))
         reasons = [ReasonCode.PARTIAL_MATCH]
+        details = [
+            f"Missing fields: {', '.join(missing)}" if missing else "Invoice candidate is absent"
+        ]
         if template_bank is None or observation is None:
             reasons.append(ReasonCode.NEW_LAYOUT)
+        if template_bank is not None and not currency_unit_confirmed:
+            reasons.append(ReasonCode.CURRENCY_UNIT_UNCONFIRMED)
+            details.append(_CURRENCY_UNIT_REVIEW_DETAIL)
         return _apply_manual_override(
             _result(
                 Verdict.REVIEW,
                 reasons,
-                details=(f"Missing fields: {', '.join(missing)}" if missing else "Invoice candidate is absent",),
+                details=details,
             ),
             manual_override,
             required_fields=(),
@@ -481,15 +505,23 @@ def evaluate_verdict(
     positive_reasons.append(ReasonCode.NUMS_CONSISTENT)
 
     if template_bank is None or observation is None:
+        reasons = [*positive_reasons, ReasonCode.NEW_LAYOUT]
+        details = ["No E-05 template bank or layout observation is available"]
+        if template_bank is not None and not currency_unit_confirmed:
+            reasons.append(ReasonCode.CURRENCY_UNIT_UNCONFIRMED)
+            details.append(_CURRENCY_UNIT_REVIEW_DETAIL)
         return _apply_manual_override(
             _result(
                 Verdict.REVIEW,
-                (*positive_reasons, ReasonCode.NEW_LAYOUT),
-                details=("No E-05 template bank or layout observation is available",),
+                reasons,
+                details=details,
             ),
             manual_override,
             required_fields=required_owner_verification_fields(invoice),
         )
+
+    if not currency_unit_confirmed:
+        positive_reasons.append(ReasonCode.CURRENCY_UNIT_UNCONFIRMED)
 
     try:
         template_match = match_observation(template_bank, observation)
@@ -681,6 +713,8 @@ def evaluate_verdict(
     if effective_confidence < thresholds.accept_confidence:
         code = ReasonCode.LOW_CONFIDENCE
         review_details = ["Effective confidence is below the 0.95 acceptance-eligibility threshold"]
+        if ReasonCode.CURRENCY_UNIT_UNCONFIRMED in positive_reasons:
+            review_details.append(_CURRENCY_UNIT_REVIEW_DETAIL)
         if self_match_detail:
             review_details.append(self_match_detail)
         if coverage_required and not coverage_passed:
@@ -726,6 +760,7 @@ def evaluate_verdict(
     blockers = {
         ReasonCode.PARTIAL_MATCH,
         ReasonCode.ACCOUNTING_ADJUSTMENT_UNSUPPORTED,
+        ReasonCode.CURRENCY_UNIT_UNCONFIRMED,
         ReasonCode.SELF_MATCH_RESUBSTITUTION,
         ReasonCode.MULTI_TEMPLATE_AMBIGUOUS,
         ReasonCode.ATTENTION_REQUIRED,
@@ -744,6 +779,9 @@ def evaluate_verdict(
             details=tuple(
                 item
                 for item in (
+                    _CURRENCY_UNIT_REVIEW_DETAIL
+                    if ReasonCode.CURRENCY_UNIT_UNCONFIRMED in positive_reasons
+                    else "",
                     self_match_detail,
                     f"Kit digit counts: {digit_counts}" if coverage_required and not coverage_passed else "",
                     "Non-zero accounting adjustments are not interpreted by E-06" if unmodeled_adjustments else "",

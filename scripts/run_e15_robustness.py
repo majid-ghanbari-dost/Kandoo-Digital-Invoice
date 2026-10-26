@@ -378,7 +378,7 @@ def run_matrix() -> tuple[list[dict[str, Any]], dict[str, int]]:
     entries, by_id = _read_inputs()
     if tuple(sorted(by_id, key=int)) != EXPECTED_FIXTURE_IDS:
         raise RobustnessRunError("expected the four labeled fixtures 29, 31, 32, and 33")
-    e05_bank = build_template_bank(CANONICAL_DIR, LABELS_PATH)
+    e05_bank = build_template_bank(CANONICAL_DIR, LABELS_PATH, currency_unit="rial")
     records: list[dict[str, Any]] = []
     totals = {
         "runs": 0,

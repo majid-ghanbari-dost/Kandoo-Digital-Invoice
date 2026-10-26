@@ -12,7 +12,7 @@ The schema makes the following rules explicit:
 - Every suggestion has a crop ID, repository-relative crop file, and SHA-256 reference. Tests verify that this crop matches the candidate's reference crop and its current bytes.
 - `accepted` is constrained to `false`. A suggestion cannot be auto-accepted by this contract; confidence is diagnostic, not calibrated.
 - When suggestions are enabled, the candidate has at least one suggestion. When disabled, the suggestion array is empty.
-- A price observation requires an explicit ISO date, a positive `unit_price_rials`, invoice ID, and source crop ID. The date source remains `header.printed_date`; there is no date inference.
+- A price observation requires an explicit ISO date, a positive `unit_price_rials`, invoice ID, and source crop ID. Its date source is the offset-aware Probe `captured_at` timestamp passed to N-02 (or recorded in `header.captured_at`); invoice-image dates are not read.
 
 ## Real-fixture goldens
 
@@ -27,7 +27,7 @@ The examples are under `tests/fixtures/real/n05-goldens/`, with one selected ref
 
 All examples identify `ParisaOCR` version `0.7.2` and model `parisaocr-fa-0.1`. The displayed strings are OCR suggestions, not verified product names. N-01/N-04 evaluation references remain provisional and owner-unconfirmed; these records make no accuracy claim and remain unaccepted.
 
-The four canonical fixtures have `header.printed_date: null`. Accordingly, every real-fixture golden has `price_observations: []`. No dates or price trends have been invented. The schema test also validates one explicitly marked synthetic dated observation to exercise the `PriceObservation` shape; that probe is not stored as a real golden and is not evidence from a fixture. Prices remain represented in rials as in N-02. N-06 will separately address explicit rial/toman onboarding and Probe capture dates.
+The four canonical fixtures have `header.captured_at: null`, and the N-05 golden generator does not receive a Probe timestamp; accordingly every committed N-05 example has `price_observations: []`. No dates or price trends have been invented. The N-02 dated-path golden separately exercises the capture-time path with a clearly synthetic sentinel. The N-05 schema test also validates an explicitly synthetic dated observation; it is not evidence from a fixture. Price integers remain as supplied by the Canonical test fixtures; no rial/toman conversion is performed.
 
 ## Idempotency and reproduction
 

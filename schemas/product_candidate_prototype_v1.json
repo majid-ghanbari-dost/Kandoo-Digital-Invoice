@@ -29,7 +29,7 @@
       }
     },
     "price_observation_date_source": {
-      "const": "header.printed_date"
+      "const": "probe.captured_at"
     },
     "candidates": {
       "type": "array",

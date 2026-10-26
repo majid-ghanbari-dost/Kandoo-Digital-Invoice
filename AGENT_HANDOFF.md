@@ -156,7 +156,13 @@ The deterministic runner covers **11/11 safe routes** (EXTRACTED only with exact
 
 Implementation commit `b8f4047cef946daaab3f11880669266de932e5bb` was pushed; Python run [40322487925](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40322487925) and Windows run [40322487999](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40322487999) both passed. Local focused tests: **10 passed, 4 subtests passed**; full suite: **1,934 passed, 119 subtests passed**. The only package-surface change is `src/image_extraction_adapter/__init__.py`; `src/image_extraction_adapter/adapter.py` and `contracts/` are unchanged. The sole new annotated E-24 tag is `stable-e-24`, to target the E-24 handoff closeout commit after both closeout workflows pass.
 
-**Next serial work:** N-06 → E-25, per dispatch. PR #11 remains open; `main` is unchanged.
+### N-06 closeout — explicit currency unit and Probe capture dates (2026-10-26)
+
+N-06 adds explicit `currency_unit` metadata to the E-05 `TemplateBank` and its JSON serialization. `rial` and `toman` are accepted without conversion; an unset or unsupported value adds E-06 `CURRENCY_UNIT_UNCONFIRMED`, blocks owner promotion, and routes otherwise reviewable invoices to REVIEW. Legacy banks without this field still load as unconfirmed. The capture-folder result exposes the bank setting and status.
+
+N-02 now uses only the offset-aware Probe `captured_at` timestamp for price-observation dates: the N-02 CLI accepts an explicit `--captured-at` override, or the builder uses each Canonical fixture's `header.captured_at`. It never reads `header.printed_date`, invoice-image dates, file timestamps, or the current date. The four committed Canonical fixtures have no capture timestamp, so the default golden remains undated. A separate deterministic golden exercises 25 observations with the explicitly synthetic sentinel `2099-01-02T03:04:05+03:30`; this is not real Probe evidence. The capture-folder CLI also accepts and forwards `--captured-at` but does not parse `Report.txt`, whose real Probe format is still unspecified.
+
+**Verification after authorized reset to E-24:** focused N-06 tests **91 passed, 33 subtests passed**; full suite **1,949 passed, 119 subtests passed**; `git diff --check` passed. Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` are unchanged. The branch remains `arena/9dc17500-kandoo-digital-invoice`; N-06 publication SHA/tag and verified Python/Windows CI URLs will be recorded after the PM relays the workflow results. E-25 is next and will record those results and apply the authorized N-04 red-run wording correction in the same documentation commit group. PR #11 remains open; `main` is unchanged.
 
 ### Dispatch closeout — E-03-kit-v3 and E-15–E-18 (2026-10-24)
 

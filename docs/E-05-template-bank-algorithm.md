@@ -69,9 +69,13 @@ It does not memorize exact line totals or payables.
    when their normalized column boundaries, row height, table top, and payable
    gap are within the implementation's layout-cluster tolerances. Row count is
    allowed to vary within a cluster. These four observations form one cluster.
-6. Aggregate the cluster into a `LayoutTemplate`. `TemplateBank.to_dict()` and
-   `save_template_bank()` provide a stable JSON serialization for reuse;
-   `load_template_bank()` restores it.
+6. Aggregate the cluster into a `LayoutTemplate`. The onboarding caller must
+   pass `currency_unit="rial"` or `currency_unit="toman"` to
+   `build_template_bank()`; the value is stored in the immutable `TemplateBank`
+   and its JSON serialization. The builder does not infer a unit from labels or
+   convert values. Omitted/unsupported values are retained for E-06 to route to
+   REVIEW. `TemplateBank.to_dict()` and `save_template_bank()` provide a stable
+   JSON serialization for reuse; `load_template_bank()` restores it.
 
 Any missing marker, label, canonical file, image, synthetic-context declaration,
 or source-image hash agreement, as well as any invalid schema object, numeric
@@ -142,7 +146,8 @@ validator; sidecar provenance markers and source-to-canonical numeric equality;
 one-cluster construction; learned columns, digits, and grouping; high-confidence
 matches for each training fixture; geometry rejection; unknown-script rejection;
 out-of-range row-count rejection; matching of new amounts with the same format;
-geometry-only evidence disclosure; and bank serialization round-trip.
+geometry-only evidence disclosure; serialization/reload of `rial`, `toman`, and
+unsupported settings; and compatibility loading of legacy banks without a unit.
 
 On the recorded fixture self-match run, scores were 0.998544 (29), 0.995653
 (31), 0.997350 (32), and 0.971928 (33). Invoice 33's wider payable bbox lowers

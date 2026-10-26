@@ -191,3 +191,33 @@ def test_template_bank_serializes_and_reloads(tmp_path: Path, bank: TemplateBank
     save_template_bank(bank, path)
     loaded = load_template_bank(path)
     assert loaded == bank
+    assert loaded.currency_unit is None
+
+
+@pytest.mark.parametrize("currency_unit", ["rial", "toman", "dinar"])
+def test_currency_unit_is_stored_with_the_template_bank(
+    tmp_path: Path,
+    currency_unit: str,
+) -> None:
+    configured = build_template_bank(
+        CANONICAL_DIR,
+        LABELS_PATH,
+        currency_unit=currency_unit,
+    )
+    assert configured.currency_unit == currency_unit
+    assert configured.to_dict()["currency_unit"] == currency_unit
+
+    path = tmp_path / f"bank-{currency_unit}.json"
+    save_template_bank(configured, path)
+    assert load_template_bank(path).currency_unit == currency_unit
+
+
+def test_legacy_template_bank_without_currency_setting_loads_unconfirmed(
+    bank: TemplateBank,
+) -> None:
+    legacy = bank.to_dict()
+    legacy.pop("currency_unit")
+
+    restored = TemplateBank.from_dict(legacy)
+
+    assert restored.currency_unit is None

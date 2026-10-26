@@ -38,7 +38,7 @@ def _source_document(crop_names: tuple[str, ...]) -> dict:
     return {
         "schema_version": SOURCE_SCHEMA_VERSION,
         "source_fixture_files": ["fixture.json"],
-        "price_observation_date_source": "header.printed_date",
+        "price_observation_date_source": "probe.captured_at",
         "candidates": [
             {
                 "name_crop_cluster_id": f"name-dhash-{index:016x}",

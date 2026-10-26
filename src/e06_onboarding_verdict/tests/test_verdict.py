@@ -34,7 +34,7 @@ SOURCE_IDS = ("29", "31", "32", "33")
 
 @pytest.fixture(scope="module")
 def bank() -> TemplateBank:
-    return build_template_bank(CANONICAL_DIR, LABELS_PATH)
+    return build_template_bank(CANONICAL_DIR, LABELS_PATH, currency_unit="rial")
 
 
 @pytest.fixture(scope="module")
@@ -415,6 +415,62 @@ def make_post_onboarding_candidate(
         verified_fields=required_owner_verification_fields(invoice),
     )
     return invoice, observation, owner
+
+
+@pytest.mark.parametrize("currency_unit", ["rial", "toman"])
+def test_explicit_currency_units_pass_without_changing_amounts(
+    bank: TemplateBank,
+    observations: tuple[LayoutObservation, ...],
+    currency_unit: str,
+) -> None:
+    configured_bank = replace(bank, currency_unit=currency_unit)
+    invoice, observation, owner = make_post_onboarding_candidate(configured_bank, observations)
+    original_invoice = copy.deepcopy(invoice)
+
+    result = evaluate_verdict(
+        invoice,
+        configured_bank,
+        observation,
+        0.99,
+        processed_invoice_count=4,
+        template_bank_locked=True,
+        d14_agreement_signed=True,
+        require_kit_digit_coverage=False,
+        manual_override=owner,
+    )
+
+    assert result.verdict is Verdict.ACCEPT
+    assert ReasonCode.CURRENCY_UNIT_UNCONFIRMED not in result.reason_codes
+    assert invoice == original_invoice
+    assert invoice["line_items"][0]["unit_price"] == 10101
+
+
+@pytest.mark.parametrize("currency_unit", [None, "dinar", ["rial"]])
+def test_missing_or_invalid_currency_unit_forces_review_and_blocks_owner_accept(
+    bank: TemplateBank,
+    observations: tuple[LayoutObservation, ...],
+    currency_unit: object,
+) -> None:
+    unconfigured_bank = replace(bank, currency_unit=currency_unit)
+    invoice, observation, owner = make_post_onboarding_candidate(unconfigured_bank, observations)
+
+    result = evaluate_verdict(
+        invoice,
+        unconfigured_bank,
+        observation,
+        0.99,
+        processed_invoice_count=4,
+        template_bank_locked=True,
+        d14_agreement_signed=True,
+        require_kit_digit_coverage=False,
+        manual_override=owner,
+    )
+
+    assert result.verdict is Verdict.REVIEW
+    assert ReasonCode.CURRENCY_UNIT_UNCONFIRMED in result.reason_codes
+    assert ReasonCode.MANUAL_OVERRIDE_BLOCKED in result.reason_codes
+    assert result.owner_acceptance_eligible is False
+    assert any("never guesses or converts" in detail for detail in result.details)
 
 
 def test_accept_requires_all_gates_and_audited_owner_verification(

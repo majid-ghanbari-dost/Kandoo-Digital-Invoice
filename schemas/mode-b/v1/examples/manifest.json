@@ -9,7 +9,7 @@
       "path": "template-bank.json",
       "purpose": "Portable E-05 layout bank; numeric-format and normalized geometry only.",
       "schema": "../template-bank.schema.json",
-      "sha256": "3fe4be40b4c31ca65498214806e3d0b86a3c121d19dce05c58884cdabc1ef2fd"
+      "sha256": "f9fc23c44d1fd69dfaced4de36a52937e9426faaad09b8b9cb8ef0a44efa67af"
     },
     {
       "artifact_type": "kandoo.mode-b.onboarding-verdict",
@@ -20,7 +20,7 @@
       "path": "onboarding-verdict.json",
       "purpose": "E-06 REVIEW example during the four-invoice warm-up gate.",
       "schema": "../onboarding-verdict.schema.json",
-      "sha256": "7423f1c7325636aee01ce98560ebaf075c082e970ace38bd8033404dea24b94e"
+      "sha256": "dcdab34051b7394542830fd49065d264f73e1662bfd676625fb23e88ff8de3ee"
     },
     {
       "artifact_type": "kandoo.mode-b.layout-font-fingerprint",

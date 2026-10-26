@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:kandoo:n05:product-candidate:v1",
   "title": "N-05 ProductCandidate v1 example",
-  "description": "A versioned ProductCandidate sample with optional non-accepting name suggestions, crop provenance, and printed-date price observations. This is separate from the frozen Canonical Invoice contracts.",
+  "description": "A versioned ProductCandidate sample with optional non-accepting name suggestions, crop provenance, and Probe-capture-dated price observations. This is separate from the frozen Canonical Invoice contracts.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -33,7 +33,7 @@
       ]
     },
     "price_observation_date_source": {
-      "const": "header.printed_date"
+      "const": "probe.captured_at"
     },
     "name_suggestions_enabled": {
       "type": "boolean"
