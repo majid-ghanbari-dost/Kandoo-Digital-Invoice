@@ -5,7 +5,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.benchmark_n04_parisaocr import _escape_github_command_data
+from scripts.benchmark_n04_parisaocr import (
+    _chunk_github_notice_items,
+    _compact_json,
+    _escape_github_command_data,
+)
 from scripts.n04_name_suggestions import (
     MODEL_VERSION,
     SCHEMA_VERSION,
@@ -56,6 +60,17 @@ class N04NameSuggestionTests(unittest.TestCase):
             _escape_github_command_data("100%\r\nnext"),
             "100%25%0D%0Anext",
         )
+
+    def test_workflow_notice_lists_are_chunked_below_message_limit(self) -> None:
+        items = [{"name": f"dep-{index}", "metadata": "x" * 700}
+                 for index in range(7)]
+        chunks = _chunk_github_notice_items(items, max_message_chars=1500)
+
+        self.assertGreater(len(chunks), 1)
+        self.assertEqual([item for chunk in chunks for item in chunk], items)
+        for chunk in chunks:
+            encoded = _escape_github_command_data(_compact_json(chunk))
+            self.assertLessEqual(len(encoded), 1500)
 
     def test_optional_disabled_path_adds_empty_list_to_every_candidate(self) -> None:
         source = _source_document(("29_row0", "31_row1"))
