@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.benchmark_n04_parisaocr import _escape_github_command_data
 from scripts.n04_name_suggestions import (
     MODEL_VERSION,
     SCHEMA_VERSION,
@@ -50,6 +51,12 @@ def _source_document(crop_names: tuple[str, ...]) -> dict:
 
 
 class N04NameSuggestionTests(unittest.TestCase):
+    def test_workflow_notice_message_escapes_percent_and_newlines(self) -> None:
+        self.assertEqual(
+            _escape_github_command_data("100%\r\nnext"),
+            "100%25%0D%0Anext",
+        )
+
     def test_optional_disabled_path_adds_empty_list_to_every_candidate(self) -> None:
         source = _source_document(("29_row0", "31_row1"))
         original = repr(source)

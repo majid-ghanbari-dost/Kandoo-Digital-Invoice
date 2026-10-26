@@ -151,6 +151,16 @@ def _percentile95(values: list[float]) -> float | None:
     return ordered[max(0, math.ceil(0.95 * len(ordered)) - 1)]
 
 
+def _escape_github_command_data(value: str) -> str:
+    """Escape a workflow-command message while keeping it on one log line."""
+    return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def _emit_github_notice(title: str, payload: Any) -> None:
+    message = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    print(f"::notice title={title}::{_escape_github_command_data(message)}", flush=True)
+
+
 def _markdown_report(result: dict[str, Any]) -> str:
     runtime = result["runtime"]
     measurements = result["measurements"]
@@ -381,6 +391,31 @@ def main(argv: list[str] | None = None) -> int:
         ],
     }
     print("N04_BENCHMARK_SUMMARY=" + json.dumps(summary, sort_keys=True))
+    _emit_github_notice("N04 raw benchmark summary", {
+        "runtime": {
+            key: result["runtime"][key]
+            for key in (
+                "github_sha", "github_run_id", "runner_os", "runner_image",
+                "runner_image_version", "python_version", "requirements_file",
+                "requirements_sha256",
+            )
+        },
+        "engine": result["engine"],
+        "measurements": summary,
+        "pip_freeze": result["runtime"]["pip_freeze"],
+    })
+    license_inventory = [
+        {
+            key: distribution[key]
+            for key in (
+                "name", "version", "license_expression", "license",
+                "license_classifiers", "license_files",
+            )
+        }
+        for distribution in result["license_inventory"]
+        if not distribution["base_venv_tool"]
+    ]
+    _emit_github_notice("N04 resolved dependency license metadata", license_inventory)
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_path:
         with Path(summary_path).open("a", encoding="utf-8", newline="\n") as output:
