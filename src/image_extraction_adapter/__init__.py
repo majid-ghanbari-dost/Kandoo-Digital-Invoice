@@ -38,6 +38,15 @@ from .parser import (
     parse_invoice_geometry,
     parse_invoice_text,
 )
+from .layout_profiles import (
+    LayoutProfile,
+    LayoutProfileRegistry,
+    ProfileCell,
+    ProfileColumn,
+    ProfileRowResult,
+    evaluate_profile_row,
+    load_layout_profile_registry,
+)
 
 __all__ = [
     "ImageExtractionAdapter",
@@ -72,4 +81,11 @@ __all__ = [
     "SpatialParseResult",
     "parse_invoice_geometry",
     "parse_invoice_text",
+    "LayoutProfile",
+    "LayoutProfileRegistry",
+    "ProfileCell",
+    "ProfileColumn",
+    "ProfileRowResult",
+    "evaluate_profile_row",
+    "load_layout_profile_registry",
 ]

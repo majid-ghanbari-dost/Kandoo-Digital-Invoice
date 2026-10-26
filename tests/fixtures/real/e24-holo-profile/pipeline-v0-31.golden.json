@@ -1,0 +1,229 @@
+{
+  "arithmetic_gate": {
+    "checked_fields": [
+      "line.0.total",
+      "line.1.total",
+      "line.2.total",
+      "invoice.payable"
+    ],
+    "extra_amounts": 0,
+    "line_sum": 2425000,
+    "passed": true,
+    "payable": 2425000,
+    "reason": null
+  },
+  "attention_cells": [],
+  "bank_update_eligible": false,
+  "canonical_invoice": null,
+  "canonical_validation": {
+    "blockers": [
+      "Canonical Invoice v0 requires producer-supplied mode, platform identifiers, customer data, and a human-readable product-name mapping.",
+      "dHash cluster IDs are visual sidecar evidence, not product_name text and are not added to the frozen v0 schema."
+    ],
+    "errors": [],
+    "valid": null
+  },
+  "description_clusters": [
+    {
+      "bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "cluster_size": 1,
+      "crop_id": "row0",
+      "dhash": "a828a9ad26245a5a",
+      "field_name": "line.0.description",
+      "name_cluster_id": "name-dhash-a828a9ad26245a5a"
+    },
+    {
+      "bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "cluster_size": 1,
+      "crop_id": "row1",
+      "dhash": "b4e5b4346e6ecddd",
+      "field_name": "line.1.description",
+      "name_cluster_id": "name-dhash-b4e5b4346e6ecddd"
+    },
+    {
+      "bbox": [
+        297,
+        672,
+        483,
+        730
+      ],
+      "cluster_size": 1,
+      "crop_id": "row2",
+      "dhash": "95b496c726a66969",
+      "field_name": "line.2.description",
+      "name_cluster_id": "name-dhash-95b496c726a66969"
+    }
+  ],
+  "image_sha256": "8ea9e20ca3c7161d14bcc719154e0be27bcaaaf5c4b9e5a26818e4b0c1908a10",
+  "layout": {
+    "reason": "Complete table geometry detected.",
+    "row_count": 3,
+    "status": "OK"
+  },
+  "numeric_cells": [
+    {
+      "bbox": [
+        120,
+        533,
+        240,
+        593
+      ],
+      "confidence": 99.9847619047619,
+      "field_name": "line.0.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۹۷۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        533,
+        289,
+        593
+      ],
+      "confidence": 99.99714285714286,
+      "field_name": "line.0.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        604,
+        240,
+        661
+      ],
+      "confidence": 99.9847619047619,
+      "field_name": "line.1.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۹۷۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        604,
+        289,
+        661
+      ],
+      "confidence": 99.99714285714286,
+      "field_name": "line.1.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        672,
+        240,
+        730
+      ],
+      "confidence": 99.98761904761905,
+      "field_name": "line.2.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۴۸۵,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        672,
+        289,
+        730
+      ],
+      "confidence": 99.99714285714286,
+      "field_name": "line.2.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        210,
+        748,
+        334,
+        784
+      ],
+      "confidence": 99.95936507936509,
+      "field_name": "invoice.payable",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۲,۴۲۵,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    }
+  ],
+  "operator_confirmed_fields": [],
+  "operator_confirmed_values": [],
+  "operator_original_values": [],
+  "pipeline_status": "AUTO_CANDIDATE",
+  "reason": "All emitted numeric cells are EXTRACTED and the arithmetic gate passed.",
+  "template_bank_updated": false,
+  "template_provenance": {
+    "source_images": [
+      {
+        "image": "tests/fixtures/real/29.png",
+        "sha256": "61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a"
+      },
+      {
+        "image": "tests/fixtures/real/31.png",
+        "sha256": "8ea9e20ca3c7161d14bcc719154e0be27bcaaaf5c4b9e5a26818e4b0c1908a10"
+      },
+      {
+        "image": "tests/fixtures/real/32.png",
+        "sha256": "c6389f078c9a487b06620c01f80f86477ffa7d291cab24d3c9639fc72fd5e68e"
+      },
+      {
+        "image": "tests/fixtures/real/33.png",
+        "sha256": "2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80"
+      }
+    ],
+    "template_bank_path": "src/templates_bank_default.json",
+    "template_library_id": "b42688770113faaba9e4024e3af66fa4eed2cb039d184daff6429e0cef047931"
+  }
+}

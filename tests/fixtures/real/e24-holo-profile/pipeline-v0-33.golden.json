@@ -1,0 +1,729 @@
+{
+  "arithmetic_gate": {
+    "checked_fields": [
+      "line.0.total",
+      "line.1.total",
+      "line.2.total",
+      "line.3.total",
+      "line.4.total",
+      "line.5.total",
+      "line.6.total",
+      "line.7.total",
+      "line.8.total",
+      "line.9.total",
+      "line.10.total",
+      "line.11.total",
+      "line.12.total",
+      "invoice.payable"
+    ],
+    "extra_amounts": 0,
+    "line_sum": 347920000,
+    "passed": true,
+    "payable": 347920000,
+    "reason": null
+  },
+  "attention_cells": [],
+  "bank_update_eligible": false,
+  "canonical_invoice": null,
+  "canonical_validation": {
+    "blockers": [
+      "Canonical Invoice v0 requires producer-supplied mode, platform identifiers, customer data, and a human-readable product-name mapping.",
+      "dHash cluster IDs are visual sidecar evidence, not product_name text and are not added to the frozen v0 schema."
+    ],
+    "errors": [],
+    "valid": null
+  },
+  "description_clusters": [
+    {
+      "bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "cluster_size": 1,
+      "crop_id": "row0",
+      "dhash": "2c2c68696b6b8a8a",
+      "field_name": "line.0.description",
+      "name_cluster_id": "name-dhash-2c2c68696b6b8a8a"
+    },
+    {
+      "bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "cluster_size": 1,
+      "crop_id": "row1",
+      "dhash": "95b496c726a66969",
+      "field_name": "line.1.description",
+      "name_cluster_id": "name-dhash-95b496c726a66969"
+    },
+    {
+      "bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "cluster_size": 1,
+      "crop_id": "row2",
+      "dhash": "c696c6c7d2d23424",
+      "field_name": "line.2.description",
+      "name_cluster_id": "name-dhash-c696c6c7d2d23424"
+    },
+    {
+      "bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "cluster_size": 1,
+      "crop_id": "row3",
+      "dhash": "da9893d7b636266f",
+      "field_name": "line.3.description",
+      "name_cluster_id": "name-dhash-da9893d7b636266f"
+    },
+    {
+      "bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "cluster_size": 1,
+      "crop_id": "row4",
+      "dhash": "24a4e495d6ce2d2d",
+      "field_name": "line.4.description",
+      "name_cluster_id": "name-dhash-24a4e495d6ce2d2d"
+    },
+    {
+      "bbox": [
+        297,
+        876,
+        483,
+        933
+      ],
+      "cluster_size": 1,
+      "crop_id": "row5",
+      "dhash": "ca88a2a7589633b3",
+      "field_name": "line.5.description",
+      "name_cluster_id": "name-dhash-ca88a2a7589633b3"
+    },
+    {
+      "bbox": [
+        297,
+        944,
+        483,
+        1001
+      ],
+      "cluster_size": 1,
+      "crop_id": "row6",
+      "dhash": "d8dbaa4ee4e6d6cc",
+      "field_name": "line.6.description",
+      "name_cluster_id": "name-dhash-d8dbaa4ee4e6d6cc"
+    },
+    {
+      "bbox": [
+        297,
+        1012,
+        483,
+        1068
+      ],
+      "cluster_size": 1,
+      "crop_id": "row7",
+      "dhash": "49424f4d5a52d171",
+      "field_name": "line.7.description",
+      "name_cluster_id": "name-dhash-49424f4d5a52d171"
+    },
+    {
+      "bbox": [
+        297,
+        1079,
+        483,
+        1136
+      ],
+      "cluster_size": 1,
+      "crop_id": "row8",
+      "dhash": "4c2e2f4c46563135",
+      "field_name": "line.8.description",
+      "name_cluster_id": "name-dhash-4c2e2f4c46563135"
+    },
+    {
+      "bbox": [
+        297,
+        1147,
+        483,
+        1204
+      ],
+      "cluster_size": 1,
+      "crop_id": "row9",
+      "dhash": "45c1cbedd515243e",
+      "field_name": "line.9.description",
+      "name_cluster_id": "name-dhash-45c1cbedd515243e"
+    },
+    {
+      "bbox": [
+        297,
+        1215,
+        483,
+        1272
+      ],
+      "cluster_size": 1,
+      "crop_id": "row10",
+      "dhash": "cac91b36c958d1e0",
+      "field_name": "line.10.description",
+      "name_cluster_id": "name-dhash-cac91b36c958d1e0"
+    },
+    {
+      "bbox": [
+        297,
+        1283,
+        483,
+        1340
+      ],
+      "cluster_size": 1,
+      "crop_id": "row11",
+      "dhash": "0b2bf75669699696",
+      "field_name": "line.11.description",
+      "name_cluster_id": "name-dhash-0b2bf75669699696"
+    },
+    {
+      "bbox": [
+        297,
+        1351,
+        483,
+        1409
+      ],
+      "cluster_size": 1,
+      "crop_id": "row12",
+      "dhash": "6bcb854d495b92d2",
+      "field_name": "line.12.description",
+      "name_cluster_id": "name-dhash-6bcb854d495b92d2"
+    }
+  ],
+  "image_sha256": "2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80",
+  "layout": {
+    "reason": "Complete table geometry detected.",
+    "row_count": 13,
+    "status": "OK"
+  },
+  "numeric_cells": [
+    {
+      "bbox": [
+        120,
+        533,
+        240,
+        593
+      ],
+      "confidence": 99.9847619047619,
+      "field_name": "line.0.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۷,۸۸۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        533,
+        289,
+        593
+      ],
+      "confidence": 99.97246753246752,
+      "field_name": "line.0.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۴",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        604,
+        240,
+        661
+      ],
+      "confidence": 99.98761904761905,
+      "field_name": "line.1.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۴,۸۵۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        604,
+        289,
+        661
+      ],
+      "confidence": 99.97047619047619,
+      "field_name": "line.1.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        672,
+        240,
+        729
+      ],
+      "confidence": 99.9847619047619,
+      "field_name": "line.2.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۸,۷۵۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        672,
+        289,
+        729
+      ],
+      "confidence": 99.97809523809524,
+      "field_name": "line.2.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۵",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        740,
+        240,
+        797
+      ],
+      "confidence": 99.98190476190476,
+      "field_name": "line.3.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۶,۴۰۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        740,
+        289,
+        797
+      ],
+      "confidence": 99.99809523809525,
+      "field_name": "line.3.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۲",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        808,
+        240,
+        865
+      ],
+      "confidence": 99.98761904761905,
+      "field_name": "line.4.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۴۹,۴۰۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        808,
+        289,
+        865
+      ],
+      "confidence": 99.97047619047619,
+      "field_name": "line.4.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۲۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        876,
+        240,
+        933
+      ],
+      "confidence": 99.9847619047619,
+      "field_name": "line.5.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱,۵۷۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        876,
+        289,
+        933
+      ],
+      "confidence": 99.99714285714286,
+      "field_name": "line.5.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        944,
+        240,
+        1001
+      ],
+      "confidence": 99.98190476190476,
+      "field_name": "line.6.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۶,۹۰۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        944,
+        289,
+        1001
+      ],
+      "confidence": 99.97809523809524,
+      "field_name": "line.6.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۵",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        1012,
+        240,
+        1068
+      ],
+      "confidence": 99.98190476190476,
+      "field_name": "line.7.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۶,۸۷۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        1012,
+        289,
+        1068
+      ],
+      "confidence": 99.99714285714286,
+      "field_name": "line.7.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        1079,
+        240,
+        1136
+      ],
+      "confidence": 99.9847619047619,
+      "field_name": "line.8.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۳,۷۰۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        1079,
+        289,
+        1136
+      ],
+      "confidence": 99.99809523809525,
+      "field_name": "line.8.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۲",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        1147,
+        240,
+        1204
+      ],
+      "confidence": 99.98190476190476,
+      "field_name": "line.9.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۲۲۹,۶۰۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        1147,
+        289,
+        1204
+      ],
+      "confidence": 99.97809523809524,
+      "field_name": "line.9.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۸",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        1215,
+        240,
+        1272
+      ],
+      "confidence": 99.98761904761905,
+      "field_name": "line.10.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱۹,۰۵۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        1215,
+        289,
+        1272
+      ],
+      "confidence": 99.97809523809524,
+      "field_name": "line.10.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱۵",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        1283,
+        240,
+        1340
+      ],
+      "confidence": 99.9863492063492,
+      "field_name": "line.11.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱,۳۸۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        1283,
+        289,
+        1340
+      ],
+      "confidence": 99.99714285714286,
+      "field_name": "line.11.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        120,
+        1351,
+        240,
+        1409
+      ],
+      "confidence": 99.9847619047619,
+      "field_name": "line.12.total",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱,۵۷۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        248,
+        1351,
+        289,
+        1409
+      ],
+      "confidence": 99.99714285714286,
+      "field_name": "line.12.quantity",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۱",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    },
+    {
+      "bbox": [
+        195,
+        1427,
+        350,
+        1463
+      ],
+      "confidence": 99.96253968253968,
+      "field_name": "invoice.payable",
+      "line_pixels_removed": 0,
+      "preprocessing": "glyph",
+      "psm": 0,
+      "raw_value": "۳۴۷,۹۲۰,۰۰۰",
+      "reason": null,
+      "status": "EXTRACTED",
+      "unrestricted_raw_value": null,
+      "whitelist": "۰۱۲۳۴۵۶۷۸۹,"
+    }
+  ],
+  "operator_confirmed_fields": [],
+  "operator_confirmed_values": [],
+  "operator_original_values": [],
+  "pipeline_status": "AUTO_CANDIDATE",
+  "reason": "All emitted numeric cells are EXTRACTED and the arithmetic gate passed.",
+  "template_bank_updated": false,
+  "template_provenance": {
+    "source_images": [
+      {
+        "image": "tests/fixtures/real/29.png",
+        "sha256": "61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a"
+      },
+      {
+        "image": "tests/fixtures/real/31.png",
+        "sha256": "8ea9e20ca3c7161d14bcc719154e0be27bcaaaf5c4b9e5a26818e4b0c1908a10"
+      },
+      {
+        "image": "tests/fixtures/real/32.png",
+        "sha256": "c6389f078c9a487b06620c01f80f86477ffa7d291cab24d3c9639fc72fd5e68e"
+      },
+      {
+        "image": "tests/fixtures/real/33.png",
+        "sha256": "2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80"
+      }
+    ],
+    "template_bank_path": "src/templates_bank_default.json",
+    "template_library_id": "b42688770113faaba9e4024e3af66fa4eed2cb039d184daff6429e0cef047931"
+  }
+}
