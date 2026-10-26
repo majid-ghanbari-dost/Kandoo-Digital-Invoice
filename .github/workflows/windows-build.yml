@@ -65,11 +65,13 @@ jobs:
         run: |
           $json = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions.json'
           $markdown = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions.md'
+          $errorJson = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions-error.json'
           & $env:N04_PYTHON scripts/benchmark_n04_parisaocr.py `
             --repo-root . `
             --install-baseline $env:N04_INSTALL_BASELINE `
             --output-json $json `
-            --output-markdown $markdown
+            --output-markdown $markdown `
+            --error-json $errorJson
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload raw N-04 Windows metrics and resolved dependency report
@@ -80,6 +82,7 @@ jobs:
           path: |
             ${{ runner.temp }}/n04-name-suggestions.json
             ${{ runner.temp }}/n04-name-suggestions.md
+            ${{ runner.temp }}/n04-name-suggestions-error.json
             ${{ runner.temp }}/n04-site-packages-before.json
             ${{ runner.temp }}/n04-pip-install-report.json
           if-no-files-found: warn

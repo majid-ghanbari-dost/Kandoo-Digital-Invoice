@@ -20,6 +20,7 @@ import subprocess
 import sys
 import sysconfig
 import time
+import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -317,6 +318,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--install-baseline", type=Path)
     parser.add_argument("--output-json", type=Path)
     parser.add_argument("--output-markdown", type=Path)
+    parser.add_argument("--error-json", type=Path)
     args = parser.parse_args(argv)
 
     if args.snapshot_site_packages:
@@ -329,11 +331,33 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.install_baseline or not args.output_json or not args.output_markdown:
         parser.error("normal benchmark mode requires --install-baseline, --output-json, and --output-markdown")
-    result = run_benchmark(
-        args.repo_root.resolve(),
-        args.install_baseline.resolve(),
-        args.output_json.resolve(),
-    )
+    try:
+        result = run_benchmark(
+            args.repo_root.resolve(),
+            args.install_baseline.resolve(),
+            args.output_json.resolve(),
+        )
+    except Exception as exc:
+        trace = traceback.format_exc()
+        if args.error_json:
+            _write_json(args.error_json.resolve(), {
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+                "traceback": trace,
+                "github_sha": os.environ.get("GITHUB_SHA"),
+                "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+            })
+        encoded_trace = (trace.replace("%", "%25")
+                         .replace("\r", "%0D")
+                         .replace("\n", "%0A"))
+        print(f"::error title=N-04 benchmark traceback::{encoded_trace}")
+        summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary_path:
+            with Path(summary_path).open("a", encoding="utf-8", newline="\n") as output:
+                output.write("## N-04 benchmark failure\n\n```text\n")
+                output.write(trace)
+                output.write("\n```\n")
+        raise
     markdown = _markdown_report(result)
     args.output_markdown.parent.mkdir(parents=True, exist_ok=True)
     args.output_markdown.write_text(markdown, encoding="utf-8", newline="\n")
