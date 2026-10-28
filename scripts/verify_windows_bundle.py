@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke-test a frozen one-folder CLI against the four real fixture invoices.
+"""Smoke-test the frozen CLI on fixture extraction and the E-26 E-20 flow.
 
 The E-01 CLI and the immutable E-11 contract do not share an identical wire
 schema. This test therefore compares extracted business values to the matching
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import importlib.util
 import json
 import shutil
@@ -23,7 +24,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -38,6 +39,162 @@ E11_DRAFT_GOLDEN = (
 
 def _read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _validate_mode_b_artifact(repo_root: Path, path: Path, schema_name: str) -> dict[str, Any]:
+    schema_path = repo_root / "schemas" / "mode-b" / "v1" / schema_name
+    schema = _read_json(schema_path)
+    artifact = _read_json(path)
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    errors = sorted(validator.iter_errors(artifact), key=lambda error: list(error.absolute_path))
+    if errors:
+        raise AssertionError(f"{path.name} fails {schema_name}: {errors[0].message}")
+    return artifact
+
+
+def _run_onboard_e20_smoke(
+    exe: Path,
+    repo_root: Path,
+    work_dir: Path,
+    report: dict[str, Any],
+) -> None:
+    """Exercise the frozen E-26 CLI through all three commands on E-20 data."""
+    from prepare_e26_e20_smoke_inputs import prepare_e26_e20_inputs
+
+    inputs = prepare_e26_e20_inputs(repo_root, work_dir / "e20-inputs")
+    fixed_time = "2026-10-28T00:00:00Z"
+    bank_path = work_dir / "e20-template-bank.json"
+    verdict_path = work_dir / "e20-onboarding-verdict.json"
+    candidate_path = work_dir / "e20-new-type-candidate.json"
+    e20_report = repo_root / "docs" / "e20-second-store.json"
+    expected_values = repo_root / "docs" / "E-03-kit-v3" / "expected-values.json"
+    store_id = "synthetic-second-store"
+
+    build = subprocess.run(
+        [
+            str(exe), "onboard", "build",
+            "--synthetic-e20-report", str(e20_report.resolve()),
+            "--synthetic-e20-values", str(expected_values.resolve()),
+            "--store-id", store_id,
+            "--currency-unit", "rial",
+            "--created-at", fixed_time,
+            "--output", str(bank_path.resolve()),
+        ],
+        cwd=work_dir,
+        capture_output=True,
+        timeout=120,
+        check=False,
+    )
+    if build.returncode != 0:
+        raise AssertionError(
+            "frozen onboard build failed: "
+            f"exit={build.returncode}; stderr={build.stderr.decode('utf-8', errors='replace')[-2500:]}"
+        )
+    bank_artifact = _validate_mode_b_artifact(repo_root, bank_path, "template-bank.schema.json")
+    if bank_artifact.get("store_id") != store_id:
+        raise AssertionError("frozen onboard build used an unexpected E-20 store ID")
+
+    verdict = subprocess.run(
+        [
+            str(exe), "onboard", "verdict",
+            "--template-bank", str(bank_path.resolve()),
+            "--store-id", store_id,
+            "--invoice-id", "e26-e20-exam-pipeline",
+            "--observation", str(inputs["pipeline_observation"].resolve()),
+            "--processed-invoice-count", "0",
+            "--template-bank-unlocked",
+            "--d14-agreement-required",
+            "--no-require-kit-digit-coverage",
+            "--extraction-confidence", "0.0",
+            "--missing-field", "line.0.quantity",
+            "--missing-field", "line.0.total",
+            "--missing-field", "line.1.total",
+            "--missing-field", "invoice.payable",
+            "--evaluated-at", fixed_time,
+            "--output", str(verdict_path.resolve()),
+        ],
+        cwd=work_dir,
+        capture_output=True,
+        timeout=120,
+        check=False,
+    )
+    if verdict.returncode != 10:
+        raise AssertionError(
+            "frozen onboard verdict did not hold the E-20 candidate for review: "
+            f"exit={verdict.returncode}; stderr={verdict.stderr.decode('utf-8', errors='replace')[-2500:]}"
+        )
+    verdict_artifact = _validate_mode_b_artifact(
+        repo_root, verdict_path, "onboarding-verdict.schema.json"
+    )
+    bank_sha256 = hashlib.sha256(bank_path.read_bytes()).hexdigest()
+    if verdict_artifact.get("template_bank_sha256") != bank_sha256:
+        raise AssertionError("onboard verdict did not bind to the exact E-16 bank bytes")
+    if verdict_artifact.get("store_id") != store_id or verdict_artifact.get("result", {}).get("verdict") != "REVIEW":
+        raise AssertionError("onboard verdict did not preserve the E-20 review outcome")
+
+    register = subprocess.run(
+        [
+            str(exe), "onboard", "register-type",
+            "--template-bank", str(bank_path.resolve()),
+            "--store-id", store_id,
+            "--invoice-id", "e26-e20-exam-invoice",
+            "--invoice", str(inputs["candidate_invoice"].resolve()),
+            "--observation", str(inputs["new_layout_observation"].resolve()),
+            "--accepted-invoice-count", "4",
+            "--template-bank-locked",
+            "--d14-agreement-signed",
+            "--extraction-confidence", "0.99",
+            "--detected-at", fixed_time,
+            "--exported-at", fixed_time,
+            "--output", str(candidate_path.resolve()),
+        ],
+        cwd=work_dir,
+        capture_output=True,
+        timeout=120,
+        check=False,
+    )
+    if register.returncode != 10:
+        raise AssertionError(
+            "frozen onboard register-type did not return the expected review result: "
+            f"exit={register.returncode}; stderr={register.stderr.decode('utf-8', errors='replace')[-2500:]}"
+        )
+    candidate_artifact = _validate_mode_b_artifact(
+        repo_root, candidate_path, "new-type-candidate.schema.json"
+    )
+    candidate = candidate_artifact.get("candidate", {})
+    if (
+        candidate_artifact.get("store_id") != store_id
+        or candidate.get("store_id") != store_id
+        or candidate.get("state") != "PROPOSED"
+    ):
+        raise AssertionError("onboard register-type did not export a store-scoped PROPOSED candidate")
+
+    report["onboarding_e20"] = {
+        "status": "PASS",
+        "store_id": store_id,
+        "synthetic_only": True,
+        "build": {
+            "exit_code": build.returncode,
+            "artifact": "template-bank.schema.json",
+            "stderr": build.stderr.decode("utf-8", errors="replace")[-1000:],
+        },
+        "verdict": {
+            "exit_code": verdict.returncode,
+            "artifact": "onboarding-verdict.schema.json",
+            "verdict": verdict_artifact["result"]["verdict"],
+            "template_bank_sha256": bank_sha256,
+        },
+        "register_type": {
+            "exit_code": register.returncode,
+            "artifact": "new-type-candidate.schema.json",
+            "candidate_id": candidate["candidate_id"],
+            "candidate_state": candidate["state"],
+        },
+        "evidence_boundary": (
+            "E-20 report and E-03 answer key are synthetic mechanics fixtures; "
+            "the proposed changed-layout candidate is not installed in the active bank."
+        ),
+    }
 
 
 def _context_for(expected: dict[str, Any], fixture_id: str) -> dict[str, Any]:
@@ -155,6 +312,25 @@ def _write_reports(
             f"{item.get('payable', '—')} | {item.get('numeric_match', '—')} | "
             f"{item.get('runtime_seconds', '—')} |"
         )
+    lines.extend(["", "## E-26 onboarding CLI / E-20 synthetic flow", ""])
+    if report.get("onboard_help"):
+        lines.append(
+            f"- Frozen `onboard --help`: exit {report['onboard_help']['exit_code']}; "
+            f"commands present: `{report['onboard_help']['commands_present']}`."
+        )
+    onboarding = report.get("onboarding_e20")
+    if onboarding:
+        lines.extend([
+            f"- Flow status: **{onboarding['status']}**; store `{onboarding['store_id']}`; synthetic only: `{onboarding['synthetic_only']}`.",
+            f"- Built-executable commands: `build` exit {onboarding['build']['exit_code']}; "
+            f"`verdict` exit {onboarding['verdict']['exit_code']} ({onboarding['verdict']['verdict']}); "
+            f"`register-type` exit {onboarding['register_type']['exit_code']} "
+            f"(candidate {onboarding['register_type']['candidate_state']}).",
+            f"- E-16 bank SHA-256 bound into verdict: `{onboarding['verdict']['template_bank_sha256']}`.",
+            f"- Evidence boundary: {onboarding['evidence_boundary']}",
+        ])
+    else:
+        lines.append("- Flow status: **not completed**; see the failure detail below.")
     lines.extend([
         "",
         "## Contract comparison boundary",
@@ -316,6 +492,31 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
                     raise AssertionError(
                         f"fixture {fixture_id} E-11 projection key shape differs from the E-11 draft golden"
                     )
+
+            onboard_help = subprocess.run(
+                [str(exe), "onboard", "--help"],
+                cwd=cwd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=60,
+                check=False,
+            )
+            commands_present = all(
+                command in onboard_help.stdout for command in ("build", "verdict", "register-type")
+            )
+            if onboard_help.returncode != 0 or not commands_present:
+                raise AssertionError(
+                    "frozen onboard --help failed or omitted a command: "
+                    f"exit={onboard_help.returncode}; stdout={onboard_help.stdout[-1200:]}; "
+                    f"stderr={onboard_help.stderr[-1200:]}"
+                )
+            report["onboard_help"] = {
+                "exit_code": onboard_help.returncode,
+                "commands_present": commands_present,
+            }
+            _run_onboard_e20_smoke(exe, repo_root, cwd, report)
 
         report["status"] = "PASS"
         report["tesseract_absence_proof"] = (

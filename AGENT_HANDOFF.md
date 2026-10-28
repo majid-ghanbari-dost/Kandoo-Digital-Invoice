@@ -93,6 +93,10 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
+### Current serial window — 2026-10-28
+
+The current task branch is `arena/d892dd9b-kandoo-digital-invoice`, based on the PR #11 merge commit `a8662f458255d66307d0783bd7e14b80addeb06b` on `main`. PR #11 is merged; older entries below that say PR #11 is open or `main` is unchanged are historical snapshots and are superseded by this state. The active serial task is E-26, followed by E-27 → N-07 → E-28 → E-29. Frozen paths `contracts/` and `src/image_extraction_adapter/adapter.py` remain untouched.
+
 ### N-01–N-03 closeout — offline name reading and ProductCandidate prototype (2026-10-25)
 
 This closeout records the serial N-01, N-02, and N-03 work on the existing branch. N-01 and N-02 are committed, pushed, tagged, and green on their final task SHAs. N-03 is this handoff update; its `stable-n-03` tag is applied only after the handoff commit's checks pass.
@@ -174,9 +178,17 @@ E-25 is a docs-only closeout for the N-04 → N-05 → E-24 → N-06 window. The
 | N-05 | `0cc7f32769b8bbc0a035b6ea27fd6e411e1fa256` | `stable-n-05` | `40316077949` and `40316078058`, both green. |
 | E-24 | `9305efbf75091f3a5df1c57bb6fe9756af096c9b` (implementation `b8f4047cef946daaab3f11880669266de932e5bb`) | `stable-e-24` | Closeout runs `40323114292` and `40323114298`, both green; implementation runs `40322487925` and `40322487999`, both green. |
 | N-06 | `bbf08e1aed31d6f165294ffe4ca0f9cf4db3d2cb` | `stable-n-06` | Push Python run #61 / `40391678234`, SUCCESS (5m 40s); push Windows run #57, SUCCESS (1m 19s; global ID not relayed). PR Windows `40391682594` passed; PR Python `40391682589` first-attempt incident and green attempt 2 are recorded above. |
-| E-25 | This docs-only closeout commit | `stable-e-25` targets this commit | E-25 push-event CI results will be recorded only when relayed by the PM. |
+| E-25 | `85b2184501b98523ce959c352d27a8532ffc2c83` | `stable-e-25` | PM-relayed push Python `40454275520` (first attempt red; attempt 2 SUCCESS) and Windows `40454275548` SUCCESS; PR Python `40454279573` and Windows `40454279702` SUCCESS. |
 
-PR #11 remains open and all checks on N-06 are green after the Python rerun. No N-06 code change was made in response to its transient first-attempt failure. The E-25 closeout does not move or re-point any existing tag.
+At the E-25 closeout on 2026-10-27, PR #11 was open and all checks on N-06 were green after the Python rerun. No N-06 code change was made in response to its transient first-attempt failure. The E-25 closeout did not move or re-point any existing tag. This status is historical; PR #11 was merged on 2026-10-28, producing `main` commit `a8662f458255d66307d0783bd7e14b80addeb06b`.
+
+### E-26 closeout — operator onboarding CLI (2026-10-28)
+
+E-26 adds `onboard build`, `onboard verdict`, and `onboard register-type` to the local CLI. The normal build path wraps the provenance-checked E-05 builder with capture-root, operator-confirmed labels, Canonical v0 fixtures/sidecar, explicit store ID, and explicit `rial`/`toman` unit. The E-20-only synthetic build path is explicitly separate and does not label synthetic answer-key data as operator-confirmed. Verdict artifacts bind to SHA-256 of the exact E-16 bank-file bytes. E-08 candidates are exported as E-16 `new-type-candidate` snapshots and remain separate from the active bank; the one-shot CLI does not persist E-08 audit trails or synthesize the separate E-02-backed `layout-font-fingerprint` artifact.
+
+The Windows one-folder workflow now includes the E-16 v1 schemas and synthetic E-20 helper. Its built-executable verifier exercises `build`, `verdict`, and `register-type` against the E-20 synthetic second-store mechanics data, while retaining the existing extraction checks. `docs/operator-onboarding-cli.md` documents the CLI and a C# `Process.Start` integration. E-16 schema shapes and frozen Canonical contracts are unchanged.
+
+Local verification: the complete Python suite passed **1,954 tests and 119 subtests**; the focused E-05/E-06/E-08/E-16 suite passed **52 tests**; the new onboarding CLI tests passed **5 tests**; `git diff --check` and `py_compile` passed. Frozen-path diff/status checks for `contracts/` and `src/image_extraction_adapter/adapter.py` were empty. The final E-26 closeout report records the full task SHA, push-event CI URLs/results, and the annotated `stable-e-26` tag. E-27 is next, followed by N-07 → E-28 → E-29.
 
 ### Dispatch closeout — E-03-kit-v3 and E-15–E-18 (2026-10-24)
 

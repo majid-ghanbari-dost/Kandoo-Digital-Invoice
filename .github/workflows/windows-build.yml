@@ -145,12 +145,17 @@ jobs:
             --workpath "$env:RUNNER_TEMP/pyinstaller-work" `
             --specpath "$env:RUNNER_TEMP/pyinstaller-spec" `
             --paths src `
+            --paths scripts `
+            --collect-all jsonschema `
             --hidden-import run_name_cluster_experiment `
+            --hidden-import synthetic_thermal_invoice `
             scripts/windows_cli_entry.py
           New-Item -ItemType Directory -Force -Path dist/kandoo-extract/src | Out-Null
           New-Item -ItemType Directory -Force -Path dist/kandoo-extract/schemas | Out-Null
+          New-Item -ItemType Directory -Force -Path dist/kandoo-extract/schemas/mode-b | Out-Null
           Copy-Item src/templates_bank_default.json dist/kandoo-extract/src/templates_bank_default.json -Force
           Copy-Item schemas/canonical_invoice_v0.json dist/kandoo-extract/schemas/canonical_invoice_v0.json -Force
+          Copy-Item schemas/mode-b/v1 dist/kandoo-extract/schemas/mode-b/v1 -Recurse -Force
           if (-not (Test-Path dist/kandoo-extract/kandoo-extract.exe)) {
             throw 'PyInstaller did not produce dist/kandoo-extract/kandoo-extract.exe'
           }

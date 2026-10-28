@@ -18,6 +18,7 @@ from typing import Any, Sequence
 from .canonical_invoice import validate_canonical_invoice
 from .capture_folder import extract_capture_folder, status_exit_code
 from .multi_evidence import evaluate_multi_evidence
+from .onboarding_cli import OnboardingCLIError, add_onboard_subcommands, run_onboard
 from .pipeline_v0 import DEFAULT_TEMPLATE_BANK_PATH, extract_pipeline_v0
 
 EXIT_READY = 0
@@ -93,6 +94,7 @@ def _build_parser() -> _ArgumentParser:
         action="store_true",
         help="require all six local evidence witnesses before AUTO_CANDIDATE",
     )
+    add_onboard_subcommands(subparsers)
     return parser
 
 
@@ -388,10 +390,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_ERROR
 
     try:
-        if args.command != "extract":
-            raise _CLIInputError(f"unsupported command: {args.command!r}")
-        return _run_extract(args)
-    except _CLIInputError as exc:
+        if args.command == "extract":
+            return _run_extract(args)
+        if args.command == "onboard":
+            return run_onboard(args)
+        raise _CLIInputError(f"unsupported command: {args.command!r}")
+    except (_CLIInputError, OnboardingCLIError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR
     except Exception as exc:
