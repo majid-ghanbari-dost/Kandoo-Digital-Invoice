@@ -1,0 +1,471 @@
+{
+  "aggregate": {
+    "extracted_but_wrong": 0,
+    "safe_profile_witness_or_review_count": 11,
+    "safe_profile_witness_or_review_rate_percent": 100.0,
+    "sample_count": 11,
+    "thresholds_tuned": false
+  },
+  "images_loaded": 0,
+  "network_or_ocr_used": false,
+  "notice": "Synthetic ordered cell values only. These checks do not use third-party images, do not claim OCR accuracy, and do not change the legacy Holo output.",
+  "profile_ids": [
+    "holo-rtl-four-column-v1",
+    "synthetic-rtl-unit-discount-v1",
+    "synthetic-rtl-unit-price-v1",
+    "synthetic-rtl-crossed-consumer-price-v1"
+  ],
+  "profile_registry_version": "e24.layout-profile-registry.v1",
+  "status": "PASS",
+  "synthetic_only": true,
+  "task": "E-24",
+  "variants": [
+    {
+      "all_witnesses_passed": false,
+      "currency_unit": "rial",
+      "expected_fields": {},
+      "expected_fields_match": true,
+      "expected_status": "REVIEW",
+      "extracted_but_wrong": false,
+      "profile_id": "unregistered-layout-v99",
+      "result": {
+        "column_roles": [],
+        "fields": {},
+        "profile_id": "unregistered-layout-v99",
+        "reason": "No exact registered layout profile was supplied; profile guessing is disabled.",
+        "reason_code": "UNKNOWN_LAYOUT_PROFILE",
+        "status": "REVIEW",
+        "witnesses": {}
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "unknown-layout-id"
+    },
+    {
+      "all_witnesses_passed": false,
+      "currency_unit": "rial",
+      "expected_fields": {},
+      "expected_fields_match": true,
+      "expected_status": "REVIEW",
+      "extracted_but_wrong": false,
+      "profile_id": "holo-rtl-four-column-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {},
+        "profile_id": "holo-rtl-four-column-v1",
+        "reason": "This profile has no explicit per-unit price role; line_total is not divided by quantity.",
+        "reason_code": "UNIT_PRICE_ROLE_UNDECLARED",
+        "status": "REVIEW",
+        "witnesses": {}
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "holo-layout-without-explicit-unit-price-witness"
+    },
+    {
+      "all_witnesses_passed": true,
+      "currency_unit": "rial",
+      "expected_fields": {
+        "currency_unit": "rial",
+        "discount_percent": "10",
+        "discounted_price": 900,
+        "line_total": 1800,
+        "line_total_unit_price_role": "discounted_price",
+        "quantity": 2,
+        "unit_price": 1000
+      },
+      "expected_fields_match": true,
+      "expected_status": "EXTRACTED",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-discount-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "discounted_price",
+          "discount_percent",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {
+          "currency_unit": "rial",
+          "description": "Synthetic discounted item",
+          "description_lines": [
+            "Synthetic discounted item"
+          ],
+          "discount_percent": "10",
+          "discounted_price": 900,
+          "line_total": 1800,
+          "line_total_unit_price_role": "discounted_price",
+          "quantity": 2,
+          "row_number": 1,
+          "unit_price": 1000
+        },
+        "profile_id": "synthetic-rtl-unit-discount-v1",
+        "reason": "Exact profile roles and declared arithmetic witnesses passed; no value was inferred.",
+        "reason_code": "PROFILE_AND_WITNESSES_PASSED",
+        "status": "EXTRACTED",
+        "witnesses": {
+          "discount_percent": {
+            "discount_percent": "10",
+            "expected_discounted_price": "900",
+            "observed_discounted_price": 900,
+            "passed": true,
+            "rounding_allowed": false,
+            "unit_price": 1000
+          },
+          "quantity_x_unit_price_equals_line_total": {
+            "currency_unit": "rial",
+            "expected_line_total": 1800,
+            "observed_line_total": 1800,
+            "passed": true,
+            "quantity": 2,
+            "unit_price": 900,
+            "unit_price_role": "discounted_price"
+          }
+        }
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "unit-price-and-discount-columns"
+    },
+    {
+      "all_witnesses_passed": true,
+      "currency_unit": "rial",
+      "expected_fields": {
+        "description": "Synthetic item\nsecond description line",
+        "description_lines": [
+          "Synthetic item",
+          "second description line"
+        ],
+        "line_total": 2400,
+        "quantity": 2,
+        "unit_price": 1200
+      },
+      "expected_fields_match": true,
+      "expected_status": "EXTRACTED",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-price-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {
+          "currency_unit": "rial",
+          "description": "Synthetic item\nsecond description line",
+          "description_lines": [
+            "Synthetic item",
+            "second description line"
+          ],
+          "discount_percent": null,
+          "discounted_price": null,
+          "line_total": 2400,
+          "line_total_unit_price_role": "unit_price",
+          "quantity": 2,
+          "row_number": 1,
+          "unit_price": 1200
+        },
+        "profile_id": "synthetic-rtl-unit-price-v1",
+        "reason": "Exact profile roles and declared arithmetic witnesses passed; no value was inferred.",
+        "reason_code": "PROFILE_AND_WITNESSES_PASSED",
+        "status": "EXTRACTED",
+        "witnesses": {
+          "quantity_x_unit_price_equals_line_total": {
+            "currency_unit": "rial",
+            "expected_line_total": 2400,
+            "observed_line_total": 2400,
+            "passed": true,
+            "quantity": 2,
+            "unit_price": 1200,
+            "unit_price_role": "unit_price"
+          }
+        }
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "two-line-row"
+    },
+    {
+      "all_witnesses_passed": true,
+      "currency_unit": "rial",
+      "expected_fields": {
+        "consumer_price": "2500",
+        "consumer_price_crossed_out": true,
+        "line_total": 1800,
+        "line_total_unit_price_role": "unit_price",
+        "unit_price": 900
+      },
+      "expected_fields_match": true,
+      "expected_status": "EXTRACTED",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-crossed-consumer-price-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "consumer_price",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {
+          "consumer_price": "2500",
+          "consumer_price_crossed_out": true,
+          "currency_unit": "rial",
+          "description": "Synthetic product",
+          "description_lines": [
+            "Synthetic product"
+          ],
+          "discount_percent": null,
+          "discounted_price": null,
+          "line_total": 1800,
+          "line_total_unit_price_role": "unit_price",
+          "quantity": 2,
+          "row_number": 1,
+          "unit_price": 900
+        },
+        "profile_id": "synthetic-rtl-crossed-consumer-price-v1",
+        "reason": "Exact profile roles and declared arithmetic witnesses passed; no value was inferred.",
+        "reason_code": "PROFILE_AND_WITNESSES_PASSED",
+        "status": "EXTRACTED",
+        "witnesses": {
+          "quantity_x_unit_price_equals_line_total": {
+            "currency_unit": "rial",
+            "expected_line_total": 1800,
+            "observed_line_total": 1800,
+            "passed": true,
+            "quantity": 2,
+            "unit_price": 900,
+            "unit_price_role": "unit_price"
+          }
+        }
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "crossed-out-consumer-price-with-active-unit-price"
+    },
+    {
+      "all_witnesses_passed": false,
+      "currency_unit": "rial",
+      "expected_fields": {},
+      "expected_fields_match": true,
+      "expected_status": "REVIEW",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-price-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {},
+        "profile_id": "synthetic-rtl-unit-price-v1",
+        "reason": "Observed column roles/order do not exactly match the selected profile.",
+        "reason_code": "COLUMN_ORDER_MISMATCH",
+        "status": "REVIEW",
+        "witnesses": {}
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "unregistered-extra-column"
+    },
+    {
+      "all_witnesses_passed": true,
+      "currency_unit": "toman",
+      "expected_fields": {
+        "currency_unit": "toman",
+        "line_total": 3000,
+        "quantity": 2,
+        "unit_price": 1500
+      },
+      "expected_fields_match": true,
+      "expected_status": "EXTRACTED",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-price-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {
+          "currency_unit": "toman",
+          "description": "Synthetic toman item",
+          "description_lines": [
+            "Synthetic toman item"
+          ],
+          "discount_percent": null,
+          "discounted_price": null,
+          "line_total": 3000,
+          "line_total_unit_price_role": "unit_price",
+          "quantity": 2,
+          "row_number": 1,
+          "unit_price": 1500
+        },
+        "profile_id": "synthetic-rtl-unit-price-v1",
+        "reason": "Exact profile roles and declared arithmetic witnesses passed; no value was inferred.",
+        "reason_code": "PROFILE_AND_WITNESSES_PASSED",
+        "status": "EXTRACTED",
+        "witnesses": {
+          "quantity_x_unit_price_equals_line_total": {
+            "currency_unit": "toman",
+            "expected_line_total": 3000,
+            "observed_line_total": 3000,
+            "passed": true,
+            "quantity": 2,
+            "unit_price": 1500,
+            "unit_price_role": "unit_price"
+          }
+        }
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "toman-with-explicit-unit"
+    },
+    {
+      "all_witnesses_passed": false,
+      "currency_unit": null,
+      "expected_fields": {},
+      "expected_fields_match": true,
+      "expected_status": "REVIEW",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-price-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {},
+        "profile_id": "synthetic-rtl-unit-price-v1",
+        "reason": "An explicit rial/toman unit is required before amount witnesses can pass.",
+        "reason_code": "CURRENCY_UNIT_UNCONFIRMED",
+        "status": "REVIEW",
+        "witnesses": {}
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "toman-without-unit-setting"
+    },
+    {
+      "all_witnesses_passed": false,
+      "currency_unit": "rial",
+      "expected_fields": {},
+      "expected_fields_match": true,
+      "expected_status": "REVIEW",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-discount-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "discounted_price",
+          "discount_percent",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {
+          "discount_percent": "10"
+        },
+        "profile_id": "synthetic-rtl-unit-discount-v1",
+        "reason": "discounted_price does not exactly match unit_price and discount_percent; no rounding or repair is permitted.",
+        "reason_code": "DISCOUNT_WITNESS_FAILED",
+        "status": "REVIEW",
+        "witnesses": {
+          "discount_percent": {
+            "discount_percent": "10",
+            "expected_discounted_price": "900",
+            "observed_discounted_price": 950,
+            "passed": false,
+            "rounding_allowed": false,
+            "unit_price": 1000
+          }
+        }
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "discount-arithmetic-mismatch"
+    },
+    {
+      "all_witnesses_passed": false,
+      "currency_unit": "rial",
+      "expected_fields": {},
+      "expected_fields_match": true,
+      "expected_status": "REVIEW",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-price-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {},
+        "profile_id": "synthetic-rtl-unit-price-v1",
+        "reason": "quantity multiplied by the profile-declared per-unit price does not equal line_total.",
+        "reason_code": "LINE_TOTAL_WITNESS_FAILED",
+        "status": "REVIEW",
+        "witnesses": {
+          "quantity_x_unit_price_equals_line_total": {
+            "currency_unit": "rial",
+            "expected_line_total": 1800,
+            "observed_line_total": 1801,
+            "passed": false,
+            "quantity": 2,
+            "unit_price": 900,
+            "unit_price_role": "unit_price"
+          }
+        }
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "line-total-witness-mismatch"
+    },
+    {
+      "all_witnesses_passed": false,
+      "currency_unit": "rial",
+      "expected_fields": {},
+      "expected_fields_match": true,
+      "expected_status": "REVIEW",
+      "extracted_but_wrong": false,
+      "profile_id": "synthetic-rtl-unit-price-v1",
+      "result": {
+        "column_roles": [
+          "line_total",
+          "unit_price",
+          "quantity",
+          "description",
+          "row_number"
+        ],
+        "fields": {},
+        "profile_id": "synthetic-rtl-unit-price-v1",
+        "reason": "A crossed-out value cannot witness the line total.",
+        "reason_code": "WITNESS_PRICE_CROSSED_OUT",
+        "status": "REVIEW",
+        "witnesses": {}
+      },
+      "safe_outcome": true,
+      "synthetic_only": true,
+      "variant": "crossed-out-price-cannot-be-the-witness"
+    }
+  ]
+}

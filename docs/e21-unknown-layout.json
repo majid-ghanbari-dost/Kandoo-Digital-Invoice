@@ -1,0 +1,474 @@
+{
+  "aggregate": {
+    "extracted_wrong": 0,
+    "passed": true,
+    "safe_route_count": 5,
+    "safe_route_rate_percent": 100.0,
+    "sample_count": 5,
+    "thresholds_tuned": false,
+    "variants_with_reason": 5,
+    "wrong_candidate_count": 0
+  },
+  "font": {
+    "family": "DejaVu Sans Mono",
+    "no_substitution": true,
+    "path": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+    "sha256": "0f5db4f1749979d961019838b160bec74abdf7f9eca69553fe1aa856bbff49a4",
+    "style": "Book"
+  },
+  "notice": "Synthetic mechanics test only: not a Holo capture, not real-store evidence, and not a production OCR accuracy claim.",
+  "platform": {
+    "machine": "x86_64",
+    "pillow": "13.0.0",
+    "python": "3.11.2",
+    "release": "6.1.158+",
+    "system": "Linux"
+  },
+  "status": "PASS",
+  "synthetic_only": true,
+  "task": "E-21",
+  "training": {
+    "e05_template_count": 1,
+    "glyph_labelled_numeric_cells": 27,
+    "glyph_used_numeric_cells": 27,
+    "source_pages": [
+      "learning-1",
+      "learning-2",
+      "learning-3"
+    ],
+    "thresholds_tuned": false
+  },
+  "variants": [
+    {
+      "arithmetic_gate": {
+        "passed": false,
+        "reason": "line.0.total '?۱' is not a well-formed amount"
+      },
+      "candidate_has_wrong_values": false,
+      "candidate_wrong_fields": [],
+      "canonical_candidate_emitted": false,
+      "cell_counts": {
+        "extracted_correct": 0,
+        "extracted_wrong": 0,
+        "review_or_blocked": 9,
+        "total": 9
+      },
+      "cells": [
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۱۲۲,۶۲۲",
+          "field": "line.0.total",
+          "raw_value": "?۱",
+          "reason": "glyph 1 not accepted: ambiguous: margin 0.091 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۳",
+          "field": "line.0.quantity",
+          "raw_value": "??,۶?",
+          "reason": "glyph 1 not accepted: glyph touches the crop edge (possible clipping); distance 0.891 exceeds 0.250; glyph 2 not accepted: ambiguous: margin 0.091 below 0.150; glyph 5 not accepted: glyph touches the crop edge (possible clipping); cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 99.99333333333334,
+          "correct_after_normalization": false,
+          "expected_value": "۱۲۶,۲۶۰",
+          "field": "line.1.total",
+          "raw_value": "۴۱",
+          "reason": "arithmetic gate failed: line.0.total '?۱' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۴",
+          "field": "line.1.quantity",
+          "raw_value": "?۶,??",
+          "reason": "glyph 1 not accepted: glyph touches the crop edge (possible clipping); distance 0.891 exceeds 0.250; glyph 4 not accepted: ambiguous: margin 0.091 below 0.150; glyph 5 not accepted: glyph touches the crop edge (possible clipping); distance 0.469 exceeds 0.250; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۸۶,۴۱۵",
+          "field": "line.2.total",
+          "raw_value": "۷?",
+          "reason": "glyph 2 not accepted: glyph touches the crop edge (possible clipping); distance 0.531 exceeds 0.250; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 99.98,
+          "correct_after_normalization": false,
+          "expected_value": "۷",
+          "field": "line.2.quantity",
+          "raw_value": "۶,۴۱",
+          "reason": "raw cell OCR does not match the declared numeric format",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۵۰,۰۹۶",
+          "field": "line.3.total",
+          "raw_value": "۸?",
+          "reason": "glyph 2 not accepted: glyph touches the crop edge (possible clipping); distance 0.522 exceeds 0.250; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۸",
+          "field": "line.3.quantity",
+          "raw_value": "۰,۰?",
+          "reason": "glyph 4 not accepted: glyph touches the crop edge (possible clipping); cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۳۸۵,۳۹۳",
+          "field": "invoice.payable",
+          "raw_value": "?۸۵,?۹?",
+          "reason": "glyph 1 not accepted: ambiguous: margin 0.062 below 0.150; glyph 5 not accepted: ambiguous: margin 0.062 below 0.150; glyph 7 not accepted: ambiguous: margin 0.062 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount; arithmetic gate failed: line.0.total '?۱' is not a well-formed amount",
+          "status": "REVIEW"
+        }
+      ],
+      "e05_reference_match": {
+        "components": {
+          "columns": 1.0,
+          "numeric_format": 1.0,
+          "payable_anchor": 0.9909577546296297,
+          "row_count": 1.0,
+          "row_rhythm": 1.0,
+          "table_anchor": 1.0
+        },
+        "confidence_score": 0.9990053530092593,
+        "matched": true,
+        "numeric_evidence_present": true,
+        "reasons": [
+          "all supplied layout and numeric-format evidence is consistent"
+        ],
+        "source_invoice_ids": [
+          "learning-1",
+          "learning-2",
+          "learning-3"
+        ],
+        "template_id": "e05-layout-01"
+      },
+      "e06_details": [
+        "Missing fields: invoice.payable is unavailable or not a valid integer-Rial amount, line.0.quantity is not a valid positive integer, line.0.total is not a valid integer-Rial amount, line.1.quantity is not a valid positive integer, line.2.quantity is not a valid positive integer, line.2.total is not a valid integer-Rial amount, line.3.quantity is not a valid positive integer, line.3.total is not a valid integer-Rial amount"
+      ],
+      "e06_reason_codes": [
+        "PARTIAL_MATCH"
+      ],
+      "e06_template_match": null,
+      "e06_verdict": "REVIEW",
+      "final_outcome": "REVIEW",
+      "final_reason": "E-06 REVIEW: Missing fields: invoice.payable is unavailable or not a valid integer-Rial amount, line.0.quantity is not a valid positive integer, line.0.total is not a valid integer-Rial amount, line.1.quantity is not a valid positive integer, line.2.quantity is not a valid positive integer, line.2.total is not a valid integer-Rial amount, line.3.quantity is not a valid positive integer, line.3.total is not a valid integer-Rial amount",
+      "height": 872,
+      "image_sha256": "24cd6ef5f62e73e782fbd97ee46e1cf18ba8cced712bf9a2a024d49d6d5f9650",
+      "label": "Swapped columns",
+      "layout_reason": "Complete table geometry detected.",
+      "layout_status": "OK",
+      "mode": "1",
+      "passed": true,
+      "pipeline_reason": "Canonical context did not produce a valid v0 candidate.",
+      "pipeline_status": "REVIEW",
+      "reason_present": true,
+      "row_count": 4,
+      "safe_route_count": 1,
+      "safe_route_rate_percent": 100.0,
+      "sample_count": 1,
+      "synthetic": true,
+      "target_layout_reason": "Complete table geometry detected.",
+      "target_layout_status": "OK",
+      "variant_id": "swapped-columns",
+      "width": 576
+    },
+    {
+      "arithmetic_gate": null,
+      "candidate_has_wrong_values": false,
+      "candidate_wrong_fields": [],
+      "canonical_candidate_emitted": false,
+      "cell_counts": {
+        "extracted_correct": 0,
+        "extracted_wrong": 0,
+        "review_or_blocked": 0,
+        "total": 0
+      },
+      "cells": [],
+      "e05_reference_match": null,
+      "e06_details": [
+        "Missing fields: blocked extraction has no Canonical Invoice candidate"
+      ],
+      "e06_reason_codes": [
+        "PARTIAL_MATCH",
+        "NEW_LAYOUT"
+      ],
+      "e06_template_match": null,
+      "e06_verdict": "REVIEW",
+      "final_outcome": "BLOCKED",
+      "final_reason": "E-02 failed closed: No table geometry was detected.",
+      "height": 872,
+      "image_sha256": "496c7a01f20add4dfb291cc13b83e8fca8ce5d93691314804dccf6b713ba15f8",
+      "label": "No vertical rules",
+      "layout_reason": "No table geometry was detected.",
+      "layout_status": "BLOCKED",
+      "mode": "1",
+      "passed": true,
+      "pipeline_reason": "No table geometry was detected.",
+      "pipeline_status": "REJECT",
+      "reason_present": true,
+      "row_count": null,
+      "safe_route_count": 1,
+      "safe_route_rate_percent": 100.0,
+      "sample_count": 1,
+      "synthetic": true,
+      "target_layout_reason": "No table geometry was detected.",
+      "target_layout_status": "BLOCKED",
+      "variant_id": "no-vertical-rules",
+      "width": 576
+    },
+    {
+      "arithmetic_gate": null,
+      "candidate_has_wrong_values": false,
+      "candidate_wrong_fields": [],
+      "canonical_candidate_emitted": false,
+      "cell_counts": {
+        "extracted_correct": 0,
+        "extracted_wrong": 0,
+        "review_or_blocked": 0,
+        "total": 0
+      },
+      "cells": [],
+      "e05_reference_match": null,
+      "e06_details": [
+        "Missing fields: blocked extraction has no Canonical Invoice candidate"
+      ],
+      "e06_reason_codes": [
+        "PARTIAL_MATCH",
+        "NEW_LAYOUT"
+      ],
+      "e06_template_match": null,
+      "e06_verdict": "REVIEW",
+      "final_outcome": "BLOCKED",
+      "final_reason": "E-02 failed closed: No table geometry was detected.",
+      "height": 872,
+      "image_sha256": "d6ce0ef992976d566b2bfae19533ba7bd9c6dc322aaeaadd9995fb8228bd2df6",
+      "label": "Three columns",
+      "layout_reason": "No table geometry was detected.",
+      "layout_status": "BLOCKED",
+      "mode": "1",
+      "passed": true,
+      "pipeline_reason": "No table geometry was detected.",
+      "pipeline_status": "REJECT",
+      "reason_present": true,
+      "row_count": null,
+      "safe_route_count": 1,
+      "safe_route_rate_percent": 100.0,
+      "sample_count": 1,
+      "synthetic": true,
+      "target_layout_reason": "No table geometry was detected.",
+      "target_layout_status": "BLOCKED",
+      "variant_id": "three-columns",
+      "width": 576
+    },
+    {
+      "arithmetic_gate": null,
+      "candidate_has_wrong_values": false,
+      "candidate_wrong_fields": [],
+      "canonical_candidate_emitted": false,
+      "cell_counts": {
+        "extracted_correct": 0,
+        "extracted_wrong": 0,
+        "review_or_blocked": 0,
+        "total": 0
+      },
+      "cells": [],
+      "e05_reference_match": null,
+      "e06_details": [
+        "Missing fields: blocked extraction has no Canonical Invoice candidate"
+      ],
+      "e06_reason_codes": [
+        "PARTIAL_MATCH",
+        "NEW_LAYOUT"
+      ],
+      "e06_template_match": null,
+      "e06_verdict": "REVIEW",
+      "final_outcome": "BLOCKED",
+      "final_reason": "E-02 failed closed: No table geometry was detected.",
+      "height": 872,
+      "image_sha256": "4e24d66a55b6cf878ba758545cdb1ba4283cdd40946003679e779cf8f9514d02",
+      "label": "Extra column",
+      "layout_reason": "No table geometry was detected.",
+      "layout_status": "BLOCKED",
+      "mode": "1",
+      "passed": true,
+      "pipeline_reason": "No table geometry was detected.",
+      "pipeline_status": "REJECT",
+      "reason_present": true,
+      "row_count": null,
+      "safe_route_count": 1,
+      "safe_route_rate_percent": 100.0,
+      "sample_count": 1,
+      "synthetic": true,
+      "target_layout_reason": "No table geometry was detected.",
+      "target_layout_status": "BLOCKED",
+      "variant_id": "extra-column",
+      "width": 576
+    },
+    {
+      "arithmetic_gate": {
+        "passed": false,
+        "reason": "line.0.total '۱??,۶??' is not a well-formed amount"
+      },
+      "candidate_has_wrong_values": false,
+      "candidate_wrong_fields": [],
+      "canonical_candidate_emitted": false,
+      "cell_counts": {
+        "extracted_correct": 3,
+        "extracted_wrong": 0,
+        "review_or_blocked": 6,
+        "total": 9
+      },
+      "cells": [
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۱۲۲,۶۲۲",
+          "field": "line.0.total",
+          "raw_value": "۱??,۶??",
+          "reason": "glyph 2 not accepted: ambiguous: margin 0.091 below 0.150; glyph 3 not accepted: ambiguous: margin 0.091 below 0.150; glyph 6 not accepted: ambiguous: margin 0.091 below 0.150; glyph 7 not accepted: ambiguous: margin 0.091 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۳",
+          "field": "line.0.quantity",
+          "raw_value": "?",
+          "reason": "glyph 1 not accepted: ambiguous: margin 0.091 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۱۲۶,۲۶۰",
+          "field": "line.1.total",
+          "raw_value": "۱?۶,?۶۰",
+          "reason": "glyph 2 not accepted: ambiguous: margin 0.091 below 0.150; glyph 5 not accepted: ambiguous: margin 0.091 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 99.99333333333334,
+          "correct_after_normalization": true,
+          "expected_value": "۴",
+          "field": "line.1.quantity",
+          "raw_value": "۴",
+          "reason": null,
+          "status": "EXTRACTED"
+        },
+        {
+          "confidence": 99.98,
+          "correct_after_normalization": true,
+          "expected_value": "۸۶,۴۱۵",
+          "field": "line.2.total",
+          "raw_value": "۸۶,۴۱۵",
+          "reason": "arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 99.99333333333334,
+          "correct_after_normalization": true,
+          "expected_value": "۷",
+          "field": "line.2.quantity",
+          "raw_value": "۷",
+          "reason": null,
+          "status": "EXTRACTED"
+        },
+        {
+          "confidence": 99.98,
+          "correct_after_normalization": true,
+          "expected_value": "۵۰,۰۹۶",
+          "field": "line.3.total",
+          "raw_value": "۵۰,۰۹۶",
+          "reason": "arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+          "status": "REVIEW"
+        },
+        {
+          "confidence": 100.0,
+          "correct_after_normalization": true,
+          "expected_value": "۸",
+          "field": "line.3.quantity",
+          "raw_value": "۸",
+          "reason": null,
+          "status": "EXTRACTED"
+        },
+        {
+          "confidence": 0.0,
+          "correct_after_normalization": false,
+          "expected_value": "۳۸۵,۳۹۳",
+          "field": "invoice.payable",
+          "raw_value": "?۸۵,?۹?",
+          "reason": "glyph 1 not accepted: ambiguous: margin 0.062 below 0.150; glyph 5 not accepted: ambiguous: margin 0.062 below 0.150; glyph 7 not accepted: ambiguous: margin 0.062 below 0.150; cell OCR confidence 0.00 is below 60.00; raw cell OCR does not match the declared numeric format; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount; arithmetic gate failed: line.0.total '۱??,۶??' is not a well-formed amount",
+          "status": "REVIEW"
+        }
+      ],
+      "e05_reference_match": {
+        "components": {
+          "columns": 0.0,
+          "numeric_format": 1.0,
+          "payable_anchor": 0.8498987268518519,
+          "row_count": 1.0,
+          "row_rhythm": 1.0,
+          "table_anchor": 0.016203703703703498
+        },
+        "confidence_score": 0.6352712673611111,
+        "matched": false,
+        "numeric_evidence_present": true,
+        "reasons": [
+          "column geometry differs from the learned layout",
+          "table top anchor differs from the learned layout"
+        ],
+        "source_invoice_ids": [
+          "learning-1",
+          "learning-2",
+          "learning-3"
+        ],
+        "template_id": "e05-layout-01"
+      },
+      "e06_details": [
+        "Missing fields: invoice.payable is unavailable or not a valid integer-Rial amount, line.0.quantity is not a valid positive integer, line.0.total is not a valid integer-Rial amount, line.1.total is not a valid integer-Rial amount"
+      ],
+      "e06_reason_codes": [
+        "PARTIAL_MATCH"
+      ],
+      "e06_template_match": null,
+      "e06_verdict": "REVIEW",
+      "final_outcome": "REVIEW",
+      "final_reason": "E-06 REVIEW: Missing fields: invoice.payable is unavailable or not a valid integer-Rial amount, line.0.quantity is not a valid positive integer, line.0.total is not a valid integer-Rial amount, line.1.total is not a valid integer-Rial amount",
+      "height": 906,
+      "image_sha256": "8ca3da64002371f3042e0cec7cc28c40458671f90c26800141e4217d5c99da62",
+      "label": "Different table position",
+      "layout_reason": "Complete table geometry detected.",
+      "layout_status": "OK",
+      "mode": "1",
+      "passed": true,
+      "pipeline_reason": "Canonical context did not produce a valid v0 candidate.",
+      "pipeline_status": "REVIEW",
+      "reason_present": true,
+      "row_count": 4,
+      "safe_route_count": 1,
+      "safe_route_rate_percent": 100.0,
+      "sample_count": 1,
+      "synthetic": true,
+      "target_layout_reason": "Complete table geometry detected.",
+      "target_layout_status": "OK",
+      "variant_id": "different-table-position",
+      "width": 576
+    }
+  ]
+}

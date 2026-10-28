@@ -1,0 +1,11 @@
+# Optional N-01 OCR experiment environment. Inference itself runs fully offline.
+Pillow==13.0.0
+tesserocr==2.12.0
+parisaocr==0.7.2
+kraken==7.1.1
+torch==2.14.0
+torchvision==0.29.1
+rapidocr==3.10.0
+onnxruntime==1.31.0
+numpy==2.4.6
+scipy==1.15.3

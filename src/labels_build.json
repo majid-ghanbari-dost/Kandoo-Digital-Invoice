@@ -1,0 +1,63 @@
+{
+  "label_status": "PROVISIONAL_VISUAL_TRANSCRIPTION — manually read from the source rasters; not confirmed by the invoice owner",
+  "purpose": "Template building only. Numeric strings below are visual labels, never OCR output.",
+  "split_note": "Build data uses all 4- and 5-row receipts plus rows 3-8 of the 13-row receipt. The 13-row evaluation scores only rows outside that training crop.",
+  "images": [
+    {
+      "path": "../deliveries/image-extraction-ocr/holo_row_detection.png",
+      "source_row_indices": [0, 1, 2, 3],
+      "payable_bbox": [214, 820, 116, 28],
+      "payable_bbox_provenance": "invoice.payable FieldAssessment bbox from Adapter spatial geometry on the original 4-row image",
+      "values": {
+        "line.0.quantity": "۱",
+        "line.0.total": "۱,۴۵۰,۰۰۰",
+        "line.1.quantity": "۱",
+        "line.1.total": "۴,۸۷۰,۰۰۰",
+        "line.2.quantity": "۱",
+        "line.2.total": "۵۷۰,۰۰۰",
+        "line.3.quantity": "۱",
+        "line.3.total": "۵۷۰,۰۰۰",
+        "invoice.payable": "۷,۴۶۰,۰۰۰"
+      }
+    },
+    {
+      "path": "../deliveries/image-extraction-ocr/5.png",
+      "source_row_indices": [0, 1, 2, 3, 4],
+      "payable_bbox": [214, 888, 116, 28],
+      "payable_bbox_provenance": "invoice.payable FieldAssessment bbox from Adapter spatial geometry on the original 5-row image",
+      "values": {
+        "line.0.quantity": "۱",
+        "line.0.total": "۹۷۰,۰۰۰",
+        "line.1.quantity": "۱",
+        "line.1.total": "۳,۹۵۰,۰۰۰",
+        "line.2.quantity": "۱",
+        "line.2.total": "۱,۸۷۰,۰۰۰",
+        "line.3.quantity": "۱",
+        "line.3.total": "۹۷۰,۰۰۰",
+        "line.4.quantity": "۱",
+        "line.4.total": "۹۰,۰۰۰",
+        "invoice.payable": "۷,۸۵۰,۰۰۰"
+      }
+    },
+    {
+      "path": "../deliveries/image-extraction-ocr/glyph-classifier-build-13-rows03-08.png",
+      "source_image": "../deliveries/image-extraction-ocr/13.png",
+      "source_row_indices": [3, 4, 5, 6, 7, 8],
+      "split_note": "Separate crop of disjoint 13-row-invoice item rows used for training; source row indices are zero-based.",
+      "values": {
+        "line.0.quantity": "۲",
+        "line.0.total": "۶,۴۰۰,۰۰۰",
+        "line.1.quantity": "۲۰",
+        "line.1.total": "۴۹,۴۰۰,۰۰۰",
+        "line.2.quantity": "۱",
+        "line.2.total": "۱,۵۷۰,۰۰۰",
+        "line.3.quantity": "۵",
+        "line.3.total": "۶,۹۰۰,۰۰۰",
+        "line.4.quantity": "۱",
+        "line.4.total": "۶,۸۷۰,۰۰۰",
+        "line.5.quantity": "۲",
+        "line.5.total": "۳,۷۰۰,۰۰۰"
+      }
+    }
+  ]
+}

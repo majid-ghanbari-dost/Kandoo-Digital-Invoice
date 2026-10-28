@@ -1,0 +1,301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:mode-b:onboarding-verdict:1",
+  "title": "Kandoo Mode B Onboarding Verdict Artifact v1",
+  "description": "Versioned E-06 decision envelope. The result member follows VerdictResult.to_dict(); the context binds it to the tested bank snapshot and explicit policy inputs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "mode",
+    "store_id",
+    "invoice_id",
+    "evaluated_at",
+    "template_bank_sha256",
+    "evaluation_context",
+    "result"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "kandoo.mode-b.onboarding-verdict"
+    },
+    "artifact_version": {
+      "const": "1"
+    },
+    "mode": {
+      "const": "B"
+    },
+    "store_id": {
+      "$ref": "#/$defs/opaqueId"
+    },
+    "invoice_id": {
+      "$ref": "#/$defs/opaqueId"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "template_bank_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "evaluation_context": {
+      "$ref": "#/$defs/evaluationContext"
+    },
+    "result": {
+      "$ref": "#/$defs/verdictResult"
+    }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": ".*\\S.*"
+    },
+    "unitInterval": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "evaluationContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "processed_invoice_count",
+        "template_bank_locked",
+        "d14_agreement_signed",
+        "require_kit_digit_coverage",
+        "extraction_confidence",
+        "missing_fields"
+      ],
+      "properties": {
+        "processed_invoice_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "template_bank_locked": {
+          "type": "boolean"
+        },
+        "d14_agreement_signed": {
+          "type": "boolean"
+        },
+        "require_kit_digit_coverage": {
+          "type": "boolean"
+        },
+        "extraction_confidence": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/unitInterval"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "missing_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/opaqueId"
+          }
+        }
+      }
+    },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "TEMPLATE_MATCH_HIGH",
+        "STRUCTURE_VALID",
+        "NUMS_CONSISTENT",
+        "EXTRACTION_CONFIDENCE_HIGH",
+        "LAYOUT_SIMILARITY_HIGH",
+        "DIGIT_COVERAGE_VALID",
+        "ONBOARDING_COMPLETE",
+        "TEMPLATE_BANK_LOCKED",
+        "D14_AGREEMENT_SIGNED",
+        "OWNER_VERIFICATION_AUDITED",
+        "LOW_CONFIDENCE",
+        "ACCOUNTING_ADJUSTMENT_UNSUPPORTED",
+        "CURRENCY_UNIT_UNCONFIRMED",
+        "PARTIAL_MATCH",
+        "NEW_LAYOUT",
+        "MULTI_TEMPLATE_AMBIGUOUS",
+        "SELF_MATCH_RESUBSTITUTION",
+        "ONBOARDING_WARMUP",
+        "TEMPLATE_BANK_UNLOCKED",
+        "D14_AGREEMENT_REQUIRED",
+        "DIGIT_COVERAGE_INSUFFICIENT",
+        "ATTENTION_REQUIRED",
+        "CANONICAL_STATE_NOT_READY",
+        "OWNER_VERIFICATION_REQUIRED",
+        "MANUAL_OVERRIDE_BLOCKED",
+        "MANUAL_OVERRIDE_INVALID",
+        "MANUAL_OVERRIDE_APPLIED",
+        "MANUAL_OWNER_REJECTED",
+        "SCHEMA_INVALID",
+        "NUMS_INCONSISTENT",
+        "NO_MATCH"
+      ]
+    },
+    "templateMatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template_id",
+        "confidence_score",
+        "matched",
+        "source_invoice_ids",
+        "components",
+        "reasons",
+        "numeric_evidence_present"
+      ],
+      "properties": {
+        "template_id": {
+          "$ref": "#/$defs/opaqueId"
+        },
+        "confidence_score": {
+          "$ref": "#/$defs/unitInterval"
+        },
+        "matched": {
+          "type": "boolean"
+        },
+        "source_invoice_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/opaqueId"
+          }
+        },
+        "components": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/opaqueId"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/unitInterval"
+          }
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "numeric_evidence_present": {
+          "type": "boolean"
+        }
+      }
+    },
+    "manualOverrideAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "actor_id",
+        "actor_role",
+        "audit_id",
+        "reason",
+        "occurred_at",
+        "verified_fields"
+      ],
+      "properties": {
+        "target": {
+          "enum": ["ACCEPT", "REVIEW", "REJECT"]
+        },
+        "actor_id": {
+          "$ref": "#/$defs/opaqueId"
+        },
+        "actor_role": {
+          "const": "store_owner"
+        },
+        "audit_id": {
+          "$ref": "#/$defs/opaqueId"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verified_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/opaqueId"
+          }
+        }
+      }
+    },
+    "verdictResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "reason_codes",
+        "confidence_score",
+        "template_match",
+        "details",
+        "audit_record",
+        "owner_acceptance_eligible"
+      ],
+      "properties": {
+        "verdict": {
+          "enum": ["ACCEPT", "REVIEW", "REJECT"]
+        },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/reasonCode"
+          }
+        },
+        "confidence_score": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/unitInterval"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "template_match": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/templateMatch"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "audit_record": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/manualOverrideAudit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "owner_acceptance_eligible": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

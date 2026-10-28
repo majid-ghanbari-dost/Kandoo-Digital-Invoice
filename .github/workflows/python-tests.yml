@@ -1,0 +1,188 @@
+name: Python tests
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-e20:
+    name: Synthetic second-store mechanics / Python 3.11
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: src:scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install E-20 runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install Pillow 'jsonschema>=4.18,<5'
+
+      # This step selects only an already-installed font with distinct masks
+      # for Persian digits ۰–۹ and comma. If none exists, it reports the block
+      # and fails without downloading or substituting a font.
+      - name: Run E-20 synthetic mechanics check
+        run: |
+          python scripts/run_e20_second_store.py \
+            --report-json "$RUNNER_TEMP/e20-second-store-evidence.json" \
+            --report-md "$RUNNER_TEMP/e20-second-store-evidence.md"
+
+      - name: Upload E-20 synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e20-synthetic-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e20-second-store-evidence.json
+            ${{ runner.temp }}/e20-second-store-evidence.md
+          if-no-files-found: warn
+          retention-days: 14
+
+  synthetic-e21:
+    name: Synthetic unknown-layout safety / Python 3.11
+    runs-on: ubuntu-latest
+    needs: synthetic-e20
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: src:scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install E-21 runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install Pillow 'jsonschema>=4.18,<5'
+
+      - name: Run E-21 synthetic unknown-layout checks
+        run: |
+          python scripts/run_e21_unknown_layout.py \
+            --report-json "$RUNNER_TEMP/e21-unknown-layout-evidence.json" \
+            --report-md "$RUNNER_TEMP/e21-unknown-layout-evidence.md"
+
+      - name: Upload E-21 synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e21-synthetic-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e21-unknown-layout-evidence.json
+            ${{ runner.temp }}/e21-unknown-layout-evidence.md
+          if-no-files-found: warn
+          retention-days: 14
+
+  n01-name-reading:
+    name: N-01 offline Persian name OCR / Python 3.11
+    # The large, optional CPU OCR runtimes are evaluated only on N-01 task commits.
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'N-01:') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: src
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      TESSDATA_FAST_COMMIT: 87416418657359cb625c412a48b6e1d6d41c29bd
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/n01-ocr-requirements.txt
+
+      - name: Install the pinned local OCR runtimes
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r scripts/n01-ocr-requirements.txt
+
+      - name: Fetch only the pinned Persian Tesseract model
+        shell: bash
+        run: |
+          set -euo pipefail
+          model_repo="$RUNNER_TEMP/tessdata-fast"
+          tessdata="$RUNNER_TEMP/tessdata"
+          mkdir -p "$model_repo" "$tessdata"
+          git -C "$model_repo" init -q
+          git -C "$model_repo" remote add origin https://github.com/tesseract-ocr/tessdata_fast.git
+          git -C "$model_repo" config core.sparseCheckout true
+          git -C "$model_repo" config core.sparseCheckoutCone false
+          printf 'fas.traineddata\n' > "$model_repo/.git/info/sparse-checkout"
+          git -C "$model_repo" fetch --no-tags --depth=1 --filter=blob:none origin "$TESSDATA_FAST_COMMIT"
+          git -C "$model_repo" checkout FETCH_HEAD
+          cp "$model_repo/fas.traineddata" "$tessdata/fas.traineddata"
+          sha256sum "$tessdata/fas.traineddata"
+
+      - name: Run the local-only N-01 OCR evaluation
+        run: |
+          python scripts/run_n01_name_reading.py \
+            --tessdata-dir "$RUNNER_TEMP/tessdata" \
+            --output-json "$RUNNER_TEMP/n01-name-reading.json" \
+            --output-markdown "$RUNNER_TEMP/n01-name-reading.md"
+          cat "$RUNNER_TEMP/n01-name-reading.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload N-01 raw outputs and metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: n01-name-reading-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/n01-name-reading.json
+            ${{ runner.temp }}/n01-name-reading.md
+          if-no-files-found: warn
+          retention-days: 14
+
+  pytest:
+    name: Ubuntu / Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest Pillow 'jsonschema>=4.18,<5'
+
+      # The Glyph-only path and the adapter's no-Tesseract regression test run
+      # without a system OCR executable. Do not add Tesseract to this job.
+      - name: Run the existing Python test suite
+        run: python -m pytest -q
+        env:
+          PYTHONPATH: src

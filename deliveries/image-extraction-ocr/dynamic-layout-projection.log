@@ -1,0 +1,7 @@
+detector=projection/median-row-height
+line_fraction=0.80
+row_coords=derived-from-image; no fixed x/y row coordinates
+holo_row_detection.png: rows=4/4 columns=5 row_cells=12 median_row_height=68.5 header_excluded=True horizontal_lines=(468.0, 525.0, 596.0, 664.0, 732.0, 801.0) column_boundaries=(116.0, 244.0, 293.0, 487.0, 527.0) sha256=61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a result=PASS
+5.png: rows=5/5 columns=5 row_cells=15 median_row_height=68.0 header_excluded=True horizontal_lines=(468.0, 525.0, 596.0, 664.0, 732.0, 800.0, 868.0) column_boundaries=(116.0, 244.0, 293.0, 487.0, 527.0) sha256=c6389f078c9a487b06620c01f80f86477ffa7d291cab24d3c9639fc72fd5e68e result=PASS
+13.png: rows=13/13 columns=5 row_cells=39 median_row_height=68.0 header_excluded=True horizontal_lines=(468.0, 525.0, 596.0, 664.0, 732.0, 800.0, 868.0, 936.0, 1004.0, 1071.0, 1139.0, 1207.0, 1275.0, 1343.0, 1412.0) column_boundaries=(116.0, 244.0, 293.0, 487.0, 527.0) sha256=2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80 result=PASS
+overall=PASS

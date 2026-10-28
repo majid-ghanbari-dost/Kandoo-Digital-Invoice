@@ -1,0 +1,38 @@
+== ../deliveries/image-extraction-ocr/holo_row_detection.png
+  USED line.0.total: ۱,۴۵۰,۰۰۰ (+5 new templates)
+  USED line.0.quantity: ۱ (+1 new templates)
+  USED line.1.total: ۴,۸۷۰,۰۰۰ (+2 new templates)
+  USED line.1.quantity: ۱ (+0 new templates)
+  USED line.2.total: ۵۷۰,۰۰۰ (+0 new templates)
+  USED line.2.quantity: ۱ (+0 new templates)
+  USED line.3.total: ۵۷۰,۰۰۰ (+0 new templates)
+  USED line.3.quantity: ۱ (+0 new templates)
+  SKIP invoice.payable: 10 components != 9 symbols in '۷,۴۶۰,۰۰۰'
+== ../deliveries/image-extraction-ocr/5.png
+  USED line.0.total: ۹۷۰,۰۰۰ (+1 new templates)
+  USED line.0.quantity: ۱ (+0 new templates)
+  USED line.1.total: ۳,۹۵۰,۰۰۰ (+1 new templates)
+  USED line.1.quantity: ۱ (+0 new templates)
+  USED line.2.total: ۱,۸۷۰,۰۰۰ (+0 new templates)
+  USED line.2.quantity: ۱ (+0 new templates)
+  USED line.3.total: ۹۷۰,۰۰۰ (+0 new templates)
+  USED line.3.quantity: ۱ (+0 new templates)
+  USED line.4.total: ۹۰,۰۰۰ (+0 new templates)
+  USED line.4.quantity: ۱ (+0 new templates)
+  USED invoice.payable: ۷,۸۵۰,۰۰۰ (+5 new templates)
+== ../deliveries/image-extraction-ocr/glyph-classifier-build-13-rows03-08.png
+  USED line.0.total: ۶,۴۰۰,۰۰۰ (+1 new templates)
+  USED line.0.quantity: ۲ (+1 new templates)
+  USED line.1.total: ۴۹,۴۰۰,۰۰۰ (+0 new templates)
+  USED line.1.quantity: ۲۰ (+1 new templates)
+  USED line.2.total: ۱,۵۷۰,۰۰۰ (+0 new templates)
+  USED line.2.quantity: ۱ (+0 new templates)
+  USED line.3.total: ۶,۹۰۰,۰۰۰ (+0 new templates)
+  USED line.3.quantity: ۵ (+1 new templates)
+  USED line.4.total: ۶,۸۷۰,۰۰۰ (+0 new templates)
+  USED line.4.quantity: ۱ (+0 new templates)
+  USED line.5.total: ۳,۷۰۰,۰۰۰ (+0 new templates)
+  USED line.5.quantity: ۲ (+0 new templates)
+profile row: ,x1 ۰x2 ۱x2 ۲x1 ۳x1 ۴x1 ۵x2 ۶x1 ۷x1 ۸x1 ۹x1
+profile payable: ,x1 ۰x1 ۵x1 ۷x1 ۸x1
+saved templates.json
