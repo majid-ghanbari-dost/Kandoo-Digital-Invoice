@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kandoo.example/schemas/e28/glyph_drift_baseline_v1.schema.json",
+  "title": "E-28 per-symbol Glyph drift baseline",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "baseline_id",
+    "template_library_id",
+    "metric",
+    "source_images",
+    "calibration",
+    "symbols"
+  ],
+  "properties": {
+    "schema_version": {"const": "e28.glyph-drift-baseline.v1"},
+    "baseline_id": {"type": "string", "minLength": 1},
+    "template_library_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "metric": {"const": "equal-weight per-invoice mean GlyphReading.distance grouped by best_label"},
+    "source_images": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sample_id", "sha256"],
+        "properties": {
+          "sample_id": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_method",
+        "bound_method",
+        "clean_control_variants",
+        "clean_control_count",
+        "synthetic_stress_checks",
+        "synthetic_only_notice"
+      ],
+      "properties": {
+        "baseline_method": {"type": "string", "minLength": 1},
+        "bound_method": {"type": "string", "minLength": 1},
+        "clean_control_variants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "clean_control_count": {"type": "integer", "minimum": 1},
+        "synthetic_stress_checks": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sample_count", "triggered_sample_count", "minimum_excess_over_bound"],
+            "properties": {
+              "sample_count": {"type": "integer", "minimum": 1},
+              "triggered_sample_count": {"type": "integer", "minimum": 1},
+              "minimum_excess_over_bound": {"type": "number", "exclusiveMinimum": 0}
+            }
+          }
+        },
+        "synthetic_only_notice": {"type": "string", "minLength": 1}
+      }
+    },
+    "symbols": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"minLength": 1, "maxLength": 1},
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mean_distance", "bound", "invoice_observation_count", "glyph_observation_count"],
+        "properties": {
+          "mean_distance": {"type": "number", "minimum": 0},
+          "bound": {"type": "number", "minimum": 0},
+          "invoice_observation_count": {"type": "integer", "minimum": 1},
+          "glyph_observation_count": {"type": "integer", "minimum": 1}
+        }
+      }
+    }
+  }
+}

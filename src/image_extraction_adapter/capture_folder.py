@@ -574,6 +574,7 @@ def extract_capture_folder(
     templates_path: str | Path = DEFAULT_TEMPLATE_BANK_PATH,
     e05_bank_path: str | Path | None = None,
     captured_at: str | None = None,
+    drift_baseline_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run E-02, E-05, and fail-closed E-06 on one capture folder.
 
@@ -624,6 +625,7 @@ def extract_capture_folder(
                 page.path,
                 templates_path=templates_path,
                 captured_at=effective_captured_at,
+                drift_baseline_path=drift_baseline_path,
             )
         except Exception as exc:
             page_results.append({
@@ -687,6 +689,10 @@ def extract_capture_folder(
                 "layout_reason": pipeline.layout_reason,
                 "row_count": pipeline.row_count,
                 "canonical_blockers": list(pipeline.canonical_blockers),
+                "glyph_drift": (
+                    dict(getattr(pipeline, "glyph_drift"))
+                    if getattr(pipeline, "glyph_drift", None) is not None else None
+                ),
             },
             "e05": e05_result,
             "numeric_candidates": numeric_candidates,

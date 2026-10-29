@@ -27,6 +27,12 @@ from types import SimpleNamespace
 from typing import Any, Literal
 
 from .canonical_invoice import validate_canonical_invoice
+from .drift_monitor import (
+    DRIFT_REASON,
+    aggregate_mean_distance_by_symbol,
+    evaluate_glyph_drift,
+    load_glyph_drift_baseline,
+)
 from .glyph_classifier import (
     GlyphClassifierOCR,
     GlyphTemplateSet,
@@ -53,6 +59,7 @@ SUPPORTED_FIXTURE_IDS = ("29", "31", "32", "33")
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_LABELS_PATH = REPOSITORY_ROOT / "tests" / "fixtures" / "real" / "labels.json"
 DEFAULT_TEMPLATE_BANK_PATH = REPOSITORY_ROOT / "src" / "templates_bank_default.json"
+DEFAULT_GLYPH_DRIFT_BASELINE_PATH = REPOSITORY_ROOT / "src" / "glyph_drift_baseline_v1.json"
 LEGACY_TEMPLATE_BANK_PATH = REPOSITORY_ROOT / "src" / "templates.json"
 
 # Payable-region search is relative to detected table geometry. These are
@@ -142,15 +149,16 @@ class PipelineResult:
     template_bank_updated: bool = False
     bank_update_eligible: bool = False
     captured_at: str | None = None
+    glyph_drift: Mapping[str, Any] | None = None
     canonical_context: Mapping[str, Any] | None = field(default=None, repr=False, compare=False)
     _non_numeric_attention: tuple[AttentionCell, ...] = field(
         default=(), repr=False, compare=False)
     _description_failures: tuple[str, ...] = field(
         default=(), repr=False, compare=False)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self, *, include_glyph_drift: bool = False) -> dict[str, Any]:
         gate = asdict(self.arithmetic_gate) if self.arithmetic_gate is not None else None
-        return {
+        document = {
             "pipeline_status": self.status,
             "reason": self.reason,
             "image_sha256": self.image_sha256,
@@ -189,9 +197,16 @@ class PipelineResult:
             "template_bank_updated": self.template_bank_updated,
             "bank_update_eligible": self.bank_update_eligible,
         }
+        if include_glyph_drift and self.glyph_drift is not None:
+            document["glyph_drift"] = copy.deepcopy(dict(self.glyph_drift))
+        return document
 
-    def to_json(self, *, indent: int = 2) -> str:
-        return json.dumps(self.to_dict(), ensure_ascii=False, indent=indent) + "\n"
+    def to_json(self, *, indent: int = 2, include_glyph_drift: bool = False) -> str:
+        return json.dumps(
+            self.to_dict(include_glyph_drift=include_glyph_drift),
+            ensure_ascii=False,
+            indent=indent,
+        ) + "\n"
 
 
 @dataclass(frozen=True)
@@ -873,6 +888,8 @@ def _execute_pipeline(
     captured_at: str | None,
     canonical_context: Mapping[str, Any] | None,
     evaluation: bool,
+    drift_baseline_path: Path | None = None,
+    enable_drift_monitor: bool = False,
     repo_root: Path = REPOSITORY_ROOT,
 ) -> PipelineResult:
     if evaluation:
@@ -951,6 +968,40 @@ def _execute_pipeline(
         # explicitly here so this result carries the gate report for routing,
         # canonical assembly, correction, and evaluation.
         cells, gate = apply_arithmetic_gate(raw_cells, extra_amounts=0)
+        glyph_drift: dict[str, Any] | None = None
+        drift_review = False
+        if enable_drift_monitor:
+            means, counts, measurement_errors = aggregate_mean_distance_by_symbol(
+                classifier.last_glyph_readings)
+            baseline = None
+            baseline_error = None
+            if drift_baseline_path is None:
+                baseline_error = "onboarding baseline was not configured"
+            else:
+                try:
+                    baseline = load_glyph_drift_baseline(drift_baseline_path)
+                except Exception as exc:
+                    baseline_error = (
+                        f"onboarding baseline could not be loaded: {type(exc).__name__}: {exc}")
+            glyph_drift = evaluate_glyph_drift(
+                means,
+                counts,
+                template_library_id=template_library_id,
+                baseline=baseline,
+                baseline_error=baseline_error,
+                measurement_errors=measurement_errors,
+            )
+            drift_review = glyph_drift["status"] == "REVIEW"
+            if drift_review:
+                cells = tuple(
+                    replace(
+                        cell,
+                        status="REVIEW",
+                        reason="; ".join(dict.fromkeys(
+                            part for part in (cell.reason, DRIFT_REASON) if part)),
+                    )
+                    for cell in cells
+                )
     except Exception as exc:
         return _blocked_result(
             image_sha256=image_sha256,
@@ -986,6 +1037,8 @@ def _execute_pipeline(
     base_attention.extend(
         AttentionCell("description", "", failure) for failure in description_failures)
     base_attention.extend(_numeric_attention(cells))
+    if drift_review:
+        base_attention.append(AttentionCell("glyph_drift", "", DRIFT_REASON))
     status = _pipeline_status(
         layout_status="OK",
         cells=cells,
@@ -993,18 +1046,22 @@ def _execute_pipeline(
         non_numeric_attention=base_attention,
         description_failures=description_failures,
     )
+    if drift_review:
+        status = "REVIEW"
     attention = tuple(base_attention)
     canonical_invoice: dict[str, Any] | None = None
     canonical_valid: bool | None = None
     canonical_errors: tuple[str, ...] = ()
     canonical_blockers: list[str] = []
+    if drift_review:
+        canonical_blockers.append(DRIFT_REASON)
     if canonical_context is None:
         canonical_blockers.extend((
             "Canonical Invoice v0 requires producer-supplied mode, platform identifiers, customer data, "
             "and a human-readable product-name mapping.",
             "dHash cluster IDs are visual sidecar evidence, not product_name text and are not added to the frozen v0 schema.",
         ))
-    else:
+    elif not drift_review:
         canonical_invoice, blockers = _build_canonical_invoice(
             context=canonical_context,
             cells=cells,
@@ -1031,8 +1088,10 @@ def _execute_pipeline(
         base_attention,
         description_failures,
         explicit_reason=(
-            "Canonical context did not produce a valid v0 candidate."
-            if canonical_context is not None and canonical_blockers else None
+            DRIFT_REASON if drift_review else (
+                "Canonical context did not produce a valid v0 candidate."
+                if canonical_context is not None and canonical_blockers else None
+            )
         ),
     )
     return PipelineResult(
@@ -1054,6 +1113,7 @@ def _execute_pipeline(
         canonical_errors=canonical_errors,
         canonical_blockers=tuple(canonical_blockers),
         captured_at=captured_at,
+        glyph_drift=glyph_drift,
         canonical_context=copy.deepcopy(canonical_context),
         _non_numeric_attention=tuple(
             item for item in base_attention
@@ -1077,6 +1137,32 @@ def _load_template_bank(path: Path) -> tuple[GlyphTemplateSet, tuple[Mapping[str
     return templates, sources, library_id
 
 
+def _resolve_drift_baseline_path(
+    bank_path: Path,
+    library_id: str,
+    requested_path: Path | str | None,
+) -> Path:
+    if requested_path is not None:
+        return Path(requested_path).resolve()
+    if bank_path == DEFAULT_TEMPLATE_BANK_PATH.resolve():
+        return DEFAULT_GLYPH_DRIFT_BASELINE_PATH
+
+    companion = bank_path.with_name(f"{bank_path.stem}.drift.json")
+    if companion.is_file():
+        return companion.resolve()
+
+    # A byte-identical copy has the same immutable library ID and may reuse
+    # the matching baseline; a changed/custom bank must bring its own baseline.
+    try:
+        default_baseline = load_glyph_drift_baseline(DEFAULT_GLYPH_DRIFT_BASELINE_PATH)
+    except Exception:
+        default_baseline = None
+    if (default_baseline is not None
+            and default_baseline.get("template_library_id") == library_id):
+        return DEFAULT_GLYPH_DRIFT_BASELINE_PATH
+    return companion.resolve()
+
+
 def _validate_captured_at(captured_at: str | None) -> None:
     if captured_at is None:
         return
@@ -1098,6 +1184,7 @@ def extract_pipeline_v0(
     *,
     canonical_context: Mapping[str, Any] | None = None,
     evaluation: bool = False,
+    drift_baseline_path: Path | str | None = None,
 ) -> PipelineResult:
     """Extract one local invoice image through the E-02 Glyph pipeline.
 
@@ -1105,11 +1192,20 @@ def extract_pipeline_v0(
     SHA, or known parent of a derived-crop template raises
     :class:`TemplateLeakageError` before OCR runs. The classifier's existing
     minimum-confidence value (60) and all Glyph thresholds remain unchanged.
+    DR-1 is enabled for runtime extraction. The default bank uses the
+    repository's versioned baseline; a custom bank needs a companion
+    ``<bank-stem>.drift.json`` baseline or an explicit ``drift_baseline_path``.
+    Missing or mismatched baselines REVIEW rather than silently accepting.
     """
     _validate_captured_at(captured_at)
     image_path = Path(image).resolve()
     bank_path = Path(templates_path).resolve()
     templates, sources, library_id = _load_template_bank(bank_path)
+    active_drift_baseline = _resolve_drift_baseline_path(
+        bank_path,
+        library_id,
+        drift_baseline_path,
+    )
     return _execute_pipeline(
         image_path,
         templates=templates,
@@ -1119,6 +1215,8 @@ def extract_pipeline_v0(
         captured_at=captured_at,
         canonical_context=canonical_context,
         evaluation=evaluation,
+        drift_baseline_path=active_drift_baseline,
+        enable_drift_monitor=True,
     )
 
 
@@ -1194,11 +1292,27 @@ def apply_operator_correction(
         confirmed_values[field_name] = normalized
         valid_correction_count += 1
 
+    drift_hold = (
+        isinstance(result.glyph_drift, Mapping)
+        and result.glyph_drift.get("status") == "REVIEW"
+    )
     ordered_cells = tuple(indexed[cell.field_name] for cell in result.cell_results)
     gated_cells, gate = apply_arithmetic_gate(ordered_cells, extra_amounts=0)
+    if drift_hold:
+        gated_cells = tuple(
+            replace(
+                cell,
+                status="REVIEW",
+                reason="; ".join(dict.fromkeys(
+                    part for part in (cell.reason, DRIFT_REASON) if part)),
+            )
+            for cell in gated_cells
+        )
     numeric_attention = list(_numeric_attention(gated_cells))
     attention: list[AttentionCell] = list(result._non_numeric_attention)
     attention.extend(numeric_attention)
+    if drift_hold:
+        attention.append(AttentionCell("glyph_drift", "", DRIFT_REASON))
     attention.extend(unhandled)
     attention_tuple = tuple(attention)
     description_failures = result._description_failures
@@ -1211,11 +1325,15 @@ def apply_operator_correction(
     )
     if result.status == "REVIEW" and not valid_correction_count:
         new_status = "REVIEW"
+    if drift_hold:
+        new_status = "REVIEW"
     canonical_invoice: dict[str, Any] | None = None
     canonical_valid: bool | None = None
     canonical_errors: tuple[str, ...] = ()
     canonical_blockers: list[str] = []
-    if result.canonical_context is not None:
+    if drift_hold:
+        canonical_blockers.append(DRIFT_REASON)
+    if result.canonical_context is not None and not drift_hold:
         canonical_invoice, canonical_blockers = _build_canonical_invoice(
             context=result.canonical_context,
             cells=gated_cells,
@@ -1231,7 +1349,7 @@ def apply_operator_correction(
             if not canonical_valid:
                 canonical_blockers.append("corrected Canonical Invoice candidate failed v0 validation")
                 canonical_invoice = None
-    else:
+    elif result.canonical_context is None:
         canonical_blockers.extend(result.canonical_blockers)
     if result.canonical_context is not None and canonical_blockers:
         new_status = "REVIEW"
@@ -1242,7 +1360,9 @@ def apply_operator_correction(
         tuple(result._non_numeric_attention) + tuple(unhandled),
         description_failures,
     )
-    if new_status == "REVIEW" and valid_correction_count and gate.reason:
+    if drift_hold:
+        correction_reason = DRIFT_REASON
+    elif new_status == "REVIEW" and valid_correction_count and gate.reason:
         correction_reason = f"operator correction applied; {correction_reason}"
     return replace(
         result,

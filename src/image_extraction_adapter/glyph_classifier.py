@@ -666,6 +666,9 @@ class GlyphClassifierOCR:
             templates, max_distance=max_distance, min_margin=min_margin,
             max_glyph_width_ratio=max_glyph_width_ratio,
             payable_uses_row_templates=payable_uses_row_templates)
+        # Adapter-local diagnostics consumed by DR-1; not part of the frozen
+        # Canonical Invoice contract or the public OCR cell-result schema.
+        self.last_glyph_readings: tuple[tuple[str, CellReading], ...] = ()
 
     @classmethod
     def from_file(cls, templates_path: Path, **kwargs: Any) -> "GlyphClassifierOCR":
@@ -725,6 +728,7 @@ class GlyphClassifierOCR:
         apply_gate: bool = True,
     ) -> tuple[CellOCRVariantResult, ...]:
         """Read numeric cells (totals, quantities, payable) of one invoice image."""
+        self.last_glyph_readings = ()
         image = Path(image_path)
         if not image.is_file():
             raise OCRExecutionError(f"image file is missing or not regular: {image}")
@@ -744,6 +748,8 @@ class GlyphClassifierOCR:
                 source, spatial, include_descriptions=False,
                 horizontal_inset=horizontal_inset)
             triples = self._recognize_crops(crops, spatial, float(minimum_confidence))
+            self.last_glyph_readings = tuple(
+                (crop.field_name, reading) for crop, _, reading in triples)
         except (OCRExecutionError, OCREngineUnavailable):
             raise
         except Exception as exc:

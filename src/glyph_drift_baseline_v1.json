@@ -1,0 +1,121 @@
+{
+  "baseline_id": "e28-5b3684f43b60a9936f2c",
+  "calibration": {
+    "baseline_method": "equal-weight mean of each onboarding invoice's per-symbol mean",
+    "bound_method": "per-symbol maximum absolute deviation from baseline over all declared clean controls; trigger on strict greater-than with 1e-8 float-rounding tolerance",
+    "clean_control_count": 16,
+    "clean_control_variants": [
+      "identity",
+      "brightness_1.01",
+      "contrast_1.01",
+      "cell_blur_0.75"
+    ],
+    "synthetic_only_notice": "Thinning, blur, and salt/pepper variants are deterministic test controls, not genuine printer/scanner observations.",
+    "synthetic_stress_checks": {
+      "cell_blur_1.0": {
+        "minimum_excess_over_bound": 0.02259682,
+        "sample_count": 4,
+        "triggered_sample_count": 4
+      },
+      "cell_salt_pepper_2pct": {
+        "minimum_excess_over_bound": 0.00065771,
+        "sample_count": 4,
+        "triggered_sample_count": 4
+      },
+      "cell_thinning_maxfilter_3": {
+        "minimum_excess_over_bound": 0.17766031,
+        "sample_count": 4,
+        "triggered_sample_count": 4
+      }
+    }
+  },
+  "metric": "equal-weight per-invoice mean GlyphReading.distance grouped by best_label",
+  "schema_version": "e28.glyph-drift-baseline.v1",
+  "source_images": [
+    {
+      "sample_id": "onboarding-001",
+      "sha256": "61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a"
+    },
+    {
+      "sample_id": "onboarding-002",
+      "sha256": "8ea9e20ca3c7161d14bcc719154e0be27bcaaaf5c4b9e5a26818e4b0c1908a10"
+    },
+    {
+      "sample_id": "onboarding-003",
+      "sha256": "c6389f078c9a487b06620c01f80f86477ffa7d291cab24d3c9639fc72fd5e68e"
+    },
+    {
+      "sample_id": "onboarding-004",
+      "sha256": "2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80"
+    }
+  ],
+  "symbols": {
+    ",": {
+      "bound": 0.00643404,
+      "glyph_observation_count": 50,
+      "invoice_observation_count": 4,
+      "mean_distance": 7.86e-06
+    },
+    "۰": {
+      "bound": 1.55e-06,
+      "glyph_observation_count": 122,
+      "invoice_observation_count": 4,
+      "mean_distance": 5.94e-06
+    },
+    "۱": {
+      "bound": 2.48e-06,
+      "glyph_observation_count": 24,
+      "invoice_observation_count": 4,
+      "mean_distance": 9.42e-06
+    },
+    "۲": {
+      "bound": 0.00399656,
+      "glyph_observation_count": 8,
+      "invoice_observation_count": 2,
+      "mean_distance": 5.9e-05
+    },
+    "۳": {
+      "bound": 0.0019873,
+      "glyph_observation_count": 4,
+      "invoice_observation_count": 2,
+      "mean_distance": 4.154e-05
+    },
+    "۴": {
+      "bound": 0.00588463,
+      "glyph_observation_count": 11,
+      "invoice_observation_count": 3,
+      "mean_distance": 4.258e-05
+    },
+    "۵": {
+      "bound": 0.00861828,
+      "glyph_observation_count": 15,
+      "invoice_observation_count": 4,
+      "mean_distance": 4.928e-05
+    },
+    "۶": {
+      "bound": 2.738e-05,
+      "glyph_observation_count": 5,
+      "invoice_observation_count": 2,
+      "mean_distance": 7.262e-05
+    },
+    "۷": {
+      "bound": 0.0037213,
+      "glyph_observation_count": 17,
+      "invoice_observation_count": 4,
+      "mean_distance": 4.001e-05
+    },
+    "۸": {
+      "bound": 0.00357155,
+      "glyph_observation_count": 11,
+      "invoice_observation_count": 4,
+      "mean_distance": 3.218e-05
+    },
+    "۹": {
+      "bound": 0.00594524,
+      "glyph_observation_count": 11,
+      "invoice_observation_count": 3,
+      "mean_distance": 3.333e-05
+    }
+  },
+  "template_library_id": "b42688770113faaba9e4024e3af66fa4eed2cb039d184daff6429e0cef047931"
+}

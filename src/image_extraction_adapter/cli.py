@@ -90,6 +90,18 @@ def _build_parser() -> _ArgumentParser:
         help=f"local Glyph template bank (default: {DEFAULT_TEMPLATE_BANK_PATH})",
     )
     extract.add_argument(
+        "--drift-baseline",
+        type=Path,
+        metavar="PATH",
+        help="DR-1 onboarding glyph-distance baseline; defaults by Glyph template-bank path",
+    )
+    extract.add_argument(
+        "--drift-report",
+        type=Path,
+        metavar="PATH",
+        help="write the image-mode DR-1 distance record to a JSON sidecar",
+    )
+    extract.add_argument(
         "--multi-evidence",
         action="store_true",
         help="require all six local evidence witnesses before AUTO_CANDIDATE",
@@ -225,7 +237,7 @@ def _write_capture_result(result: dict[str, Any], output_path: Path | None) -> b
 
 
 def _run_capture_folder(args: argparse.Namespace) -> int:
-    if args.context is not None or args.multi_evidence:
+    if args.context is not None or args.multi_evidence or args.drift_report is not None:
         result = {
             "result_version": "capture-folder-result-v1",
             "status": "ERROR",
@@ -234,7 +246,7 @@ def _run_capture_folder(args: argparse.Namespace) -> int:
             "capture_folder": str(args.capture_folder),
             "errors": [{
                 "code": "UNSUPPORTED_CAPTURE_OPTION",
-                "message": "--context and --multi-evidence are not used by --capture-folder mode",
+                "message": "--context, --multi-evidence, and --drift-report are not used by --capture-folder mode",
             }],
             "scoring_fields": ["quantity", "line_total", "payable"],
             "accuracy": {
@@ -255,6 +267,7 @@ def _run_capture_folder(args: argparse.Namespace) -> int:
                 templates_path=args.templates,
                 e05_bank_path=args.e05_bank,
                 captured_at=args.captured_at,
+                drift_baseline_path=args.drift_baseline,
             )
         except Exception as exc:
             result = {
@@ -313,6 +326,8 @@ def _run_extract(args: argparse.Namespace) -> int:
         raise _CLIInputError("--context is required when using --image")
     if args.out is not None or args.e05_bank is not None:
         raise _CLIInputError("--out and --e05-bank are only supported with --capture-folder")
+    if args.drift_report is not None and not args.drift_report.expanduser().parent.is_dir():
+        raise _CLIInputError("--drift-report parent directory must already exist")
     _require_file(args.image, "--image")
     _require_file(args.templates, "--templates")
     _require_file(args.context, "--context")
@@ -324,7 +339,19 @@ def _run_extract(args: argparse.Namespace) -> int:
         templates_path=args.templates,
         captured_at=args.captured_at,
         canonical_context=canonical_context,
+        drift_baseline_path=args.drift_baseline,
     )
+    glyph_drift = getattr(result, "glyph_drift", None)
+    if args.drift_report is not None:
+        drift_record = glyph_drift
+        if drift_record is None:
+            drift_record = {
+                "status": "NOT_EVALUATED",
+                "reason": "glyph extraction did not produce per-symbol readings",
+                "pipeline_status": result.status,
+            }
+        target = args.drift_report.expanduser().absolute()
+        _write_capture_result(dict(drift_record), target)
 
     if result.status == "REJECT":
         print("REJECT: extraction is blocked; no Canonical Invoice was emitted.", file=sys.stderr)
