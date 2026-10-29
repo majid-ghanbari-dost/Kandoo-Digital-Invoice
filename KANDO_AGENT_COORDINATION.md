@@ -17,7 +17,8 @@ Operational coordination between implementation and governance agents. This file
 | `E-04.5 + E-05` label-derived fixtures and template bank | Current implementation agent | COMMITTED/PUSHED; 9 FOCUSED TESTS PASS; `stable-e-05` VERIFIED |
 | `E-06` onboarding verdict | Current implementation agent | COMPLETE; COMMIT `91f5b04` WITH `stable-e-06` PRESENT IN LOCAL HISTORY |
 | `E-26` onboarding CLI | Current implementation agent | COMPLETE; local verification and relayed push-CI proof recorded in E-26 closeout |
-| `E-27` capture-folder end-to-end harness | Current implementation agent | IMPLEMENTED; full local suite green; Windows built-executable push-CI relay pending |
+| `E-27` capture-folder end-to-end harness | Current implementation agent | COMPLETE; published as `7abf174755d36bdf1aeb787f8bbc5145070725b5` / `stable-e-27`; Windows push-CI relay pending |
+| `N-07` NameConfirmation work-list | Current implementation agent | IMPLEMENTED; full local suite green; exact-cluster confirmation reuse and no-auto-merge review tested; push-CI relay pending |
 | Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
 | WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
 | Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
@@ -37,9 +38,10 @@ Operational coordination between implementation and governance agents. This file
 ## Current Serial Dispatch — 2026-10-29
 
 - PR #11 was merged before this window. `main` is based at merge commit `a8662f458255d66307d0783bd7e14b80addeb06b`; this session stays on the fixed branch `arena/d892dd9b-kandoo-digital-invoice`. E-26 is certified at `e7b7f65b2fb1fae81c82a73604daed3dee6345bb` (`stable-e-26`), with Python run `40717568578` and Windows run `40717568817` green.
-- E-27 extends E-12 with offset-aware `Timestamp:` extraction from Report.txt, exact-instant override checking, synthetic page-count/SPL-hash integrity checks, and stable `BLOCKED` / `REVIEW` exit-20 results for missing PNG, corrupt synthetic SPL, empty job, duplicate job ID, and two PNGs with a one-page report. The report explicitly disclaims authentic Probe-format/SPL verification.
-- `scripts/verify_windows_bundle.py` now exercises four built-executable capture folders against repository fixture-derived Canonical JSON goldens and all five failure cases. Local source CLI rehearsal passed, and the full Python suite passed **1,961 tests plus 119 subtests**; capture-folder suite **20 passed**; `py_compile` and `git diff --check` passed. Push Windows CI relay is pending; no local Windows execution is claimed.
-- Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` remain byte-identical. E-27 is tagged `stable-e-27` after full local verification; N-07 is next, followed by E-28 → E-29. Continue the serial task/tag/push process without per-task pauses.
+- E-27 is published at `7abf174755d36bdf1aeb787f8bbc5145070725b5` / `stable-e-27`. Its Windows verifier exercises four fixture-backed built-executable capture folders against Canonical JSON and five synthetic failure cases; all five return `BLOCKED` / `REVIEW` at exit 20. CI relay is pending and no local Windows run is claimed.
+- N-07 extends N-05 with schema-defined `NameConfirmation`, four updated empty-name/empty-suggestion goldens, and `scripts/run_n07_name_worklist.py`. The default work-list emits 22 crop images from 25 repository fixture occurrences, groups exact dHash matches only, reuses confirmed names by exact cluster ID, and marks one-bit near-threshold pairs REVIEW without merging. Optional N-04 OCR requires an installed ParisaOCR runtime and explicit opt-in; default is OCR-free.
+- Full local suite passed **1,968 tests plus 123 subtests**; combined N-05/N-07 focused suite passed **13 tests plus 8 subtests**. N-07 work-list schema/crops and deterministic reruns passed. Push CI relay remains pending; no Actions inspection or Windows execution is claimed.
+- Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` remain byte-identical. E-27 is tagged `stable-e-27`; N-07 is tagged `stable-n-07` after full local verification. E-28 is next, then E-29; continue the serial task/tag/push process without per-task pauses.
 
 ## Historical Serial Dispatch — 2026-10-27 (superseded)
 

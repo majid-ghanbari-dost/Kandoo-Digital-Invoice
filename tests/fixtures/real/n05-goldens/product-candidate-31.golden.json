@@ -4,25 +4,16 @@
       "e05-synth-invoice-31",
       "e05-synth-invoice-32"
     ],
+    "name_confirmation": {
+      "confirmation_source_cluster_id": null,
+      "confirmation_status": "UNCONFIRMED",
+      "confirmed_name": "",
+      "near_threshold_cluster_ids": [],
+      "review_reasons": [],
+      "review_required": false
+    },
     "name_crop_cluster_id": "name-dhash-a828a9ad26245a5a",
-    "name_suggestions": [
-      {
-        "accepted": false,
-        "confidence": 100.0,
-        "crop_reference": {
-          "crop_id": "31_row0",
-          "file": "tests/fixtures/real/n02-reference-crops/31_row0.png",
-          "sha256": "4ccd24c6d022d06b32eddbfbaf64d314ed5504dd078a42c47583fb76220572e5"
-        },
-        "engine": "ParisaOCR",
-        "engine_version": "0.7.2",
-        "lines": [
-          "دستمال سفره تم"
-        ],
-        "model_version": "parisaocr-fa-0.1",
-        "suggested_name": "دستمال سفره تم"
-      }
-    ],
+    "name_suggestions": [],
     "occurrence_count": 2,
     "price_observations": [],
     "quantity_sum": 2,
@@ -32,7 +23,7 @@
       "32_row0"
     ]
   },
-  "name_suggestions_enabled": true,
+  "name_suggestions_enabled": false,
   "price_observation_date_source": "probe.captured_at",
   "schema_version": "n05.product-candidate.v1",
   "source_fixture_file": "tests/fixtures/real/canonical/canonical-31.json",

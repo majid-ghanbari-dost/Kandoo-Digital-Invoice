@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:kandoo:n05:product-candidate:v1",
   "title": "N-05 ProductCandidate v1 example",
-  "description": "A versioned ProductCandidate sample with optional non-accepting name suggestions, crop provenance, and Probe-capture-dated price observations. This is separate from the frozen Canonical Invoice contracts.",
+  "description": "A versioned ProductCandidate sample with human NameConfirmation state, optional non-accepting name suggestions, crop provenance, and Probe-capture-dated price observations. This is separate from the frozen Canonical Invoice contracts.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -150,7 +150,8 @@
         "source_crop_ids",
         "price_observations",
         "invoice_ids",
-        "name_suggestions"
+        "name_suggestions",
+        "name_confirmation"
       ],
       "properties": {
         "name_crop_cluster_id": {
@@ -193,6 +194,9 @@
             "pattern": "^e05-synth-invoice-(29|31|32|33)$"
           }
         },
+        "name_confirmation": {
+          "$ref": "#/$defs/NameConfirmation"
+        },
         "name_suggestions": {
           "type": "array",
           "items": {
@@ -200,6 +204,103 @@
           }
         }
       }
+    },
+    "NameConfirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "confirmed_name",
+        "confirmation_status",
+        "confirmation_source_cluster_id",
+        "review_required",
+        "review_reasons",
+        "near_threshold_cluster_ids"
+      ],
+      "properties": {
+        "confirmed_name": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "confirmation_status": {
+          "enum": ["UNCONFIRMED", "CONFIRMED", "REVIEW"]
+        },
+        "confirmation_source_cluster_id": {
+          "type": ["string", "null"],
+          "pattern": "^name-dhash-[0-9a-f]{16}$"
+        },
+        "review_required": {
+          "type": "boolean"
+        },
+        "review_reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["NEAR_THRESHOLD_CLUSTER"]
+          }
+        },
+        "near_threshold_cluster_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^name-dhash-[0-9a-f]{16}$"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "confirmation_status": {"const": "UNCONFIRMED"}
+            },
+            "required": ["confirmation_status"]
+          },
+          "then": {
+            "properties": {
+              "confirmed_name": {"const": ""},
+              "confirmation_source_cluster_id": {"type": "null"},
+              "review_required": {"const": false},
+              "review_reasons": {"maxItems": 0},
+              "near_threshold_cluster_ids": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "confirmation_status": {"const": "CONFIRMED"}
+            },
+            "required": ["confirmation_status"]
+          },
+          "then": {
+            "properties": {
+              "confirmed_name": {"minLength": 1},
+              "confirmation_source_cluster_id": {"type": "string"},
+              "review_required": {"const": false},
+              "review_reasons": {"maxItems": 0},
+              "near_threshold_cluster_ids": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "confirmation_status": {"const": "REVIEW"}
+            },
+            "required": ["confirmation_status"]
+          },
+          "then": {
+            "properties": {
+              "review_required": {"const": true},
+              "review_reasons": {
+                "minItems": 1,
+                "contains": {"const": "NEAR_THRESHOLD_CLUSTER"}
+              },
+              "near_threshold_cluster_ids": {"minItems": 1}
+            }
+          }
+        }
+      ]
     },
     "nameSuggestion": {
       "type": "object",
