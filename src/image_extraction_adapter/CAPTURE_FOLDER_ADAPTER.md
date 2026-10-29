@@ -18,17 +18,24 @@ explicit values `rial` and `toman` are confirmed. Unset or unsupported values
 are reported as unconfirmed and keep E-06 in REVIEW. No currency conversion is
 performed.
 
-`--captured-at` accepts the offset-aware ISO 8601 `captured_at` value supplied
-by KandooPrintProbe. The caller must pass it explicitly; the adapter records it
-and forwards it to E-02. The raw `Report.txt` remains inventoried, not parsed,
-because the real Probe report format has not been supplied.
+`--captured-at` accepts an offset-aware ISO 8601 value and remains available
+for callers whose report does not contain a timestamp. The adapter also reads
+one exact `Timestamp: <ISO-8601-with-offset>` line from `Report.txt`, uses it as
+`captured_at`, and forwards it to E-02. If both sources provide a timestamp,
+they must identify the same instant or the folder is blocked. The E-27 harness
+uses an explicitly synthetic key/value subset: `Spool job ID:`, `Timestamp:`,
+`Page count:`, and optional `SPL SHA-256:`. This is not asserted to be the real
+KandooPrintProbe report format; production-format confirmation remains pending.
+Unknown report lines stay opaque and the raw file's bytes, hash, and line count
+remain inventoried.
 
 The machine-readable result is JSON on stdout unless `--out` is supplied, in
 which case it is written atomically to that file. A concise human summary is
 always written to stderr so stdout remains pipe-safe JSON. The result uses the
-E-06 verdict strings `ACCEPT`, `REVIEW`, and `REJECT`; adapter status separately
-identifies `ERROR` or `BLOCKED` outcomes. Exit codes follow the existing CLI
-convention: 0 accepted/ready, 10 review, 20 blocked/rejected, and 30 input or
+E-06 verdict strings `ACCEPT`, `REVIEW`, and `REJECT`; capture-artifact
+validation failures are represented as `status: BLOCKED` / `verdict: REVIEW`
+with stable error codes. Exit codes follow the existing CLI convention: 0
+accepted/ready, 10 review, 20 blocked/rejected, and 30 command-line input or
 output error.
 
 ## Folder contract
@@ -45,10 +52,16 @@ The adapter inspects immediate files in one capture folder:
 ```
 
 - Exactly one non-empty `*.spl` file is required. It is hashed and inventoried
-  but not parsed, executed, or converted by this adapter.
+  but not parsed, executed, or converted by this adapter. If a synthetic/test
+  report includes `SPL SHA-256:`, the digest is checked against the exact SPL
+  bytes; this does not imply knowledge of the SPL binary format.
 - Exactly one readable, non-empty UTF-8 `Report.txt` is required. Its bytes,
-  SHA-256, and line count are recorded. Probe-specific key/value content is not
-  interpreted because a real Probe report format has not yet been supplied.
+  SHA-256, and line count are recorded. The narrow key/value subset described
+  above is parsed only when those exact fields are present: duplicate spool
+  job IDs, invalid timestamps, zero/mismatched page counts, and a mismatched
+  optional SPL digest fail closed. `Page count:` must match the number of PNG
+  files when present. This parsing is synthetic harness behavior, not a claim
+  about the unverified real Probe report format.
 - At least one readable PNG is required. Each file must decode as PNG; one bad
   page fails the folder rather than being skipped.
 - Extension matching is case-insensitive. PNG pages are ordered by natural,
@@ -58,10 +71,11 @@ The adapter inspects immediate files in one capture folder:
   indices.
 - Unknown sibling files are tolerated and listed in `artifacts.extra_files`.
   Duplicate SPL or Report files are ambiguous and fail closed.
-- Missing/ambiguous/empty required artifacts and invalid PNGs return
-  `status: ERROR` with explicit error codes (including `MISSING_SPL` and
-  `MISSING_PNG`) and the E-06-compatible overall `verdict: REJECT`. No missing
-  page is silently omitted.
+- Missing/ambiguous/empty required artifacts, malformed report metadata, and
+  invalid PNGs return `status: BLOCKED` / `verdict: REVIEW`, exit 20, and
+  explicit error codes (including `MISSING_SPL`, `MISSING_PNG`, `EMPTY_JOB`,
+  `DUPLICATE_JOB_ID`, and `PAGE_COUNT_MISMATCH`). No missing page is silently
+  omitted. Invalid CLI arguments or output I/O still use exit 30.
 
 ## Extraction and verdict behavior
 
@@ -88,16 +102,20 @@ diagnosis.
 ## Synthetic test coverage and evidence limit
 
 Tests construct synthetic capture directories using repository PNG fixtures
-`tests/fixtures/real/{29,31,32,33}.png`, a non-empty synthetic `.spl` byte
-file, and a synthetic `Report.txt`. They cover the valid one-page path, missing
-SPL, missing PNG, natural multi-page ordering, and tolerated extra files. The
-fixture PNGs are legacy renders and the SPL/report files are not genuine
-KandooPrintProbe outputs. The multi-page test combines distinct synthetic
-fixture pages to exercise ordering/aggregation plumbing; it is not a real
-multi-page invoice. Consequently, the tests verify folder plumbing and
-fail-closed behavior only; they do not verify a real Probe report format,
-Windows spool generation, SPL-to-PNG rendering, physical print/scan variance,
-or v2-page OCR accuracy.
+`tests/fixtures/real/{29,31,32,33}.png`, synthetic `.spl` bytes, and a
+synthetic `Report.txt`. They cover timestamp forwarding from the report,
+conflicting timestamps, checksum corruption, an empty-job declaration, a
+duplicate spool job ID, a two-PNG/page-count mismatch, missing artifacts,
+natural multi-page ordering, and tolerated extra files. The Windows bundle
+verifier additionally runs the built executable via the E-12 capture-folder
+adapter against fixture-derived Canonical JSON goldens and checks stable
+blocked exit codes for the failure cases. The fixture PNGs are legacy renders
+and the SPL/report files are not genuine KandooPrintProbe outputs. In
+particular, the `Timestamp:`, `Page count:`, and optional `SPL SHA-256:` test
+fields are synthetic harness conventions, not verification of a real Probe
+report format. The tests verify harness plumbing and fail-closed behavior only;
+they do not verify Windows spool generation, SPL-to-PNG rendering, physical
+print/scan variance, or v2-page OCR accuracy.
 
 The default E-05 bank is label-derived from the same four legacy fixtures, so
 matches involving those exact PNGs are resubstitution evidence. When the input

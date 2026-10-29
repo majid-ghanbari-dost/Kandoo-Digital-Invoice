@@ -160,7 +160,7 @@ jobs:
             throw 'PyInstaller did not produce dist/kandoo-extract/kandoo-extract.exe'
           }
 
-      - name: Verify frozen CLI, E-01 fixture values, and E-11 contract crosswalk
+      - name: Verify frozen CLI, E-27 capture folders, E-01 values, and E-11 crosswalk
         shell: pwsh
         run: |
           python scripts/verify_windows_bundle.py `
