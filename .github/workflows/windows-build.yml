@@ -154,6 +154,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist/kandoo-extract/schemas | Out-Null
           New-Item -ItemType Directory -Force -Path dist/kandoo-extract/schemas/mode-b | Out-Null
           Copy-Item src/templates_bank_default.json dist/kandoo-extract/src/templates_bank_default.json -Force
+          Copy-Item src/glyph_drift_baseline_v1.json dist/kandoo-extract/src/glyph_drift_baseline_v1.json -Force
           Copy-Item schemas/canonical_invoice_v0.json dist/kandoo-extract/schemas/canonical_invoice_v0.json -Force
           Copy-Item schemas/mode-b/v1 dist/kandoo-extract/schemas/mode-b/v1 -Recurse -Force
           if (-not (Test-Path dist/kandoo-extract/kandoo-extract.exe)) {
