@@ -3,25 +3,16 @@
     "invoice_ids": [
       "e05-synth-invoice-29"
     ],
+    "name_confirmation": {
+      "confirmation_source_cluster_id": null,
+      "confirmation_status": "UNCONFIRMED",
+      "confirmed_name": "",
+      "near_threshold_cluster_ids": [],
+      "review_reasons": [],
+      "review_required": false
+    },
     "name_crop_cluster_id": "name-dhash-d0f6c624b1950757",
-    "name_suggestions": [
-      {
-        "accepted": false,
-        "confidence": 99.8,
-        "crop_reference": {
-          "crop_id": "29_row0",
-          "file": "tests/fixtures/real/n02-reference-crops/29_row0.png",
-          "sha256": "a151f4660f7070522d66646e9fb2761981e7f8239f8ed1df2813fae4a630b2ca"
-        },
-        "engine": "ParisaOCR",
-        "engine_version": "0.7.2",
-        "lines": [
-          "ریسه تم"
-        ],
-        "model_version": "parisaocr-fa-0.1",
-        "suggested_name": "ریسه تم"
-      }
-    ],
+    "name_suggestions": [],
     "occurrence_count": 1,
     "price_observations": [],
     "quantity_sum": 1,
@@ -30,7 +21,7 @@
       "29_row0"
     ]
   },
-  "name_suggestions_enabled": true,
+  "name_suggestions_enabled": false,
   "price_observation_date_source": "probe.captured_at",
   "schema_version": "n05.product-candidate.v1",
   "source_fixture_file": "tests/fixtures/real/canonical/canonical-29.json",

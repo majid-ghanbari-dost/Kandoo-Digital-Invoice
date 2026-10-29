@@ -3,26 +3,16 @@
     "invoice_ids": [
       "e05-synth-invoice-33"
     ],
+    "name_confirmation": {
+      "confirmation_source_cluster_id": null,
+      "confirmation_status": "UNCONFIRMED",
+      "confirmed_name": "",
+      "near_threshold_cluster_ids": [],
+      "review_reasons": [],
+      "review_required": false
+    },
     "name_crop_cluster_id": "name-dhash-cac91b36c958d1e0",
-    "name_suggestions": [
-      {
-        "accepted": false,
-        "confidence": 98.65,
-        "crop_reference": {
-          "crop_id": "33_row10",
-          "file": "tests/fixtures/real/n02-reference-crops/33_row10.png",
-          "sha256": "4896821e8a88991d97558068eaa4a5069d900ac27f28b4c47ab868f3c642c899"
-        },
-        "engine": "ParisaOCR",
-        "engine_version": "0.7.2",
-        "lines": [
-          "پیش دستی کاغذی",
-          "ماتایی تم"
-        ],
-        "model_version": "parisaocr-fa-0.1",
-        "suggested_name": "پیش دستی کاغذی\nماتایی تم"
-      }
-    ],
+    "name_suggestions": [],
     "occurrence_count": 1,
     "price_observations": [],
     "quantity_sum": 15,
@@ -31,7 +21,7 @@
       "33_row10"
     ]
   },
-  "name_suggestions_enabled": true,
+  "name_suggestions_enabled": false,
   "price_observation_date_source": "probe.captured_at",
   "schema_version": "n05.product-candidate.v1",
   "source_fixture_file": "tests/fixtures/real/canonical/canonical-33.json",

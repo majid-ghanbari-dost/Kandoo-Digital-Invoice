@@ -3,25 +3,16 @@
     "invoice_ids": [
       "e05-synth-invoice-32"
     ],
+    "name_confirmation": {
+      "confirmation_source_cluster_id": null,
+      "confirmation_status": "UNCONFIRMED",
+      "confirmed_name": "",
+      "near_threshold_cluster_ids": [],
+      "review_reasons": [],
+      "review_required": false
+    },
     "name_crop_cluster_id": "name-dhash-565612931557eaaa",
-    "name_suggestions": [
-      {
-        "accepted": false,
-        "confidence": 100.0,
-        "crop_reference": {
-          "crop_id": "32_row1",
-          "file": "tests/fixtures/real/n02-reference-crops/32_row1.png",
-          "sha256": "45b9429280dcc454e614e536b400c27bd3e8359da9962ec464fbb63fde8eb453"
-        },
-        "engine": "ParisaOCR",
-        "engine_version": "0.7.2",
-        "lines": [
-          "سطل شن بازی کوچک"
-        ],
-        "model_version": "parisaocr-fa-0.1",
-        "suggested_name": "سطل شن بازی کوچک"
-      }
-    ],
+    "name_suggestions": [],
     "occurrence_count": 1,
     "price_observations": [],
     "quantity_sum": 1,
@@ -30,7 +21,7 @@
       "32_row1"
     ]
   },
-  "name_suggestions_enabled": true,
+  "name_suggestions_enabled": false,
   "price_observation_date_source": "probe.captured_at",
   "schema_version": "n05.product-candidate.v1",
   "source_fixture_file": "tests/fixtures/real/canonical/canonical-32.json",

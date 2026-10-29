@@ -10,6 +10,7 @@ page skips.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from functools import lru_cache
 import hashlib
 import json
@@ -86,6 +87,9 @@ class CaptureFolder:
     report_line_count: int
     pages: tuple[CapturePage, ...]
     extra_files: tuple[str, ...]
+    probe_job_id: str | None
+    report_captured_at: str | None
+    report_page_count: int | None
 
     def artifacts_dict(self) -> dict[str, Any]:
         return {
@@ -103,6 +107,11 @@ class CaptureFolder:
             "pages": [page.to_dict() for page in self.pages],
             "extra_files": list(self.extra_files),
             "page_order": "natural, case-insensitive filename order",
+            "probe_metadata": {
+                "spool_job_id": self.probe_job_id,
+                "captured_at": self.report_captured_at,
+                "page_count": self.report_page_count,
+            },
         }
 
 
@@ -125,6 +134,130 @@ def _natural_sort_key(path: Path) -> tuple[Any, ...]:
     parts = re.split(r"(\d+)", path.name.casefold())
     key = tuple((0, int(part)) if part.isdigit() else (1, part) for part in parts)
     return (*key, (2, path.name))
+
+
+_PROBE_REPORT_FIELD = re.compile(
+    r"^\s*(?P<key>spool\s+job\s+id|timestamp|page\s+count|spl\s+sha-?256)\s*:\s*(?P<value>.*?)\s*$",
+    re.IGNORECASE,
+)
+_SHA256_TEXT = re.compile(r"^[0-9a-f]{64}$", re.IGNORECASE)
+
+
+def _parse_probe_report(
+    report_text: str,
+    *,
+    spl_sha256: str | None,
+    png_count: int,
+) -> tuple[dict[str, Any], tuple[CaptureProblem, ...]]:
+    """Parse the E-27 key/value subset without assuming a binary SPL format.
+
+    Unknown Probe lines remain opaque. Recognized fields are validated only
+    when present: repeated spool IDs, offset-free timestamps, zero/mismatched
+    page counts, and mismatched optional SPL digests fail closed.
+    """
+    aliases = {
+        "spool job id": "spool_job_id",
+        "timestamp": "captured_at",
+        "page count": "page_count",
+        "spl sha-256": "spl_sha256",
+        "spl sha256": "spl_sha256",
+    }
+    found: dict[str, list[tuple[int, str]]] = {}
+    problems: list[CaptureProblem] = []
+    for line_number, line in enumerate(report_text.splitlines(), start=1):
+        match = _PROBE_REPORT_FIELD.fullmatch(line)
+        if match is None:
+            continue
+        label = re.sub(r"\s+", " ", match.group("key")).strip().casefold()
+        field = aliases.get(label)
+        if field is None:
+            continue
+        value = match.group("value").strip()
+        previous = found.setdefault(field, [])
+        if previous:
+            code = "DUPLICATE_JOB_ID" if field == "spool_job_id" else "DUPLICATE_REPORT_FIELD"
+            problems.append(CaptureProblem(
+                code,
+                f"Report.txt contains more than one {match.group('key')} field",
+                f"Report.txt:{line_number}",
+            ))
+        previous.append((line_number, value))
+
+    metadata: dict[str, Any] = {
+        "spool_job_id": None,
+        "captured_at": None,
+        "page_count": None,
+        "spl_sha256": None,
+    }
+    for field, entries in found.items():
+        metadata[field] = entries[0][1]
+
+    job_id = metadata["spool_job_id"]
+    if job_id is not None and (
+        not job_id
+        or len(job_id) > 256
+        or any(ord(character) < 32 for character in job_id)
+    ):
+        problems.append(CaptureProblem(
+            "INVALID_JOB_ID",
+            "Spool job ID must be a non-empty printable value of at most 256 characters",
+            "Report.txt",
+        ))
+
+    captured_at = metadata["captured_at"]
+    if captured_at is not None:
+        normalized = captured_at[:-1] + "+00:00" if captured_at.endswith(("Z", "z")) else captured_at
+        try:
+            parsed = datetime.fromisoformat(normalized)
+        except ValueError:
+            parsed = None
+        if parsed is None or parsed.tzinfo is None or parsed.utcoffset() is None:
+            problems.append(CaptureProblem(
+                "INVALID_CAPTURED_AT",
+                "Timestamp must be ISO 8601 with an explicit UTC offset",
+                "Report.txt",
+            ))
+
+    raw_page_count = metadata["page_count"]
+    if raw_page_count is not None:
+        if not re.fullmatch(r"[0-9]+", raw_page_count):
+            problems.append(CaptureProblem(
+                "INVALID_PAGE_COUNT",
+                "Page count must be a non-negative decimal integer",
+                "Report.txt",
+            ))
+        else:
+            page_count = int(raw_page_count)
+            metadata["page_count"] = page_count
+            if page_count == 0:
+                problems.append(CaptureProblem(
+                    "EMPTY_JOB",
+                    "Probe report declares a job with zero pages",
+                    "Report.txt",
+                ))
+            elif page_count != png_count:
+                problems.append(CaptureProblem(
+                    "PAGE_COUNT_MISMATCH",
+                    f"Probe report declares {page_count} page(s), but the folder contains {png_count} PNG file(s)",
+                    "Report.txt",
+                ))
+
+    reported_sha256 = metadata["spl_sha256"]
+    if reported_sha256 is not None:
+        if not _SHA256_TEXT.fullmatch(reported_sha256):
+            problems.append(CaptureProblem(
+                "INVALID_SPL_SHA256",
+                "SPL SHA-256 must contain exactly 64 hexadecimal characters",
+                "Report.txt",
+            ))
+        elif spl_sha256 is not None and reported_sha256.casefold() != spl_sha256.casefold():
+            problems.append(CaptureProblem(
+                "SPL_HASH_MISMATCH",
+                "SPL bytes do not match the SHA-256 recorded in Report.txt",
+                "Report.txt",
+            ))
+
+    return metadata, tuple(problems)
 
 
 def _is_safe_regular_file(path: Path, root: Path) -> bool:
@@ -234,6 +367,19 @@ def inspect_capture_folder(folder: str | Path) -> CaptureFolder:
         if report_readable and not report_text.strip():
             problems.append(CaptureProblem("EMPTY_REPORT", "Report.txt contains no report text", report_path.name))
 
+    spl_sha256 = None
+    if _is_safe_regular_file(spl_path, root) and spl_path.stat().st_size > 0:
+        try:
+            spl_sha256 = _sha256_file(spl_path)
+        except OSError as exc:
+            problems.append(CaptureProblem("INVALID_SPL", f"SPL could not be read: {exc}", spl_path.name))
+    probe_metadata, report_problems = _parse_probe_report(
+        report_text,
+        spl_sha256=spl_sha256,
+        png_count=len(png_files),
+    )
+    problems.extend(report_problems)
+
     inspected_pages: list[CapturePage] = []
     for index, png_path in enumerate(png_files, start=1):
         try:
@@ -258,6 +404,9 @@ def inspect_capture_folder(folder: str | Path) -> CaptureFolder:
         report_line_count=len(report_text.splitlines()),
         pages=tuple(inspected_pages),
         extra_files=extras,
+        probe_job_id=probe_metadata["spool_job_id"],
+        report_captured_at=probe_metadata["captured_at"],
+        report_page_count=probe_metadata["page_count"] if isinstance(probe_metadata["page_count"], int) else None,
     )
 
 
@@ -376,6 +525,22 @@ def _page_observation(
         return None, f"E-05 observation could not be built: {type(exc).__name__}: {exc}"
 
 
+def _same_timestamp_instant(left: str, right: str) -> bool:
+    def parse(value: str) -> datetime | None:
+        normalized = value[:-1] + "+00:00" if value.endswith(("Z", "z")) else value
+        try:
+            parsed = datetime.fromisoformat(normalized)
+        except ValueError:
+            return None
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            return None
+        return parsed
+
+    left_value = parse(left)
+    right_value = parse(right)
+    return left_value is not None and right_value is not None and left_value == right_value
+
+
 def _error_result(
     folder: str | Path,
     problems: tuple[CaptureProblem, ...],
@@ -384,8 +549,8 @@ def _error_result(
 ) -> dict[str, Any]:
     return {
         "result_version": RESULT_VERSION,
-        "status": "ERROR",
-        "verdict": Verdict.REJECT.value,
+        "status": "BLOCKED",
+        "verdict": Verdict.REVIEW.value,
         "verdict_source": "capture-artifact-validation",
         "capture_folder": str(Path(folder).expanduser()),
         "captured_at": captured_at,
@@ -409,6 +574,7 @@ def extract_capture_folder(
     templates_path: str | Path = DEFAULT_TEMPLATE_BANK_PATH,
     e05_bank_path: str | Path | None = None,
     captured_at: str | None = None,
+    drift_baseline_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run E-02, E-05, and fail-closed E-06 on one capture folder.
 
@@ -416,13 +582,31 @@ def extract_capture_folder(
     capture-folder contract does not contain producer-owned Canonical Invoice
     context (identities, customer and product-name mapping). This missing
     context is surfaced as an E-06 REVIEW rather than invented. An optional
-    offset-aware ``captured_at`` value is passed to E-02 and retained in the
-    result; Probe ``Report.txt`` content itself is not parsed.
+    offset-aware ``captured_at`` value is passed to E-02. When Report.txt has
+    one recognized ``Timestamp:`` field, that value is used automatically; a
+    conflicting explicit override blocks the folder.
     """
     try:
         capture = inspect_capture_folder(folder)
     except CaptureFolderValidationError as exc:
         return _error_result(exc.folder, exc.problems, captured_at=captured_at)
+
+    effective_captured_at = captured_at
+    if capture.report_captured_at is not None:
+        if (
+            captured_at is not None
+            and not _same_timestamp_instant(capture.report_captured_at, captured_at)
+        ):
+            return _error_result(
+                capture.path,
+                (CaptureProblem(
+                    "CAPTURED_AT_MISMATCH",
+                    "--captured-at conflicts with the timestamp recorded in Report.txt",
+                    capture.report_path.name,
+                ),),
+                captured_at=capture.report_captured_at,
+            )
+        effective_captured_at = capture.report_captured_at
 
     bank: TemplateBank | None = None
     bank_error: str | None = None
@@ -440,7 +624,8 @@ def extract_capture_folder(
             pipeline = extract_pipeline_v0(
                 page.path,
                 templates_path=templates_path,
-                captured_at=captured_at,
+                captured_at=effective_captured_at,
+                drift_baseline_path=drift_baseline_path,
             )
         except Exception as exc:
             page_results.append({
@@ -504,6 +689,10 @@ def extract_capture_folder(
                 "layout_reason": pipeline.layout_reason,
                 "row_count": pipeline.row_count,
                 "canonical_blockers": list(pipeline.canonical_blockers),
+                "glyph_drift": (
+                    dict(getattr(pipeline, "glyph_drift"))
+                    if getattr(pipeline, "glyph_drift", None) is not None else None
+                ),
             },
             "e05": e05_result,
             "numeric_candidates": numeric_candidates,
@@ -580,7 +769,7 @@ def extract_capture_folder(
         "verdict": overall_verdict,
         "verdict_source": "E-06 with E-02 block override" if has_blocked_pages else "E-06",
         "capture_folder": str(capture.path),
-        "captured_at": captured_at,
+        "captured_at": effective_captured_at,
         "artifacts": capture.artifacts_dict(),
         "scoring_fields": list(SCORING_FIELDS),
         "accuracy": {

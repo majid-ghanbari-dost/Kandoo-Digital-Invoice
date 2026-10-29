@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:n07:name-worklist:v1",
+  "title": "N-07 name-confirmation work-list v1",
+  "description": "Human-review work-list with one generated crop image per exact dHash ProductCandidate. Near-threshold candidates are retained separately and flagged; similarity never merges them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_schema_version",
+    "confirmation_reuse_key",
+    "cluster_policy",
+    "name_suggestions_enabled",
+    "work_items"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "n07.name-worklist.v1"
+    },
+    "source_schema_version": {
+      "const": "n02.product-candidates.v1"
+    },
+    "confirmation_reuse_key": {
+      "const": "name_crop_cluster_id"
+    },
+    "cluster_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assignment",
+        "near_threshold_distance",
+        "near_threshold_action"
+      ],
+      "properties": {
+        "assignment": {
+          "const": "exact-dhash-only"
+        },
+        "near_threshold_distance": {
+          "const": 1
+        },
+        "near_threshold_action": {
+          "const": "review-without-merge"
+        }
+      }
+    },
+    "name_suggestions_enabled": {
+      "type": "boolean"
+    },
+    "work_items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate", "crop_image"],
+        "properties": {
+          "candidate": {
+            "$ref": "urn:kandoo:n05:product-candidate:v1#/$defs/productCandidate"
+          },
+          "crop_image": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["file", "sha256"],
+            "properties": {
+              "file": {
+                "type": "string",
+                "pattern": "^crops/name-dhash-[0-9a-f]{16}\\.png$"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "name_suggestions_enabled": {"const": true}
+        },
+        "required": ["name_suggestions_enabled"]
+      },
+      "then": {
+        "properties": {
+          "work_items": {
+            "items": {
+              "properties": {
+                "candidate": {
+                  "properties": {
+                    "name_suggestions": {"minItems": 1}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name_suggestions_enabled": {"const": false}
+        },
+        "required": ["name_suggestions_enabled"]
+      },
+      "then": {
+        "properties": {
+          "work_items": {
+            "items": {
+              "properties": {
+                "candidate": {
+                  "properties": {
+                    "name_suggestions": {"maxItems": 0}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

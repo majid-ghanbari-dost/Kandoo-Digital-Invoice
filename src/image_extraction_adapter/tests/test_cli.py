@@ -96,6 +96,28 @@ class ExtractionCLITests(unittest.TestCase):
         self.assertIn("کالای آزمایشی", stdout)
         self.assertTrue(invoice["provenance"]["template_library_id"])
 
+    def test_drift_report_sidecar_records_per_symbol_means_without_polluting_stdout(self):
+        with tempfile.TemporaryDirectory(prefix="e28-cli-drift-report-") as temp:
+            context_path = self._write_context(temp)
+            report_path = Path(temp) / "glyph-drift.json"
+            args = [
+                *self._arguments(context_path),
+                "--drift-report",
+                str(report_path),
+            ]
+            code, stdout, stderr = self._run_cli(args)
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(code, 0, stderr)
+        self.assertEqual(stderr, "")
+        self._assert_valid_canonical_json(stdout)
+        self.assertEqual(report["status"], "CLEAR")
+        self.assertTrue(report["mean_distance_by_symbol"])
+        self.assertTrue(all(
+            item["glyph_count"] > 0
+            for item in report["mean_distance_by_symbol"].values()
+        ))
+
     def test_review_case_exit_10_outputs_valid_canonical_json(self):
         with tempfile.TemporaryDirectory(prefix="e09-cli-review-") as temp:
             context_path = self._write_context(temp)
