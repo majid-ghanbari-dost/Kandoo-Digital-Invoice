@@ -114,7 +114,9 @@ class PipelineV0Tests(unittest.TestCase):
                 output_path=output,
                 repo_root=ROOT,
             )
-            self.assertEqual(report.bank_sha256, hashlib.sha256(output.read_bytes()).hexdigest())
+            written_bank = output.read_bytes()
+            self.assertNotIn(b"\r", written_bank)
+            self.assertEqual(report.bank_sha256, hashlib.sha256(written_bank).hexdigest())
             self.assertEqual(report.bank_sha256, hashlib.sha256(DEFAULT_BANK.read_bytes()).hexdigest())
         with self.assertRaises(TemplateBankBuildError):
             build_default_template_bank(
@@ -134,6 +136,10 @@ class PipelineV0Tests(unittest.TestCase):
             {Path(item["image"]).name for item in templates.provenance},
             {"31.png", "32.png", "33.png"},
         )
+        with tempfile.TemporaryDirectory(prefix="pipeline-v0-fold-save-") as temp_name:
+            serialized_bank = Path(temp_name) / "fold-templates.json"
+            templates.save(serialized_bank)
+            self.assertNotIn(b"\r", serialized_bank.read_bytes())
 
     def test_leave_one_out_has_three_auto_candidates_one_review_and_no_wrong_extracted_values(self) -> None:
         outcomes = run_leave_one_out_evaluation(LABELS_PATH, repo_root=ROOT)

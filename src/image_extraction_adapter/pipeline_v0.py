@@ -1532,15 +1532,15 @@ def build_default_template_bank(
         "dhash_threshold": DEFAULT_DHASH_THRESHOLD,
     }
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    bank_bytes = (
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    ).encode("utf-8")
+    target.write_bytes(bank_bytes)
     used_count = sum(line.startswith("USED ") for line in logs)
     skipped = tuple(line for line in logs if line.startswith("SKIP "))
     return TemplateBankBuildReport(
         output_path=str(target),
-        bank_sha256=_sha256_file(target),
+        bank_sha256=hashlib.sha256(bank_bytes).hexdigest(),
         source_images=source_metadata,
         template_counts=templates.counts(),
         training_cell_count=training_cell_count,

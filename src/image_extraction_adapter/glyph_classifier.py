@@ -354,9 +354,8 @@ class GlyphTemplateSet:
         return cls(profiles, list(data.get("provenance", [])))
 
     def save(self, path: Path) -> None:
-        Path(path).write_text(
-            json.dumps(self.to_json_dict(), ensure_ascii=False, indent=1),
-            encoding="utf-8")
+        data = json.dumps(self.to_json_dict(), ensure_ascii=False, indent=1).encode("utf-8")
+        Path(path).write_bytes(data)
 
     @classmethod
     def load(cls, path: Path) -> "GlyphTemplateSet":

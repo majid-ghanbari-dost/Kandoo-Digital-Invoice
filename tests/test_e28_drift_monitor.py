@@ -220,8 +220,10 @@ class E28GlyphDriftMonitorTests(unittest.TestCase):
                 templates_path=DEFAULT_TEMPLATE_BANK_PATH,
                 output_path=output,
             )
+            written_baseline = output.read_bytes()
+            self.assertNotIn(b"\r", written_baseline)
             self.assertEqual(
-                json.loads(output.read_text(encoding="utf-8")),
+                json.loads(written_baseline.decode("utf-8")),
                 self.baseline,
             )
             self.validator.validate(rebuilt)
