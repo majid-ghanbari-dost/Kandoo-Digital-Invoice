@@ -8,40 +8,36 @@ Operational coordination between implementation and governance agents. This file
 
 | Area | Owner | Status |
 |---|---|---|
-| `WP-HOLOO-IMAGE-EXTRACTION-02` | Current implementation agent | SYNTHETIC PERSIAN SUPPORT COMPLETE; synthetic evidence remains separate from Holoo validation |
-| `HOLOO-EXTRACTION-CONTINUATION-01` | Current implementation agent | SPATIAL OCR FALLBACK IMPLEMENTED; one user-supplied image yielded four rows but remains REVIEW_REQUIRED; issuance not reached |
-| `WP-HOLOO-IMAGE-EXTRACTION-05` | Current implementation agent | GEOMETRY-BASED CELL CROPS, PIL PREPROCESSING, AND PSM-7 OCR IMPLEMENTED; benchmark complete; supplied image remains REVIEW_REQUIRED |
-| `WP-HOLOO-IMAGE-EXTRACTION-09` | Current implementation agent | COMPLETE; DYNAMIC PROJECTION TESTED ON 4/5/13-ROW IMAGES; GLYPH EVALUATION FAILS ARITHMETIC GATE |
-| `WP-HOLOO-IMAGE-EXTRACTION-10` | Current implementation agent | COMPLETE; GLYPH INTEGRATED AS PRIMARY NUMERIC-CELL BACKEND; GUARDED 13-ROW E2E RETURNS PAGE-LEVEL REVIEW; NO SUBMIT |
-| `E-03-kit-v2` print-extraction kit | Current implementation agent | 3+1 PAGES, VALUES, COVERAGE, AND CAPTURE CONTRACT COMPLETE; ACTUAL WINDOWS HELLO CAPTURE OWNER-VERIFICATION PENDING; V1 PRESERVED/OBSOLETE |
-| `E-04.5 + E-05` label-derived fixtures and template bank | Current implementation agent | COMMITTED/PUSHED; 9 FOCUSED TESTS PASS; `stable-e-05` VERIFIED |
-| `E-06` onboarding verdict | Current implementation agent | COMPLETE; COMMIT `91f5b04` WITH `stable-e-06` PRESENT IN LOCAL HISTORY |
-| `E-26` onboarding CLI | Current implementation agent | COMPLETE; local verification and relayed push-CI proof recorded in E-26 closeout |
-| `E-27` capture-folder end-to-end harness | Current implementation agent | COMPLETE; published as `7abf174755d36bdf1aeb787f8bbc5145070725b5` / `stable-e-27`; Windows push-CI relay pending |
-| `N-07` NameConfirmation work-list | Current implementation agent | IMPLEMENTED; full local suite green; exact-cluster confirmation reuse and no-auto-merge review tested; push-CI relay pending |
-| Native Checkout Q1–Q4 decisions | Product Owner | RECORDED; future architecture only, not current MVP priority |
-| WP-11.2 Holoo database adapter | None until its decisions/evidence are resolved | DEFERRED; separate from image OCR |
-| Governance/handoff | Technical Manager / governance agent | EOD sync recorded in `AGENT_HANDOFF.md` |
+| Window 4 (E-30 through E-33) | Current implementation agent | COMPLETE, COMMITTED, TAGGED, AND PUBLISHED on the fixed branch; no active technical task remains in this window |
+| E-30 CLI contract and golden pack | Current implementation agent | COMPLETE; `stable-e-30`; source golden verifier passed 6/6 locally |
+| E-31 all-real-fixture accuracy and timing harness | Current implementation agent | COMPLETE; `stable-e-31`; four-fold leave-one-invoice-out run reports zero EXTRACTED-but-wrong; Windows timing workflow awaits executive verification |
+| E-32 workflow hygiene | Current implementation agent | COMPLETE; `stable-e-32`; Node 24 action majors and explicit runner labels; workflow-only |
+| E-33 handoff/report | Current implementation agent | COMPLETE; `stable-e-33`; closes Window 4 |
+| Product-owner evidence/decisions | Product Owner, coordinated by PM | OPEN ESCALATION: authentic SPL/SHD samples, Holoo price-entry test, hosting, and legal text; not attempted in Arena |
+| Technical/management follow-up | PM | Route unresolved implementation, hosting, and legal decisions here |
+| Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` | Project governance | UNCHANGED in Window 4; remain frozen |
+| Historical WP/N/E tasks | Prior task owners | Completed/historical records remain in `AGENT_HANDOFF.md`; not active Window 4 work |
 
 ## Rules
 
 1. One WP = one owner.
 2. Do not edit another agent's active WP/files concurrently.
 3. Reviews do not transfer ownership.
-4. This Arena session is fixed to `arena/d892dd9b-kandoo-digital-invoice`; do not switch/create another branch.
+4. This Arena session is fixed to `arena/194fd0be-kandoo-digital-invoice`; do not switch, create, rename, or push to another branch.
 5. Frozen files require explicit evidence/authorization before modification.
 6. Update this file and `AGENT_HANDOFF.md` when ownership or project state changes.
 7. Stop at genuine decision, evidence, contract, or architecture blockers.
 8. Never claim source integration or Holoo accuracy without verifiable artifacts and real-source evidence.
-9. Do not merge a PR unless explicitly authorized. PR #11 was merged before the current window; do not alter that completed merge.
+9. No PR was created for Window 4. Do not create, merge, or otherwise manage a PR unless the Product Owner explicitly authorizes it.
 
-## Current Serial Dispatch — 2026-10-29
+## Current Serial Dispatch — Window 4 closeout (2026-10-30)
 
-- PR #11 was merged before this window. `main` is based at merge commit `a8662f458255d66307d0783bd7e14b80addeb06b`; this session stays on the fixed branch `arena/d892dd9b-kandoo-digital-invoice`. E-26 is certified at `e7b7f65b2fb1fae81c82a73604daed3dee6345bb` (`stable-e-26`), with Python run `40717568578` and Windows run `40717568817` green.
-- E-27 is published at `7abf174755d36bdf1aeb787f8bbc5145070725b5` / `stable-e-27`. Its Windows verifier exercises four fixture-backed built-executable capture folders against Canonical JSON and five synthetic failure cases; all five return `BLOCKED` / `REVIEW` at exit 20. CI relay is pending and no local Windows run is claimed.
-- N-07 extends N-05 with schema-defined `NameConfirmation`, four updated empty-name/empty-suggestion goldens, and `scripts/run_n07_name_worklist.py`. The default work-list emits 22 crop images from 25 repository fixture occurrences, groups exact dHash matches only, reuses confirmed names by exact cluster ID, and marks one-bit near-threshold pairs REVIEW without merging. Optional N-04 OCR requires an installed ParisaOCR runtime and explicit opt-in; default is OCR-free.
-- Full local suite passed **1,968 tests plus 123 subtests**; combined N-05/N-07 focused suite passed **13 tests plus 8 subtests**. N-07 work-list schema/crops and deterministic reruns passed. Push CI relay remains pending; no Actions inspection or Windows execution is claimed.
-- Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` remain byte-identical. E-27 is tagged `stable-e-27`; N-07 is tagged `stable-n-07` after full local verification. E-28 is next, then E-29; continue the serial task/tag/push process without per-task pauses.
+- This session remains on `arena/194fd0be-kandoo-digital-invoice`; Window 4 E-30 → E-31 → E-32 → E-33 is complete and published. Full E-30 through E-32 SHAs, tags, metrics, and CI wording are in `AGENT_HANDOFF.md`. E-33 is the handoff-closeout commit tagged `stable-e-33`; its full peeled SHA is reported after publication.
+- E-31 confirmed the complete invoice inventory as `29.png`, `31.png`, `32.png`, `33.png`; 22 nested N-02 crops are excluded as non-invoice inputs. Four-fold leave-one-invoice-out results: invoice outcomes 3 EXTRACTED / 1 REVIEW / 0 BLOCKED; expected numeric-field routes 36 / 18 / 0; zero EXTRACTED-but-wrong. Fixture 33 routes to REVIEW in the held-out evaluation. The checked-in default bank contains these fixtures, so its CLI smoke is resubstitution evidence, not independent accuracy.
+- Local full suite: **1,979 passed, 134 subtests passed**; focused pipeline/adapter/E-31 tests: **164 passed, 67 subtests passed**. E-30 source golden verification passed 6/6. E-31 source harness passed and the unknown-layout regression returns REVIEW without a Canonical candidate.
+- E-32 updates checkout/setup-python/upload-artifact to v7 (Node 24) and pins runners to `ubuntu-24.04` / `windows-2025`. Windows CI is configured to time the frozen executable and upload its report. Do not claim Windows or Ubuntu CI outcomes: all CI rows await executive verification.
+- Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` remain unchanged. No PR, merge, force-push, or main-branch change was made. Stop after E-33 publication/report.
+- **PRODUCT-OWNER ESCALATION (not attempted):** authentic SPL/SHD/Probe samples, the Holoo price-entry test, hosting, and legal text remain open. Route technical and management decisions to the PM; do not fabricate evidence or decisions.
 
 ## Historical Serial Dispatch — 2026-10-27 (superseded)
 

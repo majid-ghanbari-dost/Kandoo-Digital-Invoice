@@ -93,7 +93,32 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 
 ## 6. Current Verified Project State
 
-### Current serial window — 2026-10-29
+### Window 4 closeout — E-30 through E-33 (2026-10-30)
+
+**Consolidated report.** Window 4 is complete on the fixed branch `arena/194fd0be-kandoo-digital-invoice`; no PR was created. E-30 froze `e30.extraction-bridge.v1`, its caller-enforced timeouts, stream/exit contract, schemas, and shared byte-exact golden pack. The source verifier passed all 6 cases. E-31 confirmed the complete invoice inventory: top-level `29.png`, `31.png`, `32.png`, `33.png`; 22 nested `n02-reference-crops` are derived crops, not invoice fixtures. Accuracy below is four-fold leave-one-invoice-out (each held-out image is excluded from template provenance); `AUTO_CANDIDATE` is counted as the EXTRACTED route. E/R/B means EXTRACTED / REVIEW / BLOCKED.
+
+| Fixture | Invoice E/R/B | Expected numeric fields E/R/B | Independent label checks | Derived payable checks | EXTRACTED-but-wrong |
+|---|---:|---:|---:|---:|---:|
+| 29 | 1/0/0 | 9/0/0 | 9 | 0 | 0 |
+| 31 | 1/0/0 | 7/0/0 | 6 | 1 | 0 |
+| 32 | 1/0/0 | 11/0/0 | 11 | 0 | 0 |
+| 33 | 0/1/0 | 9/18/0 | 9 | 0 | 0 |
+| **Total** | **3/1/0** | **36/18/0** | **35** | **1** | **0** |
+
+Fixture 31 payable is derived from confirmed line totals, so its matching value is separately counted, not treated as an independent label. The default-bank CLI smoke returned EXTRACTED for all four with zero labeled mismatches, but its bank provenance includes those images; that resubstitution is not the accuracy result. Unknown-layout regression routes to REVIEW with no Canonical candidate. Local source-CLI timings (not Windows results): startup median 0.2091 s; per invoice 29/31/32/33 = 0.7391/0.5888/0.6870/0.8004 s. Windows CI now measures the frozen executable and uploads its report; Windows and Ubuntu CI results remain **awaiting executive verification**.
+
+E-32 is workflow-only: checkout/setup-python/upload-artifact actions now use v7 (Node 24), runners are pinned to `ubuntu-24.04` / `windows-2025`, YAML parsing passed, and no product behavior changed. Local verification: focused pipeline/adapter/E-31 tests **164 passed, 67 subtests passed**; full suite **1,979 passed, 134 subtests passed**; E-30 golden pack **6/6**; E-31 harness **PASS, zero EXTRACTED-but-wrong**. Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` remain byte-identical.
+
+**PRODUCT-OWNER ESCALATION (not attempted):** provide authentic SPL/SHD samples with Probe metadata; arrange the Holoo price-entry test; decide hosting; and provide/approve legal text. Route technical and management decisions to the PM. No such samples/tests/decisions were fabricated or attempted.
+
+| Task | Full commit SHA | Immutable tag | CI |
+|---|---|---|---|
+| E-30 | `ab1340ab840e92dbdd8f3be186bc7492c5e0c911` | `stable-e-30` | Awaiting executive verification |
+| E-31 | `b67b8e32453b224479c13effc790d26298f6beab` | `stable-e-31` | Awaiting executive verification |
+| E-32 | `1791914f79794ed2ea3e5a7bf46fe146b15912fe` | `stable-e-32` | Awaiting executive verification |
+| E-33 | This handoff commit; full SHA is the peeled target of `stable-e-33` and is supplied in the publication report | `stable-e-33` | Awaiting executive verification |
+
+### Prior serial window — 2026-10-29 (historical)
 
 The current task branch is `arena/d892dd9b-kandoo-digital-invoice`, based on the PR #11 merge commit `a8662f458255d66307d0783bd7e14b80addeb06b` on `main`. PR #11 is merged; older entries below that say PR #11 is open or `main` is unchanged are historical snapshots and are superseded by this state. E-26 is certified; E-27 is published at `7abf174755d36bdf1aeb787f8bbc5145070725b5` (`stable-e-27`); N-07 closes in this task commit, followed by E-28 → E-29. Frozen paths `contracts/` and `src/image_extraction_adapter/adapter.py` remain byte-identical.
 
@@ -315,25 +340,25 @@ WP-05 was verified on 2026-10-15; WP-09 and WP-10 verification was added on 2026
 
 ## 7. Current Agent Ownership
 
-- **Serial closeout state:** N-04, N-05, E-24, and N-06 are complete; E-25 closes this task window in the current documentation commit group. Preserve the stated fixture/layout/currency boundaries. N-01 and N-04 evaluation references remain provisional and owner-unconfirmed.
-- **Historical image-extraction work:** `WP-HOLOO-IMAGE-EXTRACTION-02` synthetic Persian support remains complete. `HOLOO-EXTRACTION-CONTINUATION-01` provides spatial OCR; `WP-HOLOO-IMAGE-EXTRACTION-05` adds cell preprocessing; `WP-HOLOO-IMAGE-EXTRACTION-09` adds dynamic projection layout; `WP-HOLOO-IMAGE-EXTRACTION-10` integrates Glyph as the primary numeric-cell backend with a page-level fail-closed review gate. The guarded 13-row E2E returned REVIEW and recorded zero submit-probe calls; real issuance was not attached and no invoice issued. OCR accuracy remains unproven and visual labels are provisional.
-- **Product Owner:** Native Checkout Q1–Q4 decisions are recorded; any later change to those decisions or MVP priority remains a PO decision.
-- **WP-11.2 Holoo DB adapter:** remains a separate deferred scope; the image-extraction adapter does not resolve its source mapping/authority/synchronization decisions.
-- Preserve unrelated work already present in the working tree; do not absorb the untracked spooler adapter or runner into this image-extraction change.
+- **Window 4:** E-30 through E-33 are complete, committed, tagged, and published on `arena/194fd0be-kandoo-digital-invoice`; no further technical task is active in this window. The exact commits/tags and verification are in the closeout table above.
+- **Product Owner escalation:** real SPL/SHD/Probe evidence, the Holoo price-entry test, hosting, and legal text remain owner/PM follow-up; none was attempted in Arena.
+- **Technical/management decisions:** route to the PM. Do not infer missing Probe formats, hosting requirements, or legal wording from synthetic fixtures or this report.
+- **Historical work:** N-01–N-07, E-03-kit, E-04.5/E-05/E-06, E-24–E-29 and earlier WP image-extraction work remain documented in the dated sections below; they are not active Window 4 ownership.
+- No PR was authorized or created for Window 4. Do not create one unless the Product Owner explicitly orders it.
 
 ## 8. Current Real Boundaries
 
-1. The 13-row target `deliveries/image-extraction-ocr/13.png` was processed through full-page Tesseract plus Glyph numeric-cell OCR. Dynamic crop geometry returned 13 rows and 27 numeric cells (12 EXTRACTED, 15 REVIEW); all 13 totals and payable remain REVIEW after the arithmetic gate failed on malformed `line.9.total`. This does not establish general Holoo accuracy or suitability across layouts.
-2. The guarded E2E adapter outcome was `ImageExtractionReviewRequired`; `NonIssuingSubmitProbe` recorded zero calls. The real `IssuanceService` was not attached to this run, so no Digital Invoice was created or reached `ISSUED`. This is an adapter-local hold, not a persistent Frozen `REVIEW` state or P5.2 ReviewQueue record.
-3. WP-09 visual labels and references are provisional and unconfirmed by the invoice owner. The 13-row train/evaluation split is by rows from the same invoice, not independent-invoice validation. Do not use these results to auto-correct values or claim general accuracy.
-4. Synthetic English and Persian smokes reached `ISSUED` through the existing pipeline, but this is Synthetic evidence only. Threshold 60 is a test setting, not a production recommendation; confidence is not calibrated.
-5. The flat text parser handles tested English/Persian labels. The dynamic projection detector recovered four-column RTL tables in the three supplied images (4, 5, and 13 rows); it has not been validated on other layouts. Projection is primary for crops, with TSV geometry fallback. Ambiguous values remain REVIEW. Jalali-to-Gregorian calendar conversion is not implemented.
-6. Native Checkout is future architecture only under the recorded Q1–Q4 choices; it is not the current MVP priority and no Native Checkout code was added.
-7. WP-11.2 (Holoo database adapter/enrichment) remains separate and deferred pending its own decisions/evidence.
+1. E-31 covers only the four checked-in top-level real-render invoice images and their operator-confirmed numeric labels. It is a fixture proxy, not Holoo-wide, SPL/SHD, tax, or production accuracy evidence.
+2. The accuracy result is leave-one-invoice-out: 3 invoice routes EXTRACTED, 1 REVIEW, 0 BLOCKED; numeric-field routes 36 EXTRACTED, 18 REVIEW, 0 BLOCKED; zero EXTRACTED-but-wrong across 35 independent comparisons and one separately identified derived-payable check. Fixture 33 is REVIEW in the held-out run.
+3. The checked-in default template bank includes the same four fixtures. Its four successful runtime CLI outputs and timings are resubstitution smoke evidence only; do not represent them as independent accuracy. The independent metric is the leave-one-out result.
+4. Unknown/unregistered layout is tested to return REVIEW with no Canonical candidate. Producer context and product names in CLI mechanics tests are explicitly synthetic; the numeric pipeline does not invent them.
+5. No authentic Probe SPL/SHD samples, Holoo price-entry test, hosting decision, or legal text are available here. Obtain them through Product Owner/PM follow-up before making those claims or decisions.
+6. Ubuntu and Windows CI workflows are configured, including Windows frozen-executable timing; their results remain awaiting executive verification. No CI outcome is inferred from a local run.
+7. `contracts/` and `src/image_extraction_adapter/adapter.py` are frozen and unchanged in Window 4. Do not modify them without explicit evidence/authorization.
 
 ## 9. Repository and EOD Branch Status
 
-All task-scoped image-extraction source, tests, Synthetic regression evidence, real-image spatial/preprocessing/Glyph reports, and handoff updates stay on `arena/9dc17500-kandoo-digital-invoice`. WP-05 was pushed as `fbfe7c0`; remote upload commit `ccb9e99` added the supplied `5.png` and `13.png` images before WP-09 work. WP-09 was pushed as `e5ff46d`; WP-10 was pushed as `76a37f0`. No change is to be merged to `main`. Earlier untracked WP-06 classifier artifacts and the unrelated spooler adapter/runner are intentionally left out of task commits. Do not force-push or overwrite remote work if a future non-fast-forward condition occurs; report that blocker instead.
+Window 4 is published on the fixed branch `arena/194fd0be-kandoo-digital-invoice`; `stable-e-30`, `stable-e-31`, `stable-e-32`, and `stable-e-33` are immutable task tags. The full E-30–E-32 commit SHAs are in the closeout table above; the final E-33 SHA is reported after tag publication because a commit cannot contain its own hash. Remote branch/tag verification is performed at publication. No PR was created, no merge or force-push was performed, and no frozen path was changed. The prior branch/window records below remain historical.
 
 ## 10. Handoff Protocol
 
