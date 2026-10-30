@@ -1,0 +1,110 @@
+{
+  "artifact_type": "kandoo.mode-b.new-type-candidate",
+  "artifact_version": "1",
+  "candidate": {
+    "candidate_id": "e08-candidate-0e36b77d402af7cd266a",
+    "decided_at": null,
+    "decision_by": null,
+    "decision_reason": null,
+    "field_positions": {
+      "column_0": [
+        0.25434,
+        0.476562
+      ],
+      "column_1": [
+        0.476562,
+        0.561632
+      ],
+      "column_2": [
+        0.561632,
+        0.898438
+      ],
+      "column_3": [
+        0.898438,
+        0.967882
+      ],
+      "payable_bbox_over_width": [
+        0.277778,
+        1.333333,
+        0.154514,
+        0.029514
+      ]
+    },
+    "layout_signature": {
+      "normalized_column_boundaries": [
+        0.25434,
+        0.476562,
+        0.561632,
+        0.898438,
+        0.967882
+      ],
+      "page_aspect_ratio": [
+        0.66055
+      ],
+      "payable_bbox_over_width": [
+        0.277778,
+        1.333333,
+        0.154514,
+        0.029514
+      ],
+      "payable_gap_over_width": [
+        0.048611
+      ],
+      "row_heights_over_width": [
+        0.118056,
+        0.118056,
+        0.118056,
+        0.118056
+      ],
+      "row_pitches_over_width": [
+        0.118056,
+        0.118056,
+        0.118056
+      ],
+      "table_top_over_width": [
+        0.8125
+      ]
+    },
+    "numeric_digit_alphabet": [
+      "۰",
+      "۱",
+      "۲",
+      "۳",
+      "۴",
+      "۵",
+      "۶",
+      "۷",
+      "۸",
+      "۹"
+    ],
+    "numeric_group_sizes": [
+      3
+    ],
+    "numeric_separators": [
+      ","
+    ],
+    "observed_numeric_fields": [
+      "invoice.payable",
+      "line.0.quantity",
+      "line.0.total",
+      "line.1.quantity",
+      "line.1.total",
+      "line.2.quantity",
+      "line.2.total",
+      "line.3.quantity",
+      "line.3.total"
+    ],
+    "proposed_at": "2026-10-30T00:00:00Z",
+    "review_reason": null,
+    "reviewed_at": null,
+    "reviewer_id": null,
+    "source_invoice_ids": [
+      "e26-e20-exam-invoice"
+    ],
+    "state": "PROPOSED",
+    "store_id": "synthetic-second-store"
+  },
+  "exported_at": "2026-10-30T00:00:00Z",
+  "mode": "B",
+  "store_id": "synthetic-second-store"
+}

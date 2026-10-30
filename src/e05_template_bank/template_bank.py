@@ -54,7 +54,7 @@ def parse_labeled_integer(value: str) -> int:
 
 def _load_json(path: Path) -> Any:
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        return json.loads(path.read_bytes().decode("utf-8"))
     except FileNotFoundError as exc:
         raise ValueError(f"required JSON file does not exist: {path}") from exc
     except json.JSONDecodeError as exc:
@@ -375,10 +375,8 @@ def save_template_bank(bank: TemplateBank, path: str | Path) -> None:
     """Persist a reusable bank as UTF-8 JSON at the caller-selected path."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        json.dumps(bank.to_dict(), ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    payload = (json.dumps(bank.to_dict(), ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    output_path.write_bytes(payload)
 
 
 def load_template_bank(path: str | Path) -> TemplateBank:

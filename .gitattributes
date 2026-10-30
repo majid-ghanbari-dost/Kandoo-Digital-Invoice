@@ -1,2 +1,17 @@
 /src/templates_bank_default.json text eol=lf
 /src/glyph_drift_baseline_v1.json text eol=lf
+/docs/extraction-bridge/**/*.md text eol=lf
+/docs/extraction-bridge/**/*.json text eol=lf
+/docs/extraction-bridge/**/*.txt text eol=lf
+/docs/extraction-bridge/**/*.png binary
+/docs/extraction-bridge/**/*.spl binary
+/schemas/extraction-bridge/**/*.json text eol=lf
+/schemas/e28/glyph_drift_report_v1.schema.json text eol=lf
+
+/contracts/**/*.json text eol=lf
+/contracts/**/*.md text eol=lf
+/schemas/**/*.json text eol=lf
+/src/**/*.json text eol=lf
+/tests/fixtures/real/**/*.json text eol=lf
+/tests/fixtures/real/**/*.md text eol=lf
+/tests/fixtures/real/**/*.png binary

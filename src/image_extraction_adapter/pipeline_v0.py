@@ -1390,7 +1390,7 @@ def apply_operator_correction(
 
 def _read_confirmed_fixture_labels(labels_path: Path) -> tuple[list[dict[str, Any]], Path]:
     try:
-        data = json.loads(labels_path.read_text(encoding="utf-8"))
+        data = json.loads(labels_path.read_bytes().decode("utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise TemplateBankBuildError(f"cannot read local fixture labels {labels_path}: {exc}") from exc
     if not isinstance(data, Mapping):

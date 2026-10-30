@@ -28,7 +28,7 @@ def load_glyph_drift_baseline(path: str | Path) -> dict[str, Any]:
     """Load and minimally validate a versioned, local DR-1 baseline."""
     baseline_path = Path(path)
     try:
-        data = json.loads(baseline_path.read_text(encoding="utf-8"))
+        data = json.loads(baseline_path.read_bytes().decode("utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise DriftBaselineError(
             f"cannot load glyph-drift baseline {baseline_path}: {type(exc).__name__}: {exc}"

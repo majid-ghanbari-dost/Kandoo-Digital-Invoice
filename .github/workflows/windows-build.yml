@@ -14,11 +14,11 @@ permissions:
 
 jobs:
   n04-parisaocr-windows:
-    name: N-04 optional ParisaOCR CPU measurements / Windows-latest
+    name: N-04 optional ParisaOCR CPU measurements / Windows 2025
     # Run the heavyweight optional stack only for N-04 task commits. The normal
     # Windows CLI job below remains OCR-free and does not acquire these dependencies.
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'N-04:') }}
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 120
     env:
       PYTHONPATH: src;scripts
@@ -29,54 +29,37 @@ jobs:
       TOKENIZERS_PARALLELISM: "false"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        id: n04_checkout
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        id: n04_setup_python
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
       - name: Create isolated OCR venv and measure baseline
         shell: pwsh
         run: |
-          $venv = Join-Path $env:RUNNER_TEMP 'n04-parisaocr-venv'
-          python -m venv $venv
-          $n04Python = Join-Path $venv 'Scripts/python.exe'
-          & $n04Python -m pip install --upgrade pip
+          python scripts/windows_step_diagnostics.py --step-name "Create isolated OCR venv and measure baseline" -- pwsh -NoProfile -File scripts/windows_n04_prepare.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $baseline = Join-Path $env:RUNNER_TEMP 'n04-site-packages-before.json'
-          & $n04Python scripts/benchmark_n04_parisaocr.py --snapshot-site-packages $baseline
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          "N04_PYTHON=$n04Python" >> $env:GITHUB_ENV
-          "N04_INSTALL_BASELINE=$baseline" >> $env:GITHUB_ENV
 
       - name: Install pinned optional ParisaOCR and Kraken runtime
         shell: pwsh
         run: |
-          $report = Join-Path $env:RUNNER_TEMP 'n04-pip-install-report.json'
-          $started = Get-Date
-          & $env:N04_PYTHON -m pip install --report $report -r scripts/n04-parisaocr-requirements.txt
+          python scripts/windows_step_diagnostics.py --step-name "Install pinned optional ParisaOCR and Kraken runtime" -- pwsh -NoProfile -File scripts/windows_n04_install.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $elapsed = ((Get-Date) - $started).TotalSeconds
-          Write-Output ("N04_PIP_INSTALL_SECONDS={0:N3}" -f $elapsed)
 
       - name: Run N-04 Windows CPU benchmark and suggestion pass
         shell: pwsh
         run: |
-          $json = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions.json'
-          $markdown = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions.md'
-          $errorJson = Join-Path $env:RUNNER_TEMP 'n04-name-suggestions-error.json'
-          & $env:N04_PYTHON scripts/benchmark_n04_parisaocr.py `
-            --repo-root . `
-            --install-baseline $env:N04_INSTALL_BASELINE `
-            --output-json $json `
-            --output-markdown $markdown `
-            --error-json $errorJson
+          python scripts/windows_step_diagnostics.py --step-name "Run N-04 Windows CPU benchmark and suggestion pass" -- pwsh -NoProfile -File scripts/windows_n04_benchmark.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload raw N-04 Windows metrics and resolved dependency report
+        id: n04_upload_artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n04-name-suggestions-${{ github.run_id }}
           path: |
@@ -88,58 +71,99 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Summarize failed N-04 GitHub-managed actions
+        if: failure()
+        shell: pwsh
+        env:
+          CHECKOUT_OUTCOME: ${{ steps.n04_checkout.outcome }}
+          SETUP_PYTHON_OUTCOME: ${{ steps.n04_setup_python.outcome }}
+          UPLOAD_OUTCOME: ${{ steps.n04_upload_artifact.outcome }}
+        run: |
+          $actionStatuses = @(
+            @{ Name = 'N-04 check out repository'; Outcome = $env:CHECKOUT_OUTCOME },
+            @{ Name = 'N-04 set up Python 3.11'; Outcome = $env:SETUP_PYTHON_OUTCOME },
+            @{ Name = 'N-04 upload metrics'; Outcome = $env:UPLOAD_OUTCOME }
+          )
+          $failed = @($actionStatuses | Where-Object { $_.Outcome -eq 'failure' })
+          if ($failed.Count -eq 0) {
+            Write-Output 'Run-command diagnostics were emitted by windows_step_diagnostics.py.'
+            exit 0
+          }
+          $lines = @('## N-04 GitHub-managed action failure diagnostics', '')
+          foreach ($item in $failed) {
+            $lines += "- Step name: $($item.Name)"
+            $lines += '- Exit code: not exposed to later steps; action outcome is failure'
+            $lines += "- Error/diff lines: inspect this action step's public log; GitHub does not expose action stderr to later steps."
+          }
+          $diagnostic = $lines -join "`n"
+          Write-Output $diagnostic
+          $utf8 = [System.Text.UTF8Encoding]::new($false)
+          [System.IO.File]::AppendAllText($env:GITHUB_STEP_SUMMARY, "$diagnostic`n", $utf8)
+
   windows-build:
     name: Windows / Python 3.11 / PyInstaller onedir
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 45
     env:
       PYTHONPATH: src
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        id: checkout
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        id: setup_python
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
       - name: Install test and packaging dependencies
+        shell: pwsh
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install pytest Pillow 'jsonschema>=4.18,<5' 'pyinstaller==6.22.3'
+          python scripts/windows_step_diagnostics.py --step-name "Upgrade pip" -- python -m pip install --upgrade pip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/windows_step_diagnostics.py --step-name "Install test and packaging dependencies" -- python -m pip install pytest Pillow 'jsonschema>=4.18,<5' 'pyinstaller==6.22.3'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      # Golden JSON hashes are over exact UTF-8/LF bytes. Restore the frozen
-      # contract files from Git without Windows autocrlf conversion.
+      # Golden JSON hashes are over exact UTF-8/LF bytes. Attributes pin the
+      # frozen files; this restore also preserves the existing checkout policy.
       - name: Preserve frozen contract bytes
         shell: pwsh
         run: |
-          git config --local core.autocrlf false
-          git checkout -- contracts
+          python scripts/windows_step_diagnostics.py --step-name "Disable autocrlf for contract restore" -- git config --local core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/windows_step_diagnostics.py --step-name "Restore frozen contracts" -- git checkout -- contracts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       # The full cross-repository suite runs on Ubuntu in python-tests.yml.
       # Windows validates the product/package path and its contract boundaries;
       # the unrelated full suite exceeded GitHub's 45-minute Windows job limit.
       - name: Windows tests - pipeline v0
-        run: python -m pytest -q tests/test_pipeline_v0.py
+        shell: pwsh
+        run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - pipeline v0" -- python -m pytest -q tests/test_pipeline_v0.py
 
       - name: Windows tests - extraction adapter
-        run: python -m pytest -q src/image_extraction_adapter/tests
+        shell: pwsh
+        run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - extraction adapter" -- python -m pytest -q src/image_extraction_adapter/tests
 
       - name: Windows tests - E-05 template bank
-        run: python -m pytest -q src/e05_template_bank/tests
+        shell: pwsh
+        run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - E-05 template bank" -- python -m pytest -q src/e05_template_bank/tests
 
       - name: Windows tests - E-06 verdict
-        run: python -m pytest -q src/e06_onboarding_verdict/tests
+        shell: pwsh
+        run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - E-06 verdict" -- python -m pytest -q src/e06_onboarding_verdict/tests
 
       - name: Windows tests - frozen E-11 contract package
-        run: python -m pytest -q tests/test_e11_contract_package.py
+        shell: pwsh
+        run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - frozen E-11 contract package" -- python -m pytest -q tests/test_e11_contract_package.py
 
       # Deliberately do not install Tesseract or tesserocr. The CLI product
       # path uses the local Glyph classifier only.
       - name: Build the Windows one-folder CLI
         shell: pwsh
         run: |
-          python -m PyInstaller --clean --noconfirm --onedir --console `
+          python scripts/windows_step_diagnostics.py --step-name "Build the Windows one-folder CLI" -- python -m PyInstaller --clean --noconfirm --onedir --console `
             --name kandoo-extract `
             --distpath dist `
             --workpath "$env:RUNNER_TEMP/pyinstaller-work" `
@@ -150,33 +174,81 @@ jobs:
             --hidden-import run_name_cluster_experiment `
             --hidden-import synthetic_thermal_invoice `
             scripts/windows_cli_entry.py
-          New-Item -ItemType Directory -Force -Path dist/kandoo-extract/src | Out-Null
-          New-Item -ItemType Directory -Force -Path dist/kandoo-extract/schemas | Out-Null
-          New-Item -ItemType Directory -Force -Path dist/kandoo-extract/schemas/mode-b | Out-Null
-          Copy-Item src/templates_bank_default.json dist/kandoo-extract/src/templates_bank_default.json -Force
-          Copy-Item src/glyph_drift_baseline_v1.json dist/kandoo-extract/src/glyph_drift_baseline_v1.json -Force
-          Copy-Item schemas/canonical_invoice_v0.json dist/kandoo-extract/schemas/canonical_invoice_v0.json -Force
-          Copy-Item schemas/mode-b/v1 dist/kandoo-extract/schemas/mode-b/v1 -Recurse -Force
-          if (-not (Test-Path dist/kandoo-extract/kandoo-extract.exe)) {
-            throw 'PyInstaller did not produce dist/kandoo-extract/kandoo-extract.exe'
-          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/windows_step_diagnostics.py --step-name "Copy Windows one-folder CLI data files" -- python scripts/copy_windows_bundle_data.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify E-30 golden pack against the built executable
+        shell: pwsh
+        run: |
+          python scripts/windows_step_diagnostics.py --step-name "Verify E-30 golden pack against the built executable" -- python scripts/verify_e30_golden_pack.py `
+            --exe dist/kandoo-extract/kandoo-extract.exe `
+            --report-json "$env:RUNNER_TEMP/e30-golden-pack.json" `
+            --report-md "$env:RUNNER_TEMP/e30-golden-pack.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run E-31 all-fixture accuracy and Windows executable timings
+        shell: pwsh
+        run: |
+          python scripts/windows_step_diagnostics.py --step-name "Run E-31 all-fixture accuracy and Windows executable timings" -- python scripts/run_e31_accuracy_harness.py `
+            --exe dist/kandoo-extract/kandoo-extract.exe `
+            --report-json "$env:RUNNER_TEMP/e31-accuracy-windows.json" `
+            --report-md "$env:RUNNER_TEMP/e31-accuracy-windows.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/windows_step_diagnostics.py --step-name "Append E-31 report to the step summary" -- python scripts/append_report_to_summary.py "$env:RUNNER_TEMP/e31-accuracy-windows.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify frozen CLI, E-27 capture folders, E-01 values, and E-11 crosswalk
         shell: pwsh
         run: |
-          python scripts/verify_windows_bundle.py `
+          python scripts/windows_step_diagnostics.py --step-name "Verify frozen CLI, E-27 capture folders, E-01 values, and E-11 crosswalk" -- python scripts/verify_windows_bundle.py `
             --exe dist/kandoo-extract/kandoo-extract.exe `
             --report-json "$env:RUNNER_TEMP/windows-build-evidence.json" `
             --report-md "$env:RUNNER_TEMP/windows-build-evidence.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload the one-folder build and evidence
+        id: upload_artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-onefolder-${{ github.run_id }}
           path: |
             dist/kandoo-extract
             ${{ runner.temp }}/windows-build-evidence.json
             ${{ runner.temp }}/windows-build-evidence.md
+            ${{ runner.temp }}/e30-golden-pack.json
+            ${{ runner.temp }}/e30-golden-pack.md
+            ${{ runner.temp }}/e31-accuracy-windows.json
+            ${{ runner.temp }}/e31-accuracy-windows.md
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Summarize failed GitHub-managed actions
+        if: failure()
+        shell: pwsh
+        env:
+          CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          SETUP_PYTHON_OUTCOME: ${{ steps.setup_python.outcome }}
+          UPLOAD_OUTCOME: ${{ steps.upload_artifact.outcome }}
+        run: |
+          $actionStatuses = @(
+            @{ Name = 'Check out repository'; Outcome = $env:CHECKOUT_OUTCOME },
+            @{ Name = 'Set up Python 3.11'; Outcome = $env:SETUP_PYTHON_OUTCOME },
+            @{ Name = 'Upload the one-folder build and evidence'; Outcome = $env:UPLOAD_OUTCOME }
+          )
+          $failed = @($actionStatuses | Where-Object { $_.Outcome -eq 'failure' })
+          if ($failed.Count -eq 0) {
+            Write-Output 'Run-command diagnostics were emitted by windows_step_diagnostics.py.'
+            exit 0
+          }
+          $lines = @('## GitHub-managed action failure diagnostics', '')
+          foreach ($item in $failed) {
+            $lines += "- Step name: $($item.Name)"
+            $lines += '- Exit code: not exposed to later steps; action outcome is failure'
+            $lines += "- Error/diff lines: inspect this action step's public log; GitHub does not expose action stderr to later steps."
+          }
+          $diagnostic = $lines -join "`n"
+          Write-Output $diagnostic
+          $utf8 = [System.Text.UTF8Encoding]::new($false)
+          [System.IO.File]::AppendAllText($env:GITHUB_STEP_SUMMARY, "$diagnostic`n", $utf8)

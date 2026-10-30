@@ -423,7 +423,7 @@ def _default_e05_bank() -> TemplateBank:
 
 def _fixture_source_hashes() -> dict[str, str]:
     try:
-        labels = json.loads(DEFAULT_E05_LABELS_PATH.read_text(encoding="utf-8"))
+        labels = json.loads(DEFAULT_E05_LABELS_PATH.read_bytes().decode("utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
     sources: dict[str, str] = {}

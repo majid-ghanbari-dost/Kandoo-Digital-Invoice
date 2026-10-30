@@ -263,13 +263,15 @@ def _output_path(path: Path, source_paths: tuple[Path, ...]) -> Path:
 
 def _write_artifact(artifact: Mapping[str, Any], schema_name: str, target: Path) -> None:
     _validate_artifact(artifact, schema_name)
-    payload = json.dumps(
-        dict(artifact),
-        ensure_ascii=False,
-        allow_nan=False,
-        indent=2,
-        sort_keys=True,
-    ) + "\n"
+    payload = (
+        json.dumps(
+            dict(artifact),
+            ensure_ascii=False,
+            allow_nan=False,
+            indent=2,
+            sort_keys=True,
+        ) + "\n"
+    ).encode("utf-8")
     temporary_path: Path | None = None
     try:
         descriptor, temporary_name = tempfile.mkstemp(
@@ -278,7 +280,7 @@ def _write_artifact(artifact: Mapping[str, Any], schema_name: str, target: Path)
             dir=target.parent,
         )
         temporary_path = Path(temporary_name)
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+        with os.fdopen(descriptor, "wb") as stream:
             stream.write(payload)
             stream.flush()
             os.fsync(stream.fileno())

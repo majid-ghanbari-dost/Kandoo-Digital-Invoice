@@ -245,7 +245,7 @@ def load_layout_profile_registry(
     """Load the checked-in registry without selecting a profile heuristically."""
     registry_path = Path(path)
     try:
-        document = json.loads(registry_path.read_text(encoding="utf-8"))
+        document = json.loads(registry_path.read_bytes().decode("utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"could not load layout-profile registry: {exc}") from exc
     if not isinstance(document, Mapping):

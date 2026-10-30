@@ -69,8 +69,7 @@ def _schema_validator():
             "Canonical Invoice validation requires jsonschema>=4.18,<5"
         ) from exc
 
-    with _SCHEMA_PATH.open("r", encoding="utf-8") as schema_file:
-        schema = json.load(schema_file)
+    schema = json.loads(_SCHEMA_PATH.read_bytes().decode("utf-8"))
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
