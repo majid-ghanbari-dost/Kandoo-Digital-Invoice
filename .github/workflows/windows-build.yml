@@ -18,7 +18,7 @@ jobs:
     # Run the heavyweight optional stack only for N-04 task commits. The normal
     # Windows CLI job below remains OCR-free and does not acquire these dependencies.
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'N-04:') }}
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 120
     env:
       PYTHONPATH: src;scripts
@@ -29,10 +29,10 @@ jobs:
       TOKENIZERS_PARALLELISM: "false"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -76,7 +76,7 @@ jobs:
 
       - name: Upload raw N-04 Windows metrics and resolved dependency report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n04-name-suggestions-${{ github.run_id }}
           path: |
@@ -90,16 +90,16 @@ jobs:
 
   windows-build:
     name: Windows / Python 3.11 / PyInstaller onedir
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 45
     env:
       PYTHONPATH: src
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -190,7 +190,7 @@ jobs:
 
       - name: Upload the one-folder build and evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-onefolder-${{ github.run_id }}
           path: |

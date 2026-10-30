@@ -15,17 +15,17 @@ permissions:
 jobs:
   synthetic-e20:
     name: Synthetic second-store mechanics / Python 3.11
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
       PYTHONPATH: src:scripts
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -45,7 +45,7 @@ jobs:
 
       - name: Upload E-20 synthetic evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e20-synthetic-${{ github.run_id }}
           path: |
@@ -56,7 +56,7 @@ jobs:
 
   synthetic-e21:
     name: Synthetic unknown-layout safety / Python 3.11
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: synthetic-e20
     timeout-minutes: 10
     env:
@@ -64,10 +64,10 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -84,7 +84,7 @@ jobs:
 
       - name: Upload E-21 synthetic evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e21-synthetic-${{ github.run_id }}
           path: |
@@ -97,7 +97,7 @@ jobs:
     name: N-01 offline Persian name OCR / Python 3.11
     # The large, optional CPU OCR runtimes are evaluated only on N-01 task commits.
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'N-01:') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
       PYTHONPATH: src
@@ -108,10 +108,10 @@ jobs:
       TESSDATA_FAST_COMMIT: 87416418657359cb625c412a48b6e1d6d41c29bd
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
           cache: pip
@@ -149,7 +149,7 @@ jobs:
 
       - name: Upload N-01 raw outputs and metrics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n01-name-reading-${{ github.run_id }}
           path: |
@@ -160,17 +160,17 @@ jobs:
 
   extraction-bridge-golden:
     name: Extraction bridge golden pack / Ubuntu Python 3.11
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
       PYTHONPATH: src:scripts
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -194,7 +194,7 @@ jobs:
 
       - name: Upload E-30 and E-31 evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: extraction-bridge-evidence-${{ github.run_id }}
           path: |
@@ -207,7 +207,7 @@ jobs:
 
   pytest:
     name: Ubuntu / Python ${{ matrix.python-version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -215,10 +215,10 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
