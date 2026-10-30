@@ -38,7 +38,7 @@ E11_DRAFT_GOLDEN = (
 
 
 def _read_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(path.read_bytes().decode("utf-8"))
 
 
 def _validate_mode_b_artifact(repo_root: Path, path: Path, schema_name: str) -> dict[str, Any]:
@@ -424,7 +424,8 @@ def _write_reports(
 ) -> None:
     json_path.parent.mkdir(parents=True, exist_ok=True)
     markdown_path.parent.mkdir(parents=True, exist_ok=True)
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    json_payload = (json.dumps(report, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    json_path.write_bytes(json_payload)
     lines = [
         "# Windows one-folder build evidence",
         "",
@@ -525,7 +526,7 @@ def _write_reports(
     ])
     if report.get("failure"):
         lines.extend(["## Failure", "", f"`{report['failure']}`", ""])
-    markdown_path.write_text("\n".join(lines), encoding="utf-8")
+    markdown_path.write_bytes("\n".join(lines).encode("utf-8"))
 
 
 def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
@@ -616,10 +617,8 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
                 expected = _read_json(canonical_dir / f"canonical-{fixture_id}.json")
                 context = _context_for(expected, fixture_id)
                 context_path = cwd / f"context-{fixture_id}.json"
-                context_path.write_text(
-                    json.dumps(context, ensure_ascii=False, indent=2) + "\n",
-                    encoding="utf-8",
-                )
+                context_payload = (json.dumps(context, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+                context_path.write_bytes(context_payload)
                 command = [
                     str(exe),
                     "extract",

@@ -360,7 +360,7 @@ class GlyphTemplateSet:
     @classmethod
     def load(cls, path: Path) -> "GlyphTemplateSet":
         return cls.from_json_dict(
-            json.loads(Path(path).read_text(encoding="utf-8")))
+            json.loads(Path(path).read_bytes().decode("utf-8")))
 
 
 # --------------------------------------------------------------------------
@@ -769,7 +769,7 @@ def _sha256(path: Path) -> str:
 
 
 def _load_entries(labels_path: Path) -> list[dict]:
-    data = json.loads(Path(labels_path).read_text(encoding="utf-8"))
+    data = json.loads(Path(labels_path).read_bytes().decode("utf-8"))
     entries = data.get("images")
     if not isinstance(entries, list) or not entries:
         raise ValueError("label file needs a non-empty 'images' list")

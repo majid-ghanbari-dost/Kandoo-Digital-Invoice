@@ -133,8 +133,7 @@ def _require_file(path: Path, option_name: str) -> None:
 
 def _load_context(path: Path) -> dict[str, Any]:
     try:
-        with path.open("r", encoding="utf-8") as context_file:
-            context = json.load(context_file)
+        context = json.loads(path.read_bytes().decode("utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise _CLIInputError(f"could not read --context JSON from {path}: {exc}") from exc
     if not isinstance(context, dict):
