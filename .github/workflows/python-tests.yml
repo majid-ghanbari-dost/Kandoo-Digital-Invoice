@@ -185,6 +185,26 @@ jobs:
             --report-json "$RUNNER_TEMP/e30-golden-pack.json" \
             --report-md "$RUNNER_TEMP/e30-golden-pack.md"
 
+      - name: Run E-31 all-fixture accuracy and source CLI timing
+        run: |
+          python scripts/run_e31_accuracy_harness.py \
+            --report-json "$RUNNER_TEMP/e31-accuracy-source.json" \
+            --report-md "$RUNNER_TEMP/e31-accuracy-source.md"
+          cat "$RUNNER_TEMP/e31-accuracy-source.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload E-30 and E-31 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: extraction-bridge-evidence-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e30-golden-pack.json
+            ${{ runner.temp }}/e30-golden-pack.md
+            ${{ runner.temp }}/e31-accuracy-source.json
+            ${{ runner.temp }}/e31-accuracy-source.md
+          if-no-files-found: warn
+          retention-days: 14
+
   pytest:
     name: Ubuntu / Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest

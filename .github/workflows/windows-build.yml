@@ -170,6 +170,16 @@ jobs:
             --report-md "$env:RUNNER_TEMP/e30-golden-pack.md"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run E-31 all-fixture accuracy and Windows executable timings
+        shell: pwsh
+        run: |
+          python scripts/run_e31_accuracy_harness.py `
+            --exe dist/kandoo-extract/kandoo-extract.exe `
+            --report-json "$env:RUNNER_TEMP/e31-accuracy-windows.json" `
+            --report-md "$env:RUNNER_TEMP/e31-accuracy-windows.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-Content "$env:RUNNER_TEMP/e31-accuracy-windows.md" | Add-Content $env:GITHUB_STEP_SUMMARY
+
       - name: Verify frozen CLI, E-27 capture folders, E-01 values, and E-11 crosswalk
         shell: pwsh
         run: |
@@ -189,5 +199,7 @@ jobs:
             ${{ runner.temp }}/windows-build-evidence.md
             ${{ runner.temp }}/e30-golden-pack.json
             ${{ runner.temp }}/e30-golden-pack.md
+            ${{ runner.temp }}/e31-accuracy-windows.json
+            ${{ runner.temp }}/e31-accuracy-windows.md
           if-no-files-found: warn
           retention-days: 14
