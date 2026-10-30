@@ -196,9 +196,15 @@ def _capture_human_summary(result: dict[str, Any]) -> str:
 
 
 def _write_capture_result(result: dict[str, Any], output_path: Path | None) -> bool:
-    payload = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    payload = (json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode("utf-8")
     if output_path is None:
-        _write_canonical_json(result)
+        stdout_buffer = getattr(sys.stdout, "buffer", None)
+        if stdout_buffer is not None:
+            stdout_buffer.write(payload)
+            stdout_buffer.flush()
+        else:  # Supports in-process tests redirecting stdout to StringIO.
+            sys.stdout.write(payload.decode("utf-8"))
+            sys.stdout.flush()
         return True
 
     target = output_path.expanduser().absolute()
@@ -225,7 +231,7 @@ def _write_capture_result(result: dict[str, Any], output_path: Path | None) -> b
             prefix=f".{target.name}.", suffix=".tmp", dir=parent
         )
         temporary_path = Path(temporary_name)
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+        with os.fdopen(descriptor, "wb") as stream:
             stream.write(payload)
             stream.flush()
             os.fsync(stream.fileno())
@@ -294,6 +300,12 @@ def _run_capture_folder(args: argparse.Namespace) -> int:
                 "e06": None,
             }
 
+    requested_capture_path = args.capture_folder.expanduser()
+    if not requested_capture_path.is_absolute():
+        # Relative invocations are recorded as supplied (with POSIX separators)
+        # so a golden invocation has the same JSON bytes on every platform.
+        result["capture_folder"] = requested_capture_path.as_posix()
+
     try:
         _write_capture_result(result, args.out)
     except (OSError, TypeError, ValueError) as exc:
@@ -348,10 +360,19 @@ def _run_extract(args: argparse.Namespace) -> int:
             drift_record = {
                 "status": "NOT_EVALUATED",
                 "reason": "glyph extraction did not produce per-symbol readings",
+                "baseline_id": None,
+                "template_library_id": None,
+                "mean_distance_by_symbol": {},
+                "triggered_symbols": [],
+                "diagnostics": ["glyph extraction did not produce per-symbol readings"],
                 "pipeline_status": result.status,
             }
+        versioned_drift_record = {
+            "schema_version": "e28.glyph-drift-report.v1",
+            **dict(drift_record),
+        }
         target = args.drift_report.expanduser().absolute()
-        _write_capture_result(dict(drift_record), target)
+        _write_capture_result(versioned_drift_record, target)
 
     if result.status == "REJECT":
         print("REJECT: extraction is blocked; no Canonical Invoice was emitted.", file=sys.stderr)

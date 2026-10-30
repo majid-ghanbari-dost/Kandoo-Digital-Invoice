@@ -56,6 +56,9 @@ def test_onboard_build_uses_operator_confirmed_capture_labels_and_e16_schema(tmp
     ])
 
     assert result.returncode == 0, result.stderr.decode("utf-8", errors="replace")
+    output_bytes = output.read_bytes()
+    assert b"\r" not in output_bytes
+    assert output_bytes.endswith(b"\n")
     artifact = _artifact(output, "template-bank.schema.json")
     assert artifact["artifact_type"] == "kandoo.mode-b.template-bank"
     assert artifact["store_id"] == "e05-synth-store"

@@ -161,6 +161,15 @@ jobs:
             throw 'PyInstaller did not produce dist/kandoo-extract/kandoo-extract.exe'
           }
 
+      - name: Verify E-30 golden pack against the built executable
+        shell: pwsh
+        run: |
+          python scripts/verify_e30_golden_pack.py `
+            --exe dist/kandoo-extract/kandoo-extract.exe `
+            --report-json "$env:RUNNER_TEMP/e30-golden-pack.json" `
+            --report-md "$env:RUNNER_TEMP/e30-golden-pack.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Verify frozen CLI, E-27 capture folders, E-01 values, and E-11 crosswalk
         shell: pwsh
         run: |
@@ -178,5 +187,7 @@ jobs:
             dist/kandoo-extract
             ${{ runner.temp }}/windows-build-evidence.json
             ${{ runner.temp }}/windows-build-evidence.md
+            ${{ runner.temp }}/e30-golden-pack.json
+            ${{ runner.temp }}/e30-golden-pack.md
           if-no-files-found: warn
           retention-days: 14

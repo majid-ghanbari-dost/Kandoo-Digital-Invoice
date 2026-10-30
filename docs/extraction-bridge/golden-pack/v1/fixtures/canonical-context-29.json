@@ -1,0 +1,26 @@
+{
+  "customer": {
+    "phone": "+15551234567",
+    "phone_provenance": "captured",
+    "phone_status": "claimed"
+  },
+  "device_id": "e30-golden-synthetic-device",
+  "display_number": "E30-SYN-29",
+  "invoice_id": "e30-golden-invoice-29",
+  "mode": "B",
+  "operation_id": "e30-golden-operation-29",
+  "product_name_provenance": [
+    "untrusted",
+    "untrusted",
+    "untrusted",
+    "untrusted"
+  ],
+  "product_names": [
+    "Synthetic E30 item 1",
+    "Synthetic E30 item 2",
+    "Synthetic E30 item 3",
+    "Synthetic E30 item 4"
+  ],
+  "public_token": "QWJjZGVmZ2hpamtsbW5vcHFyc3R1dg",
+  "store_id": "e30-golden-synthetic-store"
+}

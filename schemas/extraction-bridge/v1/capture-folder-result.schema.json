@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:extraction-bridge:capture-folder-result:1",
+  "title": "Kandoo extraction-bridge capture-folder result v1",
+  "type": "object",
+  "required": [
+    "result_version",
+    "status",
+    "verdict",
+    "verdict_source",
+    "capture_folder",
+    "errors",
+    "scoring_fields",
+    "accuracy",
+    "pages",
+    "numeric_candidates",
+    "e06"
+  ],
+  "properties": {
+    "result_version": { "const": "capture-folder-result-v1" },
+    "status": { "enum": ["ACCEPT", "REVIEW", "REJECT", "BLOCKED", "ERROR"] },
+    "verdict": { "enum": ["ACCEPT", "REVIEW", "REJECT"] },
+    "verdict_source": { "type": "string", "minLength": 1 },
+    "capture_folder": { "type": "string", "minLength": 1 },
+    "captured_at": { "type": ["string", "null"] },
+    "artifacts": { "type": "object" },
+    "scoring_fields": {
+      "type": "array",
+      "items": { "enum": ["quantity", "line_total", "payable"] },
+      "uniqueItems": true
+    },
+    "accuracy": {
+      "type": "object",
+      "required": ["status", "expected_values_available", "fields", "reason"],
+      "properties": {
+        "status": { "const": "NOT_SCORED" },
+        "expected_values_available": { "const": false },
+        "fields": {
+          "type": "array",
+          "items": { "enum": ["quantity", "line_total", "payable"] },
+          "uniqueItems": true
+        },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "invoice_candidates": { "type": "object" },
+    "numeric_candidates": {
+      "type": "object",
+      "required": ["quantity", "line_total", "payable"],
+      "properties": {
+        "quantity": { "type": "array" },
+        "line_total": { "type": "array" },
+        "payable": { "type": "array" }
+      },
+      "additionalProperties": false
+    },
+    "pages": { "type": "array", "items": { "type": "object" } },
+    "e05_bank": { "type": "object" },
+    "e06": { "type": ["object", "null"] },
+    "blocked_pages": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "message": { "type": "string" },
+          "path": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

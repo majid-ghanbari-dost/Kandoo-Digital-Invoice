@@ -106,11 +106,15 @@ class ExtractionCLITests(unittest.TestCase):
                 str(report_path),
             ]
             code, stdout, stderr = self._run_cli(args)
-            report = json.loads(report_path.read_text(encoding="utf-8"))
+            report_bytes = report_path.read_bytes()
+            report = json.loads(report_bytes.decode("utf-8"))
 
         self.assertEqual(code, 0, stderr)
         self.assertEqual(stderr, "")
         self._assert_valid_canonical_json(stdout)
+        self.assertEqual(report["schema_version"], "e28.glyph-drift-report.v1")
+        self.assertNotIn(b"\r", report_bytes)
+        self.assertTrue(report_bytes.endswith(b"\n"))
         self.assertEqual(report["status"], "CLEAR")
         self.assertTrue(report["mean_distance_by_symbol"])
         self.assertTrue(all(

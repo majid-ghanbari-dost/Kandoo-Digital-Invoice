@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import hashlib
 import io
+import os
 import json
 import shutil
 import tempfile
@@ -208,6 +209,36 @@ class CaptureFolderAdapterTests(unittest.TestCase):
         self.assertEqual(payload["verdict"], "REVIEW")
         self.assertIn("REVIEW", stderr.getvalue())
         self.assertIn("E-06", stderr.getvalue())
+
+    def test_cli_relative_capture_folder_records_portable_path_and_binary_output(self):
+        original_cwd = Path.cwd()
+        with tempfile.TemporaryDirectory(prefix="e30-relative-capture-") as temp:
+            os.chdir(temp)
+            try:
+                folder = self._write_capture(Path("capture"))
+                output_path = Path("capture-result.json")
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    exit_code = main([
+                        "extract",
+                        "--capture-folder",
+                        folder.as_posix(),
+                        "--out",
+                        output_path.as_posix(),
+                    ])
+                output_bytes = output_path.read_bytes()
+            finally:
+                os.chdir(original_cwd)
+
+        self.assertEqual(exit_code, 10)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("REVIEW", stderr.getvalue())
+        self.assertNotIn(b"\r", output_bytes)
+        self.assertTrue(output_bytes.endswith(b"\n"))
+        payload = json.loads(output_bytes.decode("utf-8"))
+        self.assertEqual(payload["result_version"], "capture-folder-result-v1")
+        self.assertEqual(payload["capture_folder"], "capture")
 
     def test_cli_passes_probe_capture_timestamp_through_capture_folder_mode(self):
         timestamp = "2026-10-26T11:12:13+03:30"

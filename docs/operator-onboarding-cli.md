@@ -6,6 +6,10 @@ builder/matcher, E-06 onboarding evaluator, and E-08 new-type detector. It does
 not perform OCR, alter Canonical Invoice v0, issue an invoice, or install a new
 template into the active bank.
 
+For the frozen C-21 process contract covering this onboarding CLI and the
+executable's extraction modes—including exit codes, stream rules, schemas, and
+caller-enforced timeouts—see [`docs/extraction-bridge/cli-surface-v1.md`](extraction-bridge/cli-surface-v1.md).
+
 ## Commands and artifacts
 
 The executable is `kandoo-extract.exe`. Its onboarding commands are:
