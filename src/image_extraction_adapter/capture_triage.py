@@ -38,17 +38,17 @@ def _natural_name_key(name: str) -> tuple[Any, ...]:
     return (*key, (2, name))
 
 
-def _entry_record(path: Path) -> dict[str, Any]:
+def _entry_record(path: Path) -> dict[str, str]:
     try:
         if path.is_symlink():
-            return {"name": path.name, "kind": "symbolic link", "size": None}
+            return {"name": path.name, "kind": "symbolic link"}
         if path.is_file():
-            return {"name": path.name, "kind": "file", "size": path.stat().st_size}
+            return {"name": path.name, "kind": "file"}
         if path.is_dir():
-            return {"name": path.name, "kind": "directory", "size": None}
+            return {"name": path.name, "kind": "directory"}
     except OSError:
-        return {"name": path.name, "kind": "unreadable entry", "size": None}
-    return {"name": path.name, "kind": "other entry", "size": None}
+        return {"name": path.name, "kind": "unreadable entry"}
+    return {"name": path.name, "kind": "other entry"}
 
 
 def _inventory(folder: str | Path) -> dict[str, Any]:
@@ -80,9 +80,7 @@ def _format_entries(label: str, entries: list[dict[str, Any]]) -> str:
         rendered: list[str] = []
         for item in entries:
             name = json.dumps(item["name"], ensure_ascii=False)
-            detail = f" ({item['size']} bytes)" if item.get("size") is not None else ""
-            if item.get("kind") not in {None, "file"}:
-                detail += f" [{item['kind']}]"
+            detail = f" [{item['kind']}]" if item.get("kind") not in {None, "file"} else ""
             rendered.append(f"{name}{detail}")
         contents = ", ".join(rendered)
     return f"- {label} ({len(entries)}): {contents}"
