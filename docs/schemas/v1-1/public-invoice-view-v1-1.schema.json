@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kandoo.cloud/schemas/v1-1/public-invoice-view-v1-1.schema.json",
+  "title": "PROPOSED v1.1 — PublicInvoiceView with additive optional recorded fields (GET /i/{token} JSON)",
+  "description": "UNCONFIRMED U14 (proposed, PM-ordered shape). Extends public-invoice-view.response.schema.json with four OPTIONAL fields; v1.0 responses remain valid unchanged. Fields appear only when the Hub recorded them; recorded values only — remaining_balance is NEVER computed by the Cloud and currency_unit is NEVER assumed. (Standalone extension document; the v1.0 schema keeps additionalProperties:false so it is not combined via allOf.)",
+  "type": "object",
+  "properties": {
+    "product_name": { "const": "Kandoo digital invoice" },
+    "store_name": { "type": "string", "minLength": 1 },
+    "display_number": { "type": "integer", "minimum": 1 },
+    "lifecycle_status": { "enum": ["ISSUED", "REVOKED", "SUPERSEDED"] },
+    "issued_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?\\+00:00$" },
+    "digital_invoice": { "$ref": "../public-invoice-view.response.schema.json#/properties/digital_invoice" },
+    "legal_copy": { "$ref": "../public-invoice-view.response.schema.json#/properties/legal_copy" },
+    "legal_copy_status": { "const": "needs lawyer approval" },
+    "customer_name": { "type": ["string", "null"], "minLength": 1, "maxLength": 255 },
+    "payments": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "enum": ["card-reader", "card-to-card", "cash", "credit"] },
+          "amount": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["type", "amount"],
+        "additionalProperties": false
+      }
+    },
+    "currency_unit": { "enum": ["rial", "toman", null] },
+    "remaining_balance": { "type": ["integer", "null"], "minimum": 0 }
+  },
+  "required": [
+    "product_name", "store_name", "display_number", "lifecycle_status",
+    "issued_at", "digital_invoice", "legal_copy", "legal_copy_status"
+  ],
+  "additionalProperties": false
+}
