@@ -1,0 +1,7 @@
+{
+  "invoice_schema_version": "1.1",
+  "customer_name": null,
+  "payments": null,
+  "currency_unit": null,
+  "remaining_balance": null
+}

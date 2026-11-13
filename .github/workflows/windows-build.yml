@@ -158,6 +158,10 @@ jobs:
         shell: pwsh
         run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - frozen E-11 contract package" -- python -m pytest -q tests/test_e11_contract_package.py
 
+      - name: Windows tests - E-40 v1.1 golden examples
+        shell: pwsh
+        run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - E-40 v1.1 golden examples" -- python -m pytest -q tests/test_e40_v1_1_golden_examples.py
+
       # Deliberately do not install Tesseract or tesserocr. The CLI product
       # path uses the local Glyph classifier only.
       - name: Build the Windows one-folder CLI

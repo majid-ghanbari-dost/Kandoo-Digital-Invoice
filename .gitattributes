@@ -15,3 +15,5 @@
 /tests/fixtures/real/**/*.json text eol=lf
 /tests/fixtures/real/**/*.md text eol=lf
 /tests/fixtures/real/**/*.png binary
+/docs/schemas/v1-1/examples/*.json text eol=lf
+/docs/schemas/v1-1/examples/*.md text eol=lf

@@ -63,3 +63,9 @@ Schema عمومی دارای `$ref` به schema پایهٔ v1.0 است که در
 کل مجموعه با Python 3.11.2، pytest 9.2.0، Pillow 13.0.0 و jsonschema 4.26.0
 سبز بود: `2035 passed, 138 subtests passed`. تست‌های Canonical Invoice v0 نیز
 در همان اجرا گذشتند تا رفتار frozen v0 کنترل شود.
+
+## Delta در O14 — goldenهای synthetic و شکاف‌های Holoo
+
+سه golden افزایشیِ issued-invoice در `docs/schemas/v1-1/examples/` اضافه شدند: نمونهٔ کامل recorded fields، نمونهٔ حداقلی با فیلدهای optional غایب، و نمونهٔ explicit-null. همه synthetic-only هستند و به‌عنوان invoice کاملِ v0 یا دادهٔ مشتری تعبیر نمی‌شوند. `manifest.json` و `tests/test_e40_v1_1_golden_examples.py` اندازه/SHA-256 دقیق هر فایل را pin می‌کنند و JSONها را در برابر schema صادرشده اعتبارسنجی می‌کنند؛ همان hash tests در Ubuntu و Windows اجرا می‌شود.
+
+برای public view همچنان golden کامل ساخته نمی‌شود: schema پایهٔ v1.0 در این checkout وجود ندارد و حدس‌زدن آن مجاز نیست. چک، به‌عنوان payment type، و تخفیف سطح فاکتور نیز شکاف‌های مشاهده‌شدهٔ Holoo هستند؛ در این delta فقط ثبت شده‌اند و به schema یا v1.1 اضافه نشده‌اند.
