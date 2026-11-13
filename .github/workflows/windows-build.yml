@@ -158,6 +158,10 @@ jobs:
         shell: pwsh
         run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - frozen E-11 contract package" -- python -m pytest -q tests/test_e11_contract_package.py
 
+      - name: Windows tests - E-40 v1.1 golden examples
+        shell: pwsh
+        run: python scripts/windows_step_diagnostics.py --step-name "Windows tests - E-40 v1.1 golden examples" -- python -m pytest -q tests/test_e40_v1_1_golden_examples.py
+
       # Deliberately do not install Tesseract or tesserocr. The CLI product
       # path uses the local Glyph classifier only.
       - name: Build the Windows one-folder CLI
@@ -198,6 +202,16 @@ jobs:
           python scripts/windows_step_diagnostics.py --step-name "Append E-31 report to the step summary" -- python scripts/append_report_to_summary.py "$env:RUNNER_TEMP/e31-accuracy-windows.md"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run E-42 synthetic-only accuracy and Windows per-invoice timing
+        shell: pwsh
+        run: |
+          python scripts/windows_step_diagnostics.py --step-name "Run E-42 synthetic-only accuracy and Windows per-invoice timing" -- python scripts/run_e42_synthetic_accuracy_harness.py `
+            --report-json "$env:RUNNER_TEMP/e42-synthetic-accuracy-windows.json" `
+            --report-md "$env:RUNNER_TEMP/e42-synthetic-accuracy-windows.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/windows_step_diagnostics.py --step-name "Append E-42 report to the step summary" -- python scripts/append_report_to_summary.py "$env:RUNNER_TEMP/e42-synthetic-accuracy-windows.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Verify frozen CLI, E-27 capture folders, E-01 values, and E-11 crosswalk
         shell: pwsh
         run: |
@@ -221,6 +235,8 @@ jobs:
             ${{ runner.temp }}/e30-golden-pack.md
             ${{ runner.temp }}/e31-accuracy-windows.json
             ${{ runner.temp }}/e31-accuracy-windows.md
+            ${{ runner.temp }}/e42-synthetic-accuracy-windows.json
+            ${{ runner.temp }}/e42-synthetic-accuracy-windows.md
           if-no-files-found: warn
           retention-days: 14
 
