@@ -1,54 +1,53 @@
 # KANDOO DIGITAL INVOICE — PYTHON AGENT HANDOFF
 
-This document is maintained under standing order SO-01.
+**آخرین محدودهٔ فعال:** ORDER 14-PY، dispatch نهایی E-44
 
-## 1. Current repository state
+**حکم D-K:** `O14-PY-RULING-1` مورخ 2026-11-13 — قطعی؛ هیچ نام یا تأیید دیگری لازم نیست.
 
-- Repository: `majid-ghanbari-dost/Kandoo-Digital-Invoice`.
-- Fixed session branch: `arena/60d98123-kandoo-digital-invoice`.
-- Current local shallow checkout before this SO-01 update: `HEAD=1b79e630a8f476ed13d2d9fa7b6fb1c3de391cd0`; `git rev-parse --is-shallow-repository` returned `true`.
-- Read-only remote checks: `stable-e-38` peels to `c143c6d4da379201d489d2caf22f835e05d9c6cc`; remote `w11-E-39` through `w11-E-44` tag targets match the task SHAs below. PR #15 is OPEN, unmerged, based on `main`, with remote head `9f397278bdd03c83d471fe7fbe740d3af080dc76`.
-- `blocker-record BR-SO01-LOCAL-HEAD`: the local branch is at `1b79e630a8f476ed13d2d9fa7b6fb1c3de391cd0`, while the PR/remote branch is at `9f397278bdd03c83d471fe7fbe740d3af080dc76`. The `stable-e-38` and W11 task commit objects and tags are absent from local refs/object lookup in this shallow checkout, though their remote tag targets were verified read-only. Do not fetch, unshallow, switch/reset, push, or move tags to resolve this discrepancy without a separate authorization. The local status is not evidence that the remote PR is behind.
-- Other pre-existing modified and untracked paths are outside this handoff update and remain untouched.
+## 1. Checkout و مرز Git
 
-## 2. W11 task status
+- مخزن: `majid-ghanbari-dost/Kandoo-Digital-Invoice`.
+- شاخهٔ مجاز: `arena/60d98123-kandoo-digital-invoice`؛ شاخهٔ session ثابت است.
+- پایهٔ E-44 پیش از گروه مستندات: `afb3df51af533867bb44d4bba2501da2153a7c31`، که E-40 و tag `o14-E-40` را دربر دارد.
+- checkout همچنان shallow است؛ از unshallow/history rewrite/force-push پرهیز شود. worktree پیش از این dispatch با remote head همگام شد و فایل‌های محلی موجود byte-exact حفظ شدند.
+- PR #15 همچنان OPEN است؛ PR #2 نیز باید باز بماند. تنها push مجاز، push همین branch برای انتشار commit مجاز E-44 است. هیچ PR-object action (merge/close، تغییر metadata، comment یا review) انجام نشود.
+- `main`، tagهای `w11-*` و `stable-*` ثابت‌اند.
 
-The following statuses, tags, and SHAs are manager-authoritative. Remote annotated-tag targets were read-only checked and match the listed commits; those commit objects are not present in this local shallow checkout.
+## 2. وضعیت ORDER 14
 
-| Task | Status | Tag | Commit SHA | Record |
-|---|---|---|---|---|
-| E-39 | accepted | `w11-E-39` | `199ea0d9efca8be8987039cbdf8a4a8674c80965` | Docs-only repository/data-flow map and E-31 guide. |
-| E-40 | blocked (blocker-record) | `w11-E-40` | `f1a41626dbbe59eddc3af960a41574d2ba4fdf96` | Awaiting approved v1.1 normative addendum and resumption amendment. |
-| E-41 | accepted | `w11-E-41` | `495995f9bb1c789faafb5a1a24335efe804ffbd0` | Seeded, reproducible synthetic-layout generator; no real customer data. |
-| E-42 | blocked (blocker-record) | `w11-E-42` | `cc546d221149e43826b8e309d16c0fb106def74e` | Same v1.1 addendum/resumption dependency; no accuracy metrics are to be fabricated. |
-| E-43 | blocked (blocker-record) | `w11-E-43` | `b2a341e80129fe7cc0fcb69adf9cc8501759a710` | Same dependency; no Holoo mapping has started. |
-| E-44 | delivered | `w11-E-44` | `9f397278bdd03c83d471fe7fbe740d3af080dc76` | Final report in chat plus marker commit; no report file change. |
+| Task | وضعیت نهایی | ثبت |
+|---|---|---|
+| E-39 | در O14 SKIPPED چون PR #15 باز است | tag تاریخی `w11-E-39` |
+| E-40 | ACCEPTED / DONE؛ synthetic delta؛ چهار CI سبز | `o14-E-40` → `afb3df51af533867bb44d4bba2501da2153a7c31` |
+| E-41 | قبلاً پذیرفته؛ O14 rerun نشد | `w11-E-41` |
+| E-42 | قبلاً پذیرفته؛ در O14 SKIPPED | `w11-E-42b` |
+| E-43 | WAIVED طبق D-I؛ هیچ E-43 اجرا نشد | `docs/E-43-holoo-mapping-gate-blocked.md` |
+| E-44 | DONE با یک commit group؛ tag پس از سبزشدن همهٔ CI | `o14-E-44`; SHA و run URLs در annotation tag |
+| E-45 | ACCEPTED؛ داده/گزارش فقط local و git-ignored | `DiagnosticResults/`; بدون commit/tag |
+| E-46 | ACCEPTED؛ تمام عددها REVIEW تحت DR-1؛ `EXTRACTED-but-wrong=0` | `DiagnosticResults/`; بدون commit/tag؛ threshold تغییر نکرد |
+| E-47 | ACCEPTED؛ geometry/report فقط local و git-ignored | `DiagnosticResults/`; بدون commit/tag |
 
-## 3. Valid decisions and open blockers
+جزئیات نهایی هر task، tagها و CI در [`registers/o14-tag-ledger.md`](registers/o14-tag-ledger.md) و [`docs/E-44-o14-handoff.md`](docs/E-44-o14-handoff.md) است. Inventory ۱۱ فایل واقعی E-45 و جدول per-field E-46 در close-out چت ارائه می‌شوند؛ داده‌های واقعی در مخزن عمومی ثبت نمی‌شوند.
 
-- Baseline record: `stable-e-38` is the verified base `c143c6d4da379201d489d2caf22f835e05d9c6cc` (remote annotated-tag target verified; local object unavailable in the shallow checkout).
-- E-40/E-42/E-43 are blocked by the v1.1 addendum chain. Manager-reported state: the schemas have been delivered and hash-verified; T-DOC-C2C3 and the technical challenge are complete; Contract Addendum v1.1 APPROVED NORMATIVE by the Product Owner 2026-11-10; U7 closed as (b). Resume only after the approved addendum is delivered through the approved single-file courier route and a resumption amendment is issued.
-- Verified courier copies currently held under `/tmp/arena-coding-uploads/`:
-  - `CLOUD-CONTRACT.md`: 58,755 bytes; SHA-256 `6d4f491a84e93803ab61831084713e5fe7209fdbfbc3d22d794037975037663e`.
-  - `issued-invoice-v1-1.schema.json`: 2,011 bytes; SHA-256 `04af72824d15bd17d01a98604265c39bf8d5d5da8ed11d406fe74a28bd5ad15c`.
-  - `public-invoice-view-v1-1.schema.json`: 2,174 bytes; SHA-256 `78620a233199dbe191e9c9cf4264a0080aaba744a53e2a820056bf98f4992650`.
-  These are temporary courier copies, not committed repository files. Reverify before relying on them in a later session.
-- U7 is a confirmed cross-stack hazard: Hub/Cloud control-character and DEL escaping may diverge in canonical JSON and cause `ENTRY_HASH_MISMATCH`. U7 is closed by the approved addendum as option (b): pin the conservative escaping profile for both stacks plus shared cross-stack golden vectors. Do not guess or alter the frozen schema/contract.
-- PR #15 remains OPEN and unmerged; leave it untouched.
+## 3. تصمیم‌ها و حدود اجرا
 
-## 4. Reference paths and verification status
+- D-A..D-J در `docs/DECISIONS.md` ثبت شده‌اند؛ D-I waiver مربوط به E-43 است.
+- D-K باید عیناً بماند:
+  `D-K Out of scope: kando-internal-ai-v01 is frozen; kandoo-internal-engine-v1 is run by a separate agent outside this order.`
+- نام‌ها و معناهای کامل: `kando-internal-ai-v01 (frozen)`؛ `kandoo-internal-engine-v1 (run by a separate agent outside this order)`. ORDER 14 مرجع واحد است؛ چیزی pending نیست.
+- فایل‌های E-45..E-47 در `/DiagnosticResults/` محلی و git-ignored هستند. دادهٔ واقعی، hashها، pipeline JSONها و گزارش‌های تفصیلی را stage/commit/push/public نکنید، مگر مجوز صریح PO.
+- E-46 نتیجهٔ تمام-REVIEW به‌علت DR-1 است. برابر بودن candidateها یا موفقیت arithmetic gate، status را EXTRACTED نمی‌کند؛ thresholdها دست‌نخورده می‌مانند.
 
-- `AGENT_HANDOFF.md`: tracked handoff document; this file.
-- `/tmp/arena-coding-uploads/CLOUD-CONTRACT.md` and the two schema files above: present and hash-verified at the time of this update; temporary, outside Git.
-- `docs/DECISIONS.md` and `docs/E-39-python-technical-map.md` through `docs/E-43-holoo-mapping-gate-blocked.md`: present only in the untracked worktree; not present in the current `HEAD`. Their authoritative/remote status is to be confirmed.
-- `docs/schemas/v1-1/` and `docs/CLOUD-CONTRACT.md`: absent from the local worktree. The schema/contract files currently held are the courier copies listed above.
-- T-DOC-C2C3 and the PM addendum draft: no local or courier file path was found during this check; path to be confirmed. The completion/review state is manager-reported.
-- `docs/DECISIONS.md` is present locally but untracked; its applicability to the v1.1 addendum is to be confirmed.
+## 4. انتشار E-44
 
-## 5. Delivery boundaries and active Git rules
+E-44 یک commit group مستنداتی واحد دارد. فایل‌های مرتبط: این handoff، `docs/DECISIONS.md`، `docs/E-44-o14-handoff.md`، `docs/E-43-holoo-mapping-gate-blocked.md` و `registers/o14-tag-ledger.md`. هیچ فایل `DiagnosticResults/` در گروه نیست.
 
-- The frozen contract and hash-pinned schemas are read-only. New behavior or normative decisions belong in a new approved addendum; do not edit frozen artifacts or infer missing rules.
-- No legal/tax claims or tax-authority integration. E-43 Holoo mapping remains unstarted until all required gates pass.
-- Documents arrive only via the approved single-file courier route; verify size and SHA-256 before use. Preserve input bytes and do not repair a mismatch.
-- For this session, work only on the fixed branch `arena/60d98123-kandoo-digital-invoice`. No force-push; no tag moves; `w11-E-*` tags stay pinned; reports are independent commits. No push to `main`, no merge, and no PR #15 action. Do not unshallow without a separate decision.
-- Leave all pre-existing untracked paths untouched. For this SO-01 step, only `AGENT_HANDOFF.md` is authorized to change.
+`o14-E-44` فقط پس از CI سبز ساخته می‌شود و باید به commit همان گروه اشاره کند. Annotation تگ، پس از تأیید CI، نام task، full commit SHA و URL/conclusion هر چهار CI اجرا را نگه می‌دارد؛ SHA و run URLs نیز در close-out نهایی می‌آیند. پس از tag، E-44 را با یک close-out واحد ببندید و taskهای دیگر را دوباره اجرا نکنید.
+
+## 5. منابع
+
+- `docs/DECISIONS.md` — فرض‌های Canonical Invoice v0 و تصمیم‌های O14 D-A..D-K.
+- `docs/E-44-o14-handoff.md` — خلاصهٔ سرد-شروع E-39..E-47.
+- `docs/E-43-holoo-mapping-gate-blocked.md` — وضعیت تاریخی W11 و waiver نهایی D-I.
+- `registers/o14-tag-ledger.md` — tagها، SHAها و CIهای عمومی.
+- `DiagnosticResults/` — داده و گزارش محلی E-45..E-47؛ git-ignored/confidential.

@@ -92,10 +92,12 @@ frozen contracts or extraction implementation.
     settle lossless conversion of adapter decimal strings/fractional quantities,
     platform allocation and restore rules for IDs/display numbers/tokens,
     arithmetic semantics for subtotal/tax/discount/payable, phone-verification
-    authority/normalization, C# conformance to the JSON/hash profile, privileged
-    storage protection beyond a content hash, or the owner-approved D14
-    customer wording. Keep unresolved values in REVIEW and obtain owner/design
-    decisions before implementing those behaviors.
+    authority/normalization, privileged storage protection beyond a content
+    hash, or the owner-approved D14 customer wording. The canonical JSON/hash
+    profile itself is pinned by ORDER 14 D-J below; a C# implementation must
+    prove parity against the shared vectors, and no C# execution is claimed by
+    this Python-only repository. Keep unresolved values in REVIEW and obtain
+    owner/design decisions before implementing those behaviors.
 18. **E-02 pipeline boundary.** `pipeline_v0.py` is a separate local pipeline;
     it does not call the flat-text parser, Tesseract, a network service, or the
     issuance adapter. Its local integer-Rial converter mirrors the strict
@@ -314,3 +316,53 @@ frozen contracts or extraction implementation.
     in Arena and remains an owner action. The existing E-03 v1 files are
     preserved but marked obsolete. ASM-29 remains historical v1 task context;
     this decision defines the active v2 kit scope without deleting that record.
+
+## ORDER 14 — Product and implementation decisions (E-44)
+
+**Authority and scope.** The following D-A through D-J are the accepted ORDER 14 decisions for this E-44 handoff. They are recorded as task-scoped decisions and do not rewrite the previously frozen Canonical Invoice contracts. D-K is recorded verbatim from manager ruling `O14-PY-RULING-1` dated 2026-11-13. No additional name, signature, or approval is required for D-K.
+
+### D-A — One app and customer-mode boundary
+
+Kandoo is one app with store, customer, and both modes. Customer mode is Android-only. Customer identity is a verified mobile-phone number. Do not treat a printed customer name or an unverified phone claim as this identity.
+
+### D-B — Production replication authentication
+
+Production replication authenticates with a secret assigned per device and scoped to that device's store. A store/device credential must not authorize another store. This records the boundary only; it does not invent a secret-rotation or recovery policy.
+
+### D-C — OTP rules and limits
+
+OTP behavior, attempt/rate limits, and reset behavior follow the Product Owner's decisions in ORDER 14. No additional numeric threshold, retry count, cooldown, or reset route is introduced by this record.
+
+### D-D — IranPayamak SMS templates and configuration
+
+Use the two fixed SMS templates specified by ORDER 14 with IranPayamak and configured provider settings. Do not add or paraphrase a third template. Do not use an IP allow-list as a prerequisite. Provider credentials/settings remain configuration, not hard-coded source values.
+
+### D-E — Product identifier and optional fields
+
+The product ID is numeric and is only an identifier; its number has no implied product, price, or category meaning. Group, subgroup, purchase price, and Holoo code are optional fields. Do not turn those optional values into inferred IDs or required fields.
+
+### D-F — Holoo read path and fallback
+
+The priority Holoo route is SQL Server read-only access, and it may be used only with the manager's consent. Print capture is the fallback route. Any Holoo facts and the identity/equality of the payment equation are exactly those stated in ORDER 14; no write access, extra accounting equation, or payment-status inference is authorized here.
+
+### D-G — Staff roles and profit visibility
+
+The staff roles are seller, operator, and manager. Profit information is visible only to the manager.
+
+### D-H — Hosting gate
+
+The selected hosting class is shared host E1. No hosting purchase is made before launch readiness is established.
+
+### D-I — E-43 waiver
+
+E-43 is explicitly waived for ORDER 14. Do not execute Holoo sample reading, parsing, joining, mapping, or testing under E-43; do not issue an E-43 completion claim or create an O14 E-43 tag. The waiver does not alter E-43's historical W11 record.
+
+### D-J — Canonical serialization profile and vector parity
+
+The Canonical Invoice serialization/hash profile is pinned to the existing profile and shared vectors: compact UTF-8 canonical JSON; recursively sorted object keys in UTF-16 code-unit order; array order preserved; integer-only numeric values; literal UTF-8 non-ASCII; standard JSON escapes for controls, quotation marks, and backslashes; and rejection of floats and lone surrogates. The versioned examples and expected digests in `contracts/goldens/manifest.json` are common known-answer vectors. Every implementation must match the vectors byte-for-byte and reproduce their issued-content SHA-256 values; stored golden files have exactly one terminal LF, which is not part of the issued-content hash input. The Python reference suite is `tests/test_e11_contract_package.py`. This order pins the parity requirement; it is not evidence that a separate C# implementation ran in this Python repository.
+
+### D-K — Out of scope (manager ruling)
+
+`D-K Out of scope: kando-internal-ai-v01 is frozen; kandoo-internal-engine-v1 is run by a separate agent outside this order.`
+
+Names and meanings are complete: `kando-internal-ai-v01 (frozen)` and `kandoo-internal-engine-v1 (run by a separate agent outside this order)`. ORDER 14 is the sole reference for this boundary; nothing is pending.
