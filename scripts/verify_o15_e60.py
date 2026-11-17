@@ -1,4 +1,4 @@
-"""Verify O15 synthetic CLI bytes plus the local E-61 evidence artifacts."""
+"""Verify O15 synthetic CLI bytes plus the local E-61/E-62 artifacts."""
 from __future__ import annotations
 
 import argparse
@@ -82,19 +82,23 @@ def verify(executable: Path | None) -> None:
 
     if executable is not None:
         executable_path = executable.expanduser().resolve(strict=True)
-        relative_schema = Path("schemas/o15/review-evidence-v1.schema.json")
-        packaged_schema_candidates = (
-            executable_path.parent / "_internal" / relative_schema,
-            executable_path.parent / relative_schema,
+        relative_schemas = (
+            Path("schemas/o15/review-evidence-v1.schema.json"),
+            Path("schemas/o15/operator-label-v1.schema.json"),
         )
-        packaged_schema = next(
-            (candidate for candidate in packaged_schema_candidates if candidate.is_file()),
-            None,
-        )
-        if packaged_schema is None:
-            raise AssertionError("Windows one-folder bundle is missing the E-61 output schema")
-        if packaged_schema.read_bytes() != (ROOT / relative_schema).read_bytes():
-            raise AssertionError("packaged E-61 schema differs from the repository contract")
+        for relative_schema in relative_schemas:
+            packaged_schema_candidates = (
+                executable_path.parent / "_internal" / relative_schema,
+                executable_path.parent / relative_schema,
+            )
+            packaged_schema = next(
+                (candidate for candidate in packaged_schema_candidates if candidate.is_file()),
+                None,
+            )
+            if packaged_schema is None:
+                raise AssertionError(f"Windows bundle is missing the packaged schema {relative_schema}")
+            if packaged_schema.read_bytes() != (ROOT / relative_schema).read_bytes():
+                raise AssertionError(f"packaged schema differs from the repository contract: {relative_schema}")
 
     with tempfile.TemporaryDirectory(prefix="o15-e60-verify-") as raw_temp:
         temp_dir = Path(raw_temp)
@@ -189,6 +193,38 @@ def verify(executable: Path | None) -> None:
         queue_text = queue_path.read_text(encoding="utf-8")
         if "What I read:" not in queue_text or "data:image/png;base64," not in queue_text:
             raise AssertionError("E-61 HTML queue must show the reading and embed its crop locally")
+        labels_path = demo_dir / "review-evidence" / "operator-labels.local.json"
+        if not labels_path.is_file():
+            raise AssertionError("demo must create the local E-62 operator label template")
+        labels_document = _load_json(labels_path)
+        _validate_json(labels_document, ROOT / "schemas" / "o15" / "operator-label-v1.schema.json")
+        if labels_document.get("online_learning") is not False:
+            raise AssertionError("operator labels must never enable online learning")
+        if evidence_document["accuracy"]["expected_values_available"] is False and any(
+            entry["read_correctly"] is not None or entry["corrected_value"] is not None
+            for entry in labels_document["entries"]
+        ):
+            raise AssertionError("operator label template must not fabricate ground-truth labels")
+        cli_labels_path = labels_path
+        cli_labels_path.unlink()
+        labels_cli = _run_extractor(
+            executable,
+            [
+                "operator-label-template",
+                "--evidence-dir",
+                str(evidence_dir),
+            ],
+            temp_dir,
+        )
+        if labels_cli.returncode != 0 or not cli_labels_path.is_file():
+            raise AssertionError(
+                "operator-label-template CLI failed: "
+                f"exit={labels_cli.returncode}; stderr={labels_cli.stderr.decode('utf-8', errors='replace')}"
+            )
+        cli_labels_document = _load_json(cli_labels_path)
+        _validate_json(cli_labels_document, ROOT / "schemas" / "o15" / "operator-label-v1.schema.json")
+        if cli_labels_document.get("online_learning") is not False:
+            raise AssertionError("operator-label-template CLI must not enable online learning")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -205,7 +241,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"::error title=O15 verification::{annotation}")
         print(message, file=sys.stderr)
         return 1
-    print("O15 verification PASS: source/frozen JSON bytes and local E-61 evidence artifacts match synthetic expectations.")
+    print("O15 verification PASS: source/frozen JSON, E-61 evidence, and E-62 label templates match synthetic expectations.")
     return 0
 
 

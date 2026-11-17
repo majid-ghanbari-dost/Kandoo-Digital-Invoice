@@ -19,6 +19,8 @@ V1_1_SCHEMA = ROOT / "docs" / "schemas" / "v1-1" / "issued-invoice-v1-1.schema.j
 if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
 
+from image_extraction_adapter.operator_labels import build_operator_label_template
+
 
 class DemoInputError(ValueError):
     pass
@@ -183,6 +185,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print("error: extractor did not write the capture-folder result", file=sys.stderr)
             return 30
         capture_result = _load_json(result_path, "capture-folder result")
+        build_operator_label_template(staging / "review-evidence")
 
         canonical: dict[str, Any] | None = None
         canonical_code: int | None = None

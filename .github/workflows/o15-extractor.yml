@@ -37,9 +37,9 @@ jobs:
         run: python -m pip install -r requirements-extractor-dev.txt
 
       - name: Run O15 extractor tests
-        run: python -m pytest -q tests/test_o15_e60.py tests/test_o15_e61.py
+        run: python -m pytest -q tests/test_o15_e60.py tests/test_o15_e61.py tests/test_o15_e62.py
 
-      - name: Verify Ubuntu JSON and local E-61 evidence
+      - name: Verify Ubuntu JSON, E-61 evidence, and E-62 labels
         run: python scripts/verify_o15_e60.py
 
   windows-onefolder:
@@ -66,7 +66,7 @@ jobs:
 
       - name: Run O15 extractor tests
         shell: pwsh
-        run: python -m pytest -q tests/test_o15_e60.py tests/test_o15_e61.py
+        run: python -m pytest -q tests/test_o15_e60.py tests/test_o15_e61.py tests/test_o15_e62.py
 
       - name: Build Windows one-folder CLI
         shell: pwsh
@@ -86,7 +86,7 @@ jobs:
           python scripts/copy_windows_bundle_data_o15.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Verify Windows executable and local E-61 evidence
+      - name: Verify Windows executable, E-61 evidence, and E-62 labels
         shell: pwsh
         run: python scripts/verify_o15_e60.py --exe dist/kandoo-extract/kandoo-extract.exe
 

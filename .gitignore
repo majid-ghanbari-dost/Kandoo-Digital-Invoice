@@ -13,7 +13,11 @@ __pycache__/
 *.spl
 !tests/fixtures/o15/capture-folder/capture-job.spl
 
-# Local operator labels may contain real invoice values.
+# Local operator labels and review evidence may contain real invoice values.
 /operator-labels.local.json
+**/operator-labels.local.json
 /review-evidence.local.json
 /review-crops.local/
+**/review-evidence/
+**/review-evidence-v1.json
+**/review-queue.html

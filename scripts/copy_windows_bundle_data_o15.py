@@ -17,6 +17,10 @@ DATA_FILES = (
         "schemas/o15/review-evidence-v1.schema.json",
     ),
     (
+        "schemas/o15/operator-label-v1.schema.json",
+        "schemas/o15/operator-label-v1.schema.json",
+    ),
+    (
         "schemas/e28/glyph_drift_baseline_v1.schema.json",
         "schemas/e28/glyph_drift_baseline_v1.schema.json",
     ),
