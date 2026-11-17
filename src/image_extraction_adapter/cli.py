@@ -72,6 +72,12 @@ def _build_parser() -> _ArgumentParser:
         help="write the capture-folder result JSON to PATH instead of stdout",
     )
     extract.add_argument(
+        "--review-evidence-dir",
+        type=Path,
+        metavar="PATH",
+        help="write local field crops and an offline HTML review queue into a new directory outside the repository",
+    )
+    extract.add_argument(
         "--e05-bank",
         type=Path,
         metavar="PATH",
@@ -273,6 +279,7 @@ def _run_capture_folder(args: argparse.Namespace) -> int:
                 e05_bank_path=args.e05_bank,
                 captured_at=args.captured_at,
                 drift_baseline_path=args.drift_baseline,
+                review_evidence_dir=args.review_evidence_dir,
             )
         except Exception as exc:
             result = {
@@ -335,8 +342,10 @@ def _run_extract(args: argparse.Namespace) -> int:
         return _run_capture_folder(args)
     if args.context is None:
         raise _CLIInputError("--context is required when using --image")
-    if args.out is not None or args.e05_bank is not None:
-        raise _CLIInputError("--out and --e05-bank are only supported with --capture-folder")
+    if args.out is not None or args.e05_bank is not None or args.review_evidence_dir is not None:
+        raise _CLIInputError(
+            "--out, --e05-bank, and --review-evidence-dir are only supported with --capture-folder"
+        )
     if args.drift_report is not None and not args.drift_report.expanduser().parent.is_dir():
         raise _CLIInputError("--drift-report parent directory must already exist")
     _require_file(args.image, "--image")

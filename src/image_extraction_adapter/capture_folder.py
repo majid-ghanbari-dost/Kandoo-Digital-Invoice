@@ -16,6 +16,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 from typing import Any
 
 from e05_template_bank import (
@@ -33,6 +34,7 @@ from image_extraction_adapter.pipeline_v0 import (
     extract_pipeline_v0,
 )
 from image_extraction_adapter.preprocessing import detect_layout_safe
+from image_extraction_adapter.review_evidence import ReviewPageSource, write_review_evidence
 
 
 RESULT_VERSION = "capture-folder-result-v1"
@@ -120,6 +122,14 @@ class CaptureFolderValidationError(ValueError):
         super().__init__("capture folder failed artifact validation")
         self.folder = folder
         self.problems = problems
+
+
+def _path_is_within(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
 
 
 def _sha256_file(path: Path) -> str:
@@ -575,6 +585,7 @@ def extract_capture_folder(
     e05_bank_path: str | Path | None = None,
     captured_at: str | None = None,
     drift_baseline_path: str | Path | None = None,
+    review_evidence_dir: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run E-02, E-05, and fail-closed E-06 on one capture folder.
 
@@ -584,12 +595,40 @@ def extract_capture_folder(
     context is surfaced as an E-06 REVIEW rather than invented. An optional
     offset-aware ``captured_at`` value is passed to E-02. When Report.txt has
     one recognized ``Timestamp:`` field, that value is used automatically; a
-    conflicting explicit override blocks the folder.
+    conflicting explicit override blocks the folder. Optional E-61 field crops
+    and an offline review queue are written only when ``review_evidence_dir``
+    names a new directory outside the repository.
     """
+    if review_evidence_dir is not None:
+        evidence_target = Path(review_evidence_dir).expanduser().resolve(strict=False)
+        protected_roots = [REPOSITORY_ROOT.resolve()]
+        if getattr(sys, "frozen", False):
+            protected_roots.append(Path(sys.executable).resolve().parent)
+        if any(
+            _path_is_within(evidence_target, protected_root)
+            for protected_root in protected_roots
+        ):
+            raise ValueError("review evidence directory must be outside the repository/bundle")
+        if evidence_target.exists():
+            raise FileExistsError(f"review evidence directory already exists: {evidence_target}")
+        if not evidence_target.parent.is_dir():
+            raise FileNotFoundError(
+                f"review evidence parent directory does not exist: {evidence_target.parent}"
+            )
+        review_evidence_dir = evidence_target
+
     try:
         capture = inspect_capture_folder(folder)
     except CaptureFolderValidationError as exc:
         return _error_result(exc.folder, exc.problems, captured_at=captured_at)
+    if review_evidence_dir is not None:
+        evidence_target = Path(review_evidence_dir).resolve(strict=False)
+        try:
+            evidence_target.relative_to(capture.path.resolve())
+        except ValueError:
+            pass
+        else:
+            raise ValueError("review evidence directory must be separate from the source capture folder")
 
     effective_captured_at = captured_at
     if capture.report_captured_at is not None:
@@ -617,6 +656,7 @@ def extract_capture_folder(
 
     training_hashes = _fixture_source_hashes()
     page_results: list[dict[str, Any]] = []
+    evidence_pages: list[ReviewPageSource] = []
     observations: list[LayoutObservation] = []
     blocked_pages: list[int] = []
     for page in capture.pages:
@@ -628,10 +668,20 @@ def extract_capture_folder(
                 drift_baseline_path=drift_baseline_path,
             )
         except Exception as exc:
+            error_message = f"{type(exc).__name__}: {exc}"
+            evidence_pages.append(ReviewPageSource(
+                page_index=page.page_index,
+                image_path=page.path,
+                pipeline_status="REJECT",
+                layout_status="BLOCKED",
+                layout_reason="E-02 pipeline did not produce a page result.",
+                pipeline_reason=error_message,
+                error=error_message,
+            ))
             page_results.append({
                 **page.to_dict(),
                 "status": "BLOCKED",
-                "error": {"code": "E02_PIPELINE_ERROR", "message": f"{type(exc).__name__}: {exc}"},
+                "error": {"code": "E02_PIPELINE_ERROR", "message": error_message},
                 "numeric_candidates": [],
                 "e02": None,
                 "e05": {"status": "NOT_EVALUATED", "reason": "E-02 did not produce a page result"},
@@ -639,6 +689,15 @@ def extract_capture_folder(
             blocked_pages.append(page.page_index)
             continue
 
+        evidence_pages.append(ReviewPageSource(
+            page_index=page.page_index,
+            image_path=page.path,
+            pipeline_status=pipeline.status,
+            layout_status=pipeline.layout_status,
+            layout_reason=pipeline.layout_reason,
+            pipeline_reason=pipeline.reason,
+            cell_results=tuple(pipeline.cell_results),
+        ))
         numeric_candidates = [
             candidate
             for cell in pipeline.cell_results
@@ -697,6 +756,9 @@ def extract_capture_folder(
             "e05": e05_result,
             "numeric_candidates": numeric_candidates,
         })
+
+    if review_evidence_dir is not None:
+        write_review_evidence(review_evidence_dir, evidence_pages)
 
     first_observation = observations[0] if observations else None
     try:

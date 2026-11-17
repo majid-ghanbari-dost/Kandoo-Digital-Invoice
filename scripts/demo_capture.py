@@ -161,7 +161,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         staging = Path(tempfile.mkdtemp(prefix=".kandoo-demo-", dir=output_dir.parent))
         result_path = staging / "capture-folder-result.json"
-        command = ["extract", "--capture-folder", str(args.capture_folder.expanduser()), "--out", str(result_path)]
+        command = [
+            "extract",
+            "--capture-folder",
+            str(args.capture_folder.expanduser()),
+            "--out",
+            str(result_path),
+            "--review-evidence-dir",
+            str(staging / "review-evidence"),
+        ]
         if args.e05_bank is not None:
             command.extend(("--e05-bank", str(args.e05_bank.expanduser())))
         if args.templates is not None:

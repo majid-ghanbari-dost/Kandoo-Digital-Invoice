@@ -26,10 +26,11 @@ For a KandooPrintProbe capture folder (one `.spl`, one `Report.txt`, and one or 
 ```powershell
 kandoo-extract.exe extract --capture-folder C:\path\to\capture `
   --e05-bank C:\path\to\approved-e05-bank.json `
-  --out C:\Users\<owner>\AppData\Local\Kandoo\O15\run-001\capture-folder-result.json
+  --out C:\Users\<owner>\AppData\Local\Kandoo\O15\run-001\capture-folder-result.json `
+  --review-evidence-dir C:\Users\<owner>\AppData\Local\Kandoo\O15\run-001\review-evidence
 ```
 
-The capture-folder API is the frozen `capture-folder-result-v1` schema at `schemas/extraction-bridge/v1/capture-folder-result.schema.json`. The local demo wrapper can additionally accept `--context` for a one-page Canonical v0 candidate and an optional `--v1-1-recorded-fields` file. v1.1 extension fields are validated and passed through separately; they are not merged into or used to modify frozen Canonical v0. If the extractor has no schema-valid candidate, the demo emits `canonical_invoice_v0: null` and a REVIEW note rather than fabricating values.
+The capture-folder API is the frozen `capture-folder-result-v1` schema at `schemas/extraction-bridge/v1/capture-folder-result.schema.json`. `--review-evidence-dir` must be a new directory outside the repository/bundle and separate from the source capture folder. The Windows one-folder bundle includes the evidence schema under `_internal/schemas/o15/`. The local demo wrapper can additionally accept `--context` for a one-page Canonical v0 candidate and an optional `--v1-1-recorded-fields` file. v1.1 extension fields are validated and passed through separately; they are not merged into or used to modify frozen Canonical v0. If the extractor has no schema-valid candidate, the demo emits `canonical_invoice_v0: null` and a REVIEW note rather than fabricating values.
 
 ```powershell
 python scripts/demo_capture.py --capture-folder C:\path\to\capture `
@@ -38,7 +39,7 @@ python scripts/demo_capture.py --capture-folder C:\path\to\capture `
   --v1-1-recorded-fields C:\path\to\recorded-v1-1-fields.json
 ```
 
-`--out-dir` must be new and outside the repository. It contains a `demo-output.json` plus the detailed `capture-folder-result.json`. With E-61, this same local run also writes a review evidence directory with crop images and a self-contained HTML review queue. The real capture, its OCR, labels, crops, and JSON must never be uploaded, sent in chat, or added to Git/CI.
+`--out-dir` must be new and outside the repository. It contains `demo-output.json`, the detailed `capture-folder-result.json`, and `review-evidence/` with `review-evidence-v1.json`, field/layout crop PNGs, and a self-contained `review-queue.html`. The sidecar schema is `schemas/o15/review-evidence-v1.schema.json`; each record uses `value`, `confidence` (0–100), `reason`, and a half-open image-pixel `crop_region` `[left, top, right, bottom]`. The frozen capture-folder v1 JSON is not changed. The queue says “What I read” and explicitly does not treat the machine reading as confirmed truth; accuracy remains `NOT_SCORED` without independent expected values. The real capture, OCR, labels, crops, queue, and JSON must never be uploaded, sent in chat, or added to Git/CI.
 
 ## Byte determinism and CI
 

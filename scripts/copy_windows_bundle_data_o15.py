@@ -13,6 +13,10 @@ DATA_FILES = (
     ("src/glyph_drift_baseline_v1.json", "src/glyph_drift_baseline_v1.json"),
     ("schemas/canonical_invoice_v0.json", "schemas/canonical_invoice_v0.json"),
     (
+        "schemas/o15/review-evidence-v1.schema.json",
+        "schemas/o15/review-evidence-v1.schema.json",
+    ),
+    (
         "schemas/e28/glyph_drift_baseline_v1.schema.json",
         "schemas/e28/glyph_drift_baseline_v1.schema.json",
     ),

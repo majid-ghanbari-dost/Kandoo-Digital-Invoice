@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:o15:review-evidence:1",
+  "title": "O15 local review evidence v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "confidence_scale",
+    "crop_coordinate_system",
+    "accuracy",
+    "items"
+  ],
+  "properties": {
+    "schema_version": { "const": "o15.review-evidence.v1" },
+    "confidence_scale": { "const": "0-100" },
+    "crop_coordinate_system": { "const": "image_pixels_xyxy_half_open" },
+    "accuracy": {
+      "type": "object",
+      "required": ["status", "expected_values_available", "extracted_but_wrong", "reason"],
+      "properties": {
+        "status": { "const": "NOT_SCORED" },
+        "expected_values_available": { "const": false },
+        "extracted_but_wrong": { "type": "null" },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/item" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "page_index",
+        "field_name",
+        "value",
+        "confidence",
+        "status",
+        "reason",
+        "image_file",
+        "image_size",
+        "crop_file",
+        "crop_region"
+      ],
+      "properties": {
+        "evidence_id": { "type": "string", "minLength": 1 },
+        "page_index": { "type": "integer", "minimum": 1 },
+        "field_name": { "type": "string", "minLength": 1 },
+        "value": { "type": "string" },
+        "confidence": {
+          "oneOf": [
+            { "type": "number", "minimum": 0, "maximum": 100 },
+            { "type": "null" }
+          ]
+        },
+        "status": { "enum": ["EXTRACTED", "REVIEW", "BLOCKED"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "image_file": { "type": "string", "minLength": 1 },
+        "image_size": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "integer", "minimum": 1 }
+          ],
+          "items": false
+        },
+        "crop_file": {
+          "type": "string",
+          "pattern": "^crops/[A-Za-z0-9_-]+\\.png$"
+        },
+        "crop_region": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "integer", "minimum": 0 },
+            { "type": "integer", "minimum": 1 },
+            { "type": "integer", "minimum": 1 }
+          ],
+          "items": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

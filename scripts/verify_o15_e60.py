@@ -1,4 +1,4 @@
-"""Verify source/frozen CLI bytes against the O15 synthetic cross-platform golden."""
+"""Verify O15 synthetic CLI bytes plus the local E-61 evidence artifacts."""
 from __future__ import annotations
 
 import argparse
@@ -80,6 +80,22 @@ def verify(executable: Path | None) -> None:
         if actual_hash != expected_hash:
             raise AssertionError(f"pinned input/golden hash mismatch for {relative}")
 
+    if executable is not None:
+        executable_path = executable.expanduser().resolve(strict=True)
+        relative_schema = Path("schemas/o15/review-evidence-v1.schema.json")
+        packaged_schema_candidates = (
+            executable_path.parent / "_internal" / relative_schema,
+            executable_path.parent / relative_schema,
+        )
+        packaged_schema = next(
+            (candidate for candidate in packaged_schema_candidates if candidate.is_file()),
+            None,
+        )
+        if packaged_schema is None:
+            raise AssertionError("Windows one-folder bundle is missing the E-61 output schema")
+        if packaged_schema.read_bytes() != (ROOT / relative_schema).read_bytes():
+            raise AssertionError("packaged E-61 schema differs from the repository contract")
+
     with tempfile.TemporaryDirectory(prefix="o15-e60-verify-") as raw_temp:
         temp_dir = Path(raw_temp)
         result_path = temp_dir / "capture-folder-result.json"
@@ -152,6 +168,27 @@ def verify(executable: Path | None) -> None:
         _assert_bytes("capture-demo-v1", demo_bytes, GOLDEN_DIR / "demo-output-v1.json")
         if not (demo_dir / "capture-folder-result.json").is_file():
             raise AssertionError("demo must retain the detailed local capture result beside its JSON output")
+        evidence_dir = demo_dir / "review-evidence"
+        evidence_path = evidence_dir / "review-evidence-v1.json"
+        queue_path = evidence_dir / "review-queue.html"
+        if not evidence_path.is_file() or not queue_path.is_file():
+            raise AssertionError("demo must create the local E-61 evidence JSON and offline review queue")
+        evidence_document = _load_json(evidence_path)
+        _validate_json(evidence_document, ROOT / "schemas" / "o15" / "review-evidence-v1.schema.json")
+        evidence_items = evidence_document.get("items", [])
+        if not evidence_items:
+            raise AssertionError("E-61 review evidence must contain at least one field or layout record")
+        for item in evidence_items:
+            crop_path = (evidence_dir / item["crop_file"]).resolve(strict=True)
+            try:
+                crop_path.relative_to(evidence_dir.resolve())
+            except ValueError as exc:
+                raise AssertionError("E-61 crop path escaped the local evidence directory") from exc
+            if crop_path.read_bytes()[:8] != b"\x89PNG\r\n\x1a\n":
+                raise AssertionError("E-61 evidence crop is not a PNG image")
+        queue_text = queue_path.read_text(encoding="utf-8")
+        if "What I read:" not in queue_text or "data:image/png;base64," not in queue_text:
+            raise AssertionError("E-61 HTML queue must show the reading and embed its crop locally")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -161,14 +198,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         verify(args.exe)
     except Exception as exc:
-        message = f"E-60 verification FAILED: {type(exc).__name__}: {exc}"
+        message = f"O15 verification FAILED: {type(exc).__name__}: {exc}"
         # Surface the deterministic synthetic diagnostic in the check annotation
         # as well as stderr so the failure is inspectable without raw logs.
         annotation = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-        print(f"::error title=E-60 verification::{annotation}")
+        print(f"::error title=O15 verification::{annotation}")
         print(message, file=sys.stderr)
         return 1
-    print("E-60 verification PASS: source/frozen CLI outputs match the pinned synthetic golden bytes.")
+    print("O15 verification PASS: source/frozen JSON bytes and local E-61 evidence artifacts match synthetic expectations.")
     return 0
 
 
