@@ -33,6 +33,8 @@ from e06_onboarding_verdict import (
 )
 from e08_new_type_flow import CandidateRegistry, detect_invoice_type
 
+from .bundle_paths import resource_root
+
 
 EXIT_READY = 0
 EXIT_REVIEW = 10
@@ -157,16 +159,7 @@ def add_onboard_subcommands(subparsers: Any) -> None:
 
 
 def _repo_root() -> Path:
-    if getattr(sys, "frozen", False):
-        candidates = (
-            Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent)).resolve(),
-            Path(sys.executable).resolve().parent,
-        )
-        for candidate in candidates:
-            if (candidate / "schemas" / "mode-b" / "v1").is_dir():
-                return candidate
-        return candidates[0]
-    return Path(__file__).resolve().parents[2]
+    return resource_root()
 
 
 def _schemas_dir() -> Path:

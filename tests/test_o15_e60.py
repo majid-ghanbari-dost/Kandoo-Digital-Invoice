@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from image_extraction_adapter.bundle_paths import resource_root
 from image_extraction_adapter.cli import main as cli_main
 from demo_capture import main as demo_main
 
@@ -64,3 +65,15 @@ def test_demo_refuses_to_write_owner_output_inside_repository():
     assert code == 30
     assert stdout.getvalue() == ""
     assert "outside the repository" in stderr.getvalue()
+
+
+def test_frozen_resource_root_prefers_pyinstaller_internal_assets(tmp_path, monkeypatch):
+    internal = tmp_path / "kandoo-extract" / "_internal"
+    (internal / "schemas").mkdir(parents=True)
+    (internal / "src").mkdir()
+    (internal / "schemas/canonical_invoice_v0.json").write_text("{}", encoding="utf-8")
+    (internal / "src/templates_bank_default.json").write_text("{}", encoding="utf-8")
+    (internal / "src/glyph_drift_baseline_v1.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(sys, "_MEIPASS", str(internal), raising=False)
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "kandoo-extract" / "kandoo-extract.exe"))
+    assert resource_root() == internal.resolve()

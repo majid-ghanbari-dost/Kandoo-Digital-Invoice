@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import os
@@ -57,9 +58,16 @@ def _assert_bytes(label: str, actual: bytes, expected_path: Path) -> None:
     if actual != expected:
         actual_hash = hashlib.sha256(actual).hexdigest()
         expected_hash = hashlib.sha256(expected).hexdigest()
+        actual_text = actual.decode("utf-8", errors="replace").splitlines()
+        expected_text = expected.decode("utf-8", errors="replace").splitlines()
+        diff = "\n".join(difflib.unified_diff(
+            expected_text, actual_text, fromfile="golden", tofile="actual", lineterm=""
+        ))
+        if len(diff) > 6000:
+            diff = diff[:6000] + "\n[diff truncated]"
         raise AssertionError(
             f"{label} differs from the pinned golden: actual {actual_hash} ({len(actual)} bytes), "
-            f"expected {expected_hash} ({len(expected)} bytes)"
+            f"expected {expected_hash} ({len(expected)} bytes)\n{diff}"
         )
 
 
@@ -153,7 +161,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         verify(args.exe)
     except Exception as exc:
-        print(f"E-60 verification FAILED: {type(exc).__name__}: {exc}", file=sys.stderr)
+        message = f"E-60 verification FAILED: {type(exc).__name__}: {exc}"
+        # Surface the deterministic synthetic diagnostic in the check annotation
+        # as well as stderr so the failure is inspectable without raw logs.
+        annotation = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title=E-60 verification::{annotation}")
+        print(message, file=sys.stderr)
         return 1
     print("E-60 verification PASS: source/frozen CLI outputs match the pinned synthetic golden bytes.")
     return 0

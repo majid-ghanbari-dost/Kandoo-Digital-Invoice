@@ -16,6 +16,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
+from .bundle_paths import resource_root
+
 
 SCHEMA_VERSION = "0"
 LIFECYCLE_STATES = frozenset(
@@ -56,7 +58,7 @@ _ALLOWED_TRANSITIONS = {
     ("ISSUED", "SUPERSEDED"),
 }
 
-_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "schemas" / "canonical_invoice_v0.json"
+_SCHEMA_PATH = resource_root() / "schemas" / "canonical_invoice_v0.json"
 
 
 @lru_cache(maxsize=1)
