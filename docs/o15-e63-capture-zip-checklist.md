@@ -1,6 +1,6 @@
 # E-63 — چک‌لیست ZIP ورودی
 
-این چک‌لیست بر مبنای دستور اجرای E-63 در [`docs/o15-final-report.md`](o15-final-report.md) است. آن گزارش ورودی را یک مسیر `--capture-folder` می‌داند، اما قالب ZIP، تعداد invoiceها، محدودیت منبع، تنوع و manifest را تعیین نمی‌کند. شکل پوشه از [`docs/extraction-bundle-v1.md`](extraction-bundle-v1.md) و اعتبارسنجی سخت‌گیرانه از CLI نسخهٔ E-60 در تگ `o15-E-60-fix-1`، commit `68be0e7c08c264a064bae598b5a3917fe6bf4dd9` گرفته شده است. artifact باینری تگ از [CI تگ E-60، run 44030430963](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44030430963) دریافت و انتسابش با SHA اجرای workflow و SHA تگ تطبیق داده می‌شود؛ چون artifact برای Windows است، اجرای واقعی Linux از source همان SHA خواهد بود.
+این چک‌لیست بر مبنای دستور اجرای E-63 در [`docs/o15-final-report.md`](o15-final-report.md) است. شکل پوشه از [`docs/extraction-bundle-v1.md`](extraction-bundle-v1.md) و اعتبارسنجی ساختاری اولیه از CLI تگ `o15-E-60-fix-1` در SHA `68be0e7c08c264a064bae598b5a3917fe6bf4dd9` گرفته شده است. اجرای نخست همان source به علت ناسازگاری `Image.get_flattened_data()` با Pillow پین‌شدهٔ `11.1.0` مسدود شد؛ با مجوز مدیر اجرایی، fix-forward حداقلی با حفظ Pillow در تگ `o15-E-63-fix-1` و SHA `89f78b2099d0f15d01bbf84bd68cc1a997c754c2` انجام شد و اجرای Linux از source همان تگ صورت گرفت. digest اعلامی artifact تگ E-60 در `docs/o15-final-report.md` ثبت است؛ یک تلاش API احرازشده با EOF پایان یافت، بنابراین hash واقعی artifact تأیید نشده است و artifact Windows در Linux اجرا نشد.
 
 ## پاسخ هفت مورد
 
@@ -39,9 +39,9 @@ o15-e63-captures.zip
 ## مبنای پذیرش / حدود ادعا
 
 - [`docs/o15-final-report.md`](o15-final-report.md) مبنای اجرای E-63 و ساختار گزارش نتیجه است؛ تعداد یا تنوع نمونه را مشخص نمی‌کند. حداقل یک invoice در این چک‌لیست انتخاب اجرایی خودکار و مستند است، نه ادعای نمایندگی آماری.
-- اعتبارسنجی فوق از CLI تگ `o15-E-60-fix-1` در SHA یادشده است و بر قرارداد schema/ورودی سخت‌گیرتر از این چک‌لیست مقدم است. اجرا در Linux از source همان SHA انجام خواهد شد؛ artifact ویندوزی در Linux اجرا نمی‌شود.
-- در اجرای انتخاب‌شده، از `--capture-folder` استفاده می‌شود؛ `--context` لازم نیست. `--e05-bank` در CLI اختیاری است و ZIP نباید bank جداگانه داشته باشد؛ از default همان SHA استفاده می‌شود. نسخهٔ E-60 شامل گزینه‌های review-evidence/label-template نسخه‌های E-61/E-62 نیست، پس این‌ها ورودی لازم نیستند.
-- تصمیم مالک دربارهٔ ساختگی‌بودن ورودی، مجوز اجرای مستقیم در سندباکس و ممنوعیت ورود داده به ریپو/commit/workflow در handoff به‌روزرسانی می‌شود. تا دریافت ZIP، E-63 اجرا نشده و E-65 آغاز نمی‌شود.
+- اعتبارسنجی ساختار اولیه از CLI تگ `o15-E-60-fix-1` آغاز شد، اما اجرای نهایی پس از fix-forward مجاز از source تگ `o15-E-63-fix-1` در SHA `89f78b2099d0f15d01bbf84bd68cc1a997c754c2` در Linux انجام شد. artifact ویندوزی به‌علت EOF دریافت نشد و hash واقعی‌اش تأیید نشده است؛ این وضعیت در گزارش ثبت شده است.
+- اجرای نهایی با `--capture-folder` بود؛ `--context` یا `--e05-bank` خارجی داده نشد. bank پیش‌فرض E-05 در source در دسترس نبود و نتیجه به‌صورت `UNAVAILABLE` گزارش شد. review-evidence/label-template خروجی جانبی هستند، نه ورودی ZIP و در این اجرا لازم نبودند.
+- تصمیم مالک دربارهٔ ساختگی‌بودن ورودی، مجوز اجرای مستقیم در سندباکس و ممنوعیت ورود داده به ریپو/commit/workflow در handoff ثبت شد. E-63 اجرا شده است؛ نتیجهٔ تجمیعی در `docs/o15-final-report.md` آمده و E-65 فقط پس از دریافت scope/acceptance criteria آغاز می‌شود.
 
 ## قرارداد تجمیع گزارش E-63
 
