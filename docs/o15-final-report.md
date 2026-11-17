@@ -13,8 +13,8 @@
 | E-60 | `o15-E-60-fix-1` | `68be0e7c08c264a064bae598b5a3917fe6bf4dd9` | [شاخه: run 44030291494](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44030291494) · [تگ: run 44030430963](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44030430963) | **PASS** — باندل Windows، CLI و parity مصنوعی Ubuntu/Windows. |
 | E-61 | `o15-E-61` | `595d84120a33fd720b9871dc2a2b3b7715b60570` | [شاخه: run 44033421569](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44033421569) · [تگ: run 44033581850](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44033581850) | **PASS** — evidence sidecar و صف بازبینی آفلاین. |
 | E-62 | `o15-E-62` | `5a126ae9fb82bef77662ed6dd380638c90612ceb` | [شاخه: run 44035249445](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035249445) · [تگ: run 44035251303](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035251303) | **PASS** — برچسب اپراتور محلی؛ accuracy بدون برچسب مستقل `NOT_SCORED`. |
-| E-63 fix-forward | `o15-E-63-fix-1` | `89f78b2099d0f15d01bbf84bd68cc1a997c754c2` | [شاخه: run 44080880091](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44080880091) · [تگ: run 44081030928](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44081030928) | **شواهد اجرا و تطبیق مستند شد؛ نتیجهٔ استخراج REVIEW؛ پذیرش نهایی در انتظار تعیین تکلیف مالک است.** |
-| E-65 (STRETCH) | — | — | — | **NOT STARTED** — هم تعیین تکلیف E-63 و هم دامنه/معیار پذیرش E-65 لازم است. |
+| E-63 fix-forward | `o15-E-63-fix-1` | `89f78b2099d0f15d01bbf84bd68cc1a997c754c2` | [شاخه: run 44080880091](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44080880091) · [تگ: run 44081030928](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44081030928) | **DELIVERED** — تکلیف مستند شد، نه پذیرش نهایی؛ پذیرش با مالک است. |
+| E-65 (STRETCH) | — | — | — | **NOT STARTED** — تعریف مکتوب scope و معیار پذیرش کامل نیست. |
 
 > تگ قدیمی `o15-E-60` به commit اولیهٔ E-60 اشاره می‌کند؛ تگ نهایی E-60 `o15-E-60-fix-1` است. تگ و commitهای قبلی حفظ شده‌اند و بازنویسی تاریخچه انجام نشده است.
 
@@ -63,18 +63,22 @@ Accuracy برابر **`NOT_SCORED`** است: expected-value labels در دستر
 |---|---|---|
 | نوع/ساختار ورودی: capture-folder شامل SPL، `Report.txt` و PNG؛ ZIP فقط بسته‌بندی انتقال است | دقیقاً سه فایل مورد انتظار در مسیر invoice؛ CLI ورودی را پذیرفت و یک page result ساخت | **PASS** |
 | حداقل تعداد: یک invoice کامل | 1 invoice، 1 صفحه؛ JSON نتیجه تولید شد | **PASS** |
-| منبع/ساختگی‌بودن | synthetic/non-sensitive بودن را مدیر اجرایی اعلام کرد؛ شواهد موجود مبدأ Holoo را مستقل اثبات نمی‌کنند و CLI نیز آن را تشخیص نمی‌دهد | synthetic بودن **OWNER-ASSERTED**؛ Holoo-origin **UNVERIFIED** |
-| تنوع | در معیار frozen حداقل تنوع تعیین نشده؛ یک نمونه کافی است | **N/A**؛ از این نمونه ادعای نمایندگی نمی‌شود |
+| منبع/ساختگی‌بودن | synthetic/non-sensitive بودن را مدیر اجرایی اعلام کرد؛ شواهد موجود مبدأ Holoo را مستقل اثبات نمی‌کنند و CLI نیز آن را تشخیص نمی‌دهد | synthetic بودن **OWNER-ASSERTED**؛ Holoo-origin **NOT-VERIFIED** |
+| تنوع | در معیار frozen حداقل تنوع تعیین نشده؛ یک نمونه کافی است | **NOT-VERIFIED**؛ از این نمونه ادعای نمایندگی نمی‌شود |
 | پسوند/سلامت فایل‌ها | SPL غیرخالی، Report قابل خواندن، PNG قابل decode؛ خطای ساختاری/صفحه‌ای صفر | **PASS** |
 | Manifest/sidecar و فایل‌های ممنوع | manifest جداگانه لازم نبود؛ Report تنها sidecar ورودی بود؛ bank/labels/context/output قبلی به ZIP اضافه نشد | **PASS** |
 | درخت دقیق ZIP و اصالت فایل‌های capture | سه عضو دقیقاً با اندازه/hashهای مرجع تطبیق داشتند؛ مقادیر فایل‌ها در repo ثبت نشدند | **PASS** |
 | روش اجرا و خروجی | source tag/SHA ثبت، Linux اجرا، هر دو JSON schema-valid، counts و محدودیت‌ها گزارش شدند | **PASS** |
 | accuracy مستقل | labels مورد انتظار وجود نداشتند؛ `NOT_SCORED`, `extracted_but_wrong: null` | **UNSCORABLE**؛ نه pass و نه fail دقت |
-| باینری Windows تگ E-60 | API احرازشده EOF داد؛ digest رسمی هست ولی بایت واقعی برای مقایسه نیست؛ ادامه از source tag جدید با مجوز صریح انجام شد | **UNVERIFIED**؛ محدودیت صریح، نه hash-match ادعایی |
+| باینری Windows تگ E-60 | API احرازشده EOF داد؛ digest رسمی هست ولی بایت واقعی برای مقایسه نیست؛ ادامه از source tag جدید با مجوز صریح انجام شد | **NOT-VERIFIED**؛ محدودیت صریح، نه hash-match ادعایی |
+
+### موارد NOT-VERIFIED
+
+سه مورد NOT-VERIFIED طبق ابلاغ: مبدأ Holoo، artifact و تنوع. برای تنوع هیچ عدد یا تفسیر تازه‌ای افزوده نشده است.
 
 ### Disposition E-63
 
-اجرای فنی پس از رفع blocker موفق و معیارهای ورودی/روش/گزارش checklist با شواهد بالا منطبق شدند؛ خروجی extraction همچنان `REVIEW` است، E-05 bank در دسترس نبود، مبدأ Holoo مستقل اثبات نشده و accuracy `NOT_SCORED` می‌ماند. بنابراین **اجرای E-63 و شواهد آن کامل/ثبت شده‌اند، اما پذیرش نهاییِ کیفیت extraction یا ادعای دقت اعلام نمی‌شود**. تعیین اینکه این disposition برای بستن E-63 کافی است با مالک است. تا آن تعیین تکلیف و دریافت scope/acceptance criteria قابل اجرا، E-65 شروع نمی‌شود.
+طبق ابلاغ مدیر اجرایی، وضعیت E-63 **`DELIVERED`** است: تکلیف و شواهد مستند شده‌اند، نه اینکه پذیرش نهایی اعلام شده باشد. نتیجهٔ extraction همچنان `REVIEW` است، E-05 bank در دسترس نبود و accuracy `NOT_SCORED` می‌ماند. پذیرش نهایی با مالک است؛ این disposition نه کیفیت را PASS می‌کند و نه نتیجهٔ REVIEW را به‌تنهایی دلیل پذیرش می‌گیرد.
 
 ## حفظ داده و انتقال
 
@@ -82,7 +86,7 @@ Accuracy برابر **`NOT_SCORED`** است: expected-value labels در دستر
 
 ## وضعیت E-65
 
-در handoff، اسناد محلی و Issues/PRهای بررسی‌شده تنها برچسب «Holoo v1.2 stretch» را داشتند؛ scope و معیار پذیرش قابل اجرا پیدا نشد. E-65 **NOT STARTED** است تا مالک disposition نهایی E-63 را تعیین کند و دامنه/معیارهای E-65 را ارائه دهد. هیچ تغییری به `main` یا merge انجام نشده است.
+E-63 اکنون `DELIVERED` است، بدون ادعای پذیرش نهایی. متن‌های معتبر بررسی‌شده فقط عبارت «Holoo v1.2 stretch» و gateهای E-65 را ثبت می‌کنند؛ scope و معیارهای اجرایی کامل پیدا نشد. بنابراین E-65 **NOT STARTED** می‌ماند تا مالک scope/acceptance criteria را تکمیل کند. هیچ تغییری به `main` یا merge انجام نشده است.
 
 ## سوابق E-60 تا E-62
 
