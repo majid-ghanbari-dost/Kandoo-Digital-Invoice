@@ -91,7 +91,9 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
 - Current Holoo path: Holoo → Print Spooler → Kandoo Agent → Raw Capture → durable local storage → extraction/recognition → Canonicalization Gate.
 - No real production Holoo DB connection is permitted by the current project boundary.
 
-## 6. Current Verified Project State
+## 6. Historical P12/Bootstrap Snapshot (pre-O15; superseded by Section 11)
+
+> The statements below preserve the handoff inherited at repository bootstrap. They are not the current execution state of the active Arena O15 branch; Section 11 is authoritative for current state.
 
 P1–P10: completed/frozen.
 WP-11.1: implemented, tested, packaged and accepted at implementation level.
@@ -123,7 +125,7 @@ Latest reported verification from the working project:
   `test_ir_provenance::test_no_raw_pipeline_values_are_stored`.
 - No new regression failure was reported.
 
-## 7. Current Agent Ownership
+## 7. Historical Agent Ownership Snapshot (pre-O15; superseded by Section 11)
 
 Agent 1:
 - Owns the active P12 execution stream until it reaches its genuine PO/evidence boundary.
@@ -133,13 +135,13 @@ Agent 2:
 - Owns independent work only after inspecting this repository and coordination state.
 - Must not modify Agent 1's active WP/files concurrently.
 
-## 8. Current Real Boundaries
+## 8. Historical Real Boundaries (pre-O15; superseded by Section 11)
 
 1. P12.3: PO/G4 ratification of D-07, D-08 and DEF2.
 2. WP-11.2: required source mapping/authority/sync/conflict/write-back decisions and sufficient contract before Adapter implementation.
 3. Repository bootstrap: actual 281-file project tree must still be transferred from the verified local ZIP into `main`.
 
-## 9. Repository Bootstrap Status
+## 9. Historical Repository Bootstrap Status (pre-O15; superseded by Section 11)
 
 The repository contains the collaboration/handoff files, but the actual 281-file implementation tree has not yet been transferred.
 
@@ -170,3 +172,21 @@ Every agent joining this project must:
 10. Report exact commit, tests, blockers and next executable work.
 
 Never infer missing technical contracts from this handoff when an authoritative spec/register is available.
+
+## 11. Current O15 Execution State — updated 2026-10-12
+
+> This section is authoritative for the active Arena branch. Sections 6–9 preserve an older pre-O15 bootstrap snapshot and are historical only.
+
+- Repository: `majid-ghanbari-dost/Kandoo-Digital-Invoice`.
+- Active branch: `arena/d0587e71-kandoo-digital-invoice`; never switch branches, merge, or push to `main` for this order.
+- E-62 source anchor before the E-64 handoff/report changes: `5a126ae9fb82bef77662ed6dd380638c90612ceb`, tagged `o15-E-62`.
+- E-60: **COMPLETE**. Final accepted tag `o15-E-60-fix-1`; SHA `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`. The earlier `o15-E-60` tag remains on the initial commit and is not the accepted final version.
+- E-61: **COMPLETE**. Tag `o15-E-61`; SHA `595d84120a33fd720b9871dc2a2b3b7715b60570`. C-84's value/confidence/crop-region and frozen result contract remain unchanged. Without independent expected-value labels, accuracy is `NOT_SCORED` and `extracted_but_wrong` is `null`.
+- E-62: **COMPLETE**. Tag `o15-E-62`; SHA `5a126ae9fb82bef77662ed6dd380638c90612ceb`. Local label templates validate against the O15 schema, default to pending values, and do not update Glyph or enable online learning.
+- E-63: **BLOCKED on owner input**. No owner capture is present in this worktree; no real owner data was read. The owner must run the E-62 Windows artifact locally and retain capture, OCR, crops, labels, hashes, and outputs on that machine. See `docs/questions/Q-15-02.md` and `docs/o15-final-report.md` for the safe run path.
+- E-64: handoff, coordination, and status report are updated in this changeset. Its task tag is `o15-E-64`; the exact commit and branch/tag CI runs are in the delivery record for this changeset.
+- E-65 (STRETCH): **NOT STARTED**; do not begin until the MUST sequence, including owner-local E-63, is complete.
+
+Verification at E-62: focused E-60/E-61/E-62 tests `18 passed`; `scripts/verify_o15_e60.py` passed; full local suite `1701 passed in 167.58s`. Both E-62 CI workflows succeeded: branch run [44035249445](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035249445) and tag run [44035251303](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035251303). E-60/E-61/E-62 branch and tag CI URLs and exact results are recorded in `docs/o15-final-report.md`; the runs were inspected. The only CI notices were non-blocking Node.js 20 action deprecation warnings.
+
+**Next executable action:** Product Owner obtains the Windows one-folder artifact from the E-62 tag workflow, runs it against the actual capture with a fresh output directory outside the repository (recommended `%LOCALAPPDATA%\\Kandoo\\O15\\run-<timestamp>`), reviews the local evidence/label file, and returns only a sanitized execution/status summary. Do not request, accept, or transmit raw capture files, OCR values, customer details, images, crops, hashes, or generated real-data files. If the owner has not run E-63, keep it blocked and keep E-65 deferred.

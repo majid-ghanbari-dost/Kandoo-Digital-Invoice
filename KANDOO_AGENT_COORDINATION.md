@@ -1,41 +1,35 @@
-# KANDOO DIGITAL INVOICE — AGENT COORDINATION
+# KANDOO DIGITAL INVOICE — O15 AGENT COORDINATION
 
-## Purpose
+## Current execution context
 
-Operational coordination between Agent 1 and Agent 2.
+- Repository: `majid-ghanbari-dost/Kandoo-Digital-Invoice`
+- Active Arena branch: `arena/d0587e71-kandoo-digital-invoice`
+- O15 work remains on this branch; do not switch branches, merge, push to `main`, or open/merge a PR without explicit authorization.
+- The historical P12/bootstrap snapshot in the earlier handoff is not the current O15 work state. See `AGENT_HANDOFF.md`'s current O15 section and `docs/o15-final-report.md`.
 
-## Ownership
+## Ownership and status
 
-| Area | Owner | Status |
+| Work item | Owner | Status |
 |---|---|---|
-| Active P12 execution stream | Agent 1 | ACTIVE |
-| P12.3 D-07/D-08/DEF2 ratification | Product Owner / G4 | DECISION REQUIRED |
-| WP-11.2 Adapter | NONE | BLOCKED until sufficient contract/PO decisions |
-| Independent new WPs | Agent 2 | CLAIM ONLY AFTER RECON |
-| Repository bootstrap / exact source transfer | Technical Manager / Coordinator | BLOCKED BY CURRENT CONNECTOR CAPABILITY |
+| E-60 Windows extractor bundle / CLI | Arena implementation agent | COMPLETE — `o15-E-60-fix-1`; branch and tag CI green |
+| E-61 local evidence / offline review queue | Arena implementation agent | COMPLETE — `o15-E-61`; branch and tag CI green |
+| E-62 operator-label template | Arena implementation agent | COMPLETE — `o15-E-62`; branch and tag CI green |
+| E-63 actual owner-capture run | Product Owner, on owner's computer only | BLOCKED — no owner capture/result available in this checkout; do not substitute synthetic or unrelated data |
+| E-64 handoff / status report | Arena implementation agent | COMPLETE in the current E-64 changeset; owner run remains a blocker |
+| E-65 Holoo v1.2 stretch | NONE until MUST sequence is complete | NOT STARTED — prohibited until E-63 is resolved |
 
-## Rules
+`docs/questions/Q-15-01.md` records the resolved source-baseline issue. `docs/questions/Q-15-02.md` records the active E-63 owner-input/data-residency blocker and the safe local-run path.
 
-1. One WP = one owner.
-2. Do not edit another agent's active WP/files.
-3. Reviews do not transfer ownership.
-4. Use branches for agent work.
-5. Frozen files require explicit evidence before modification.
-6. Update this file and AGENT_HANDOFF.md when ownership or project state changes.
-7. Missions should cover multiple executable WPs where possible.
-8. Stop only at genuine decision/evidence/contract/architecture blockers.
-9. Never claim source integration when the repository does not contain the resulting artifact.
+## Coordination rules
 
-## Current State
+1. One work item has one owner; do not edit another agent's active files.
+2. Keep frozen contracts and golden outputs unchanged absent a documented blocker/approval.
+3. Every technical choice is recorded in one line in `docs/decisions-made.md` with choice, reason, and rejected alternative.
+4. Never claim accuracy or real-capture acceptance that was not measured. With no independent expected-value labels, report `NOT_SCORED` and `extracted_but_wrong: null`.
+5. Real owner capture, OCR, crops, labels, hashes, and outputs stay on the owner's computer. Do not stage, commit, send to CI/upload, or paste them into chat.
+6. For each completed task, use its own commit/tag and verify both branch and tag CI. Report links only for CI runs actually inspected.
+7. Do not start E-65 before E-60 through E-64 MUST work is complete, including the owner-local E-63 run.
 
-The repository contains the collaboration/handoff files.
+## Next executable action
 
-Verified current implementation package:
-- kandoo-current-implementation10.zip
-- ZIP SHA-256: b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753
-- 281 project files + embedded manifest
-- 281/281 manifest hashes verified
-
-The current GitHub connector has repository write permissions but no bulk local-directory upload/Git-push operation. The implementation tree is therefore not yet claimed as integrated.
-
-Next executable action: transfer the exact 281 files into main, verify against the package manifest, then record the resulting HEAD here and in AGENT_HANDOFF.md.
+The Product Owner downloads the Windows one-folder artifact from the successful E-62 tag workflow linked in `docs/o15-final-report.md`, runs it locally against the real capture with a fresh output folder under `%LOCALAPPDATA%\Kandoo\O15`, reviews the local evidence/labels, and retains every sensitive file locally. Return only a sanitized execution/status summary; no raw values, images, crops, hashes, or customer data are needed. If the owner cannot run it yet, keep E-63 BLOCKED and leave E-65 unstarted.
