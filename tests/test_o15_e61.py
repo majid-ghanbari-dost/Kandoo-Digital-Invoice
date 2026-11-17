@@ -17,7 +17,10 @@ from demo_capture import main as demo_main
 from image_extraction_adapter import pipeline_v0
 from image_extraction_adapter.capture_folder import extract_capture_folder
 from image_extraction_adapter.pipeline_v0 import DEFAULT_MINIMUM_CONFIDENCE, extract_pipeline_v0
-from image_extraction_adapter.preprocessing import LayoutSafetyResult
+from image_extraction_adapter.preprocessing import (
+    LayoutSafetyResult,
+    remove_morphological_table_lines,
+)
 from image_extraction_adapter.review_evidence import ReviewPageSource, write_review_evidence
 
 FIXTURE = ROOT / "tests/fixtures/o15/capture-folder"
@@ -30,6 +33,23 @@ def _validate_evidence(document: object) -> None:
     schema = json.loads(EVIDENCE_SCHEMA.read_bytes().decode("utf-8"))
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema).validate(document)
+
+
+def test_line_mask_flattened_pixel_count_uses_pillow_11_1_data_api():
+    image = Image.new("L", (40, 24), 255)
+    for x in range(5, 35):
+        image.putpixel((x, 12), 0)
+
+    cleaned, removed = remove_morphological_table_lines(
+        image,
+        horizontal_kernel=15,
+        vertical_kernel=15,
+        skip_vertical_rule_removal=True,
+    )
+
+    assert removed == 30
+    assert all(cleaned.getpixel((x, 12)) == 255 for x in range(5, 35))
+    assert all(image.getpixel((x, 12)) == 0 for x in range(5, 35))
 
 
 def test_evidence_records_reading_confidence_reason_and_exact_crop(tmp_path):
