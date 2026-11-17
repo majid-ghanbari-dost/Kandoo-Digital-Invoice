@@ -81,6 +81,13 @@ def _command_prefix(executable: Path | None) -> list[str]:
     return [sys.executable, "-m", "image_extraction_adapter.cli"]
 
 
+def _decode_diagnostic(data: bytes) -> str:
+    """Normalize platform-native subprocess line endings for stable JSON output."""
+    decoded = data.decode("utf-8", errors="replace")
+    normalized = decoded.replace("\r\n", "\n").replace("\r", "\n")
+    return normalized.strip()
+
+
 def _run_cli(
     executable: Path | None,
     arguments: list[str],
@@ -201,7 +208,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         raise DemoInputError(f"extractor emitted invalid Canonical Invoice v0: {validation_errors}")
                     canonical = candidate
                 elif canonical_process.stderr:
-                    canonical_note = canonical_process.stderr.decode("utf-8", errors="replace").strip()
+                    canonical_note = _decode_diagnostic(canonical_process.stderr)
 
         status = capture_result.get("status", "ERROR")
         verdict = capture_result.get("verdict", "REJECT")

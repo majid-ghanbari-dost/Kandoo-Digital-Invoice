@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from image_extraction_adapter.bundle_paths import resource_root
 from image_extraction_adapter.cli import main as cli_main
-from demo_capture import main as demo_main
+from demo_capture import _decode_diagnostic, main as demo_main
 
 
 def test_cli_help_is_a_successful_stable_command():
@@ -65,6 +65,10 @@ def test_demo_refuses_to_write_owner_output_inside_repository():
     assert code == 30
     assert stdout.getvalue() == ""
     assert "outside the repository" in stderr.getvalue()
+
+
+def test_demo_diagnostic_newlines_are_normalized_to_lf():
+    assert _decode_diagnostic(b"first\r\nsecond\rthird\n") == "first\nsecond\nthird"
 
 
 def test_frozen_resource_root_prefers_pyinstaller_internal_assets(tmp_path, monkeypatch):
