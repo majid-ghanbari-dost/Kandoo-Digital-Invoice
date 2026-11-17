@@ -1,0 +1,16 @@
+{
+  "mode": "B",
+  "invoice_id": "o15-synthetic-invoice",
+  "display_number": "SYNTH-001",
+  "operation_id": "o15-synthetic-operation",
+  "device_id": "o15-synthetic-device",
+  "public_token": "U1lOVEhFVElDLVRFU1Q",
+  "store_id": "o15-synthetic-store",
+  "customer": {
+    "phone": "+15550000000",
+    "phone_status": "claimed",
+    "phone_provenance": "captured"
+  },
+  "product_names": ["Synthetic test product"],
+  "product_name_provenance": ["captured"]
+}

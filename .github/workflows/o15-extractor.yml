@@ -1,0 +1,99 @@
+name: O15 extractor bundle
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "o15-*"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ubuntu-source:
+    name: Ubuntu source CLI / Python 3.11
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src:scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-extractor-dev.txt
+
+      - name: Install pinned extractor and test dependencies
+        run: python -m pip install -r requirements-extractor-dev.txt
+
+      - name: Run O15 extractor tests
+        run: python -m pytest -q tests/test_o15_e60.py
+
+      - name: Verify Ubuntu JSON against shared golden bytes
+        run: python scripts/verify_o15_e60.py
+
+  windows-onefolder:
+    name: Windows one-folder executable / Python 3.11
+    runs-on: windows-2025
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: src;scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-extractor-dev.txt
+
+      - name: Install pinned extractor and test dependencies
+        shell: pwsh
+        run: python -m pip install -r requirements-extractor-dev.txt
+
+      - name: Run O15 extractor tests
+        shell: pwsh
+        run: python -m pytest -q tests/test_o15_e60.py
+
+      - name: Build Windows one-folder CLI
+        shell: pwsh
+        run: |
+          python -m PyInstaller --clean --noconfirm --onedir --console `
+            --name kandoo-extract `
+            --distpath dist `
+            --workpath "$env:RUNNER_TEMP/pyinstaller-work" `
+            --specpath "$env:RUNNER_TEMP/pyinstaller-spec" `
+            --paths src `
+            --paths scripts `
+            --collect-all jsonschema `
+            --hidden-import run_name_cluster_experiment `
+            --hidden-import synthetic_thermal_invoice `
+            scripts/windows_cli_entry.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/copy_windows_bundle_data_o15.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify Windows executable against the shared golden bytes
+        shell: pwsh
+        run: python scripts/verify_o15_e60.py --exe dist/kandoo-extract/kandoo-extract.exe
+
+      - name: Upload Windows one-folder bundle (synthetic smoke only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: kandoo-extract-windows-${{ github.sha }}
+          path: dist/kandoo-extract/
+          if-no-files-found: error
+          retention-days: 14

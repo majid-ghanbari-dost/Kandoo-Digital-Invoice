@@ -1,0 +1,6 @@
+# O15 — Technical decisions made
+
+- **E-60 source baseline:** I port only extractor/CLI/runtime assets identified by `docs/o15-source-provenance.json` from `origin/main` at `180b279b6c692f841cab739577ad4fedeefb77c3` as additive files on the assigned branch; this avoids duplicating the image pipeline while preserving the branch boundary, and a merge/rebase or reimplementation from text-only `src/pipeline/` was rejected.
+- **E-60 CLI/build:** Keep the existing extractor CLI protocol and exit codes (0 ready, 10 review, 20 blocked/reject, 30 input/runtime error), package it as a PyInstaller Windows one-folder app, and pin Pillow/jsonschema; a new CLI protocol or Tesseract dependency was rejected.
+- **E-60 cross-platform evidence:** Use a committed, explicitly synthetic capture folder and compare exact UTF-8/LF JSON bytes against one shared golden on Ubuntu source mode and the Windows executable; using any owner capture or raw owner result in CI was rejected.
+- **E-60 Canonical output:** Require producer-supplied context for Canonical Invoice v0 and preserve explicitly supplied v1.1 recorded fields as a separate, schema-checked object; never infer identifiers/customer/products or merge v1.1 extension fields into frozen v0, and reject implicit/default context.

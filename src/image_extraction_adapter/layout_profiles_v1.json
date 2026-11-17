@@ -1,0 +1,63 @@
+{
+  "schema_version": "e24.layout-profile-registry.v1",
+  "profiles": [
+    {
+      "profile_id": "holo-rtl-four-column-v1",
+      "table_reading_direction": "right_to_left",
+      "column_order": "left_to_right",
+      "columns_left_to_right": [
+        {"role": "line_total", "required": true, "value_kind": "integer_amount"},
+        {"role": "quantity", "required": true, "value_kind": "positive_integer"},
+        {"role": "description", "required": true, "value_kind": "text", "multiline": true},
+        {"role": "row_number", "required": true, "value_kind": "positive_integer"}
+      ],
+      "line_total_unit_price_role": null,
+      "discount_policy": "none"
+    },
+    {
+      "profile_id": "synthetic-rtl-unit-discount-v1",
+      "table_reading_direction": "right_to_left",
+      "column_order": "left_to_right",
+      "columns_left_to_right": [
+        {"role": "line_total", "required": true, "value_kind": "integer_amount"},
+        {"role": "discounted_price", "required": true, "value_kind": "integer_amount"},
+        {"role": "discount_percent", "required": false, "value_kind": "percentage"},
+        {"role": "unit_price", "required": false, "value_kind": "integer_amount"},
+        {"role": "quantity", "required": true, "value_kind": "positive_integer"},
+        {"role": "description", "required": true, "value_kind": "text", "multiline": true},
+        {"role": "row_number", "required": true, "value_kind": "positive_integer"}
+      ],
+      "line_total_unit_price_role": "discounted_price",
+      "discount_policy": "exact_if_present"
+    },
+    {
+      "profile_id": "synthetic-rtl-unit-price-v1",
+      "table_reading_direction": "right_to_left",
+      "column_order": "left_to_right",
+      "columns_left_to_right": [
+        {"role": "line_total", "required": true, "value_kind": "integer_amount"},
+        {"role": "unit_price", "required": true, "value_kind": "integer_amount"},
+        {"role": "quantity", "required": true, "value_kind": "positive_integer"},
+        {"role": "description", "required": true, "value_kind": "text", "multiline": true},
+        {"role": "row_number", "required": true, "value_kind": "positive_integer"}
+      ],
+      "line_total_unit_price_role": "unit_price",
+      "discount_policy": "none"
+    },
+    {
+      "profile_id": "synthetic-rtl-crossed-consumer-price-v1",
+      "table_reading_direction": "right_to_left",
+      "column_order": "left_to_right",
+      "columns_left_to_right": [
+        {"role": "line_total", "required": true, "value_kind": "integer_amount"},
+        {"role": "consumer_price", "required": false, "value_kind": "integer_amount"},
+        {"role": "unit_price", "required": true, "value_kind": "integer_amount"},
+        {"role": "quantity", "required": true, "value_kind": "positive_integer"},
+        {"role": "description", "required": true, "value_kind": "text", "multiline": true},
+        {"role": "row_number", "required": true, "value_kind": "positive_integer"}
+      ],
+      "line_total_unit_price_role": "unit_price",
+      "discount_policy": "none"
+    }
+  ]
+}

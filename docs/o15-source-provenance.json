@@ -1,0 +1,196 @@
+{
+  "schema_version": "o15-source-provenance-v1",
+  "source_ref": "origin/main",
+  "source_commit": "180b279b6c692f841cab739577ad4fedeefb77c3",
+  "method": "additive file-level port only; no merge, rebase, reset, or branch switch",
+  "files": [
+    {
+      "path": "docs/schemas/v1-1/issued-invoice-v1-1.schema.json",
+      "blob": "56c36e89dd7c0fa0363cd391b2f5df111b125574"
+    },
+    {
+      "path": "docs/schemas/v1-1/public-invoice-view-v1-1.schema.json",
+      "blob": "a15d47d326efb6b02e5993a3714e634355dd6164"
+    },
+    {
+      "path": "schemas/canonical_invoice_v0.json",
+      "blob": "da3316a24be60620e194e955febd242328cacba1"
+    },
+    {
+      "path": "schemas/e28/glyph_drift_baseline_v1.schema.json",
+      "blob": "821b4a64921f051d3e55c3f787ce67ba228083de"
+    },
+    {
+      "path": "schemas/e28/glyph_drift_report_v1.schema.json",
+      "blob": "1591c2da7329335cd739d31b874f9e66a05a91b3"
+    },
+    {
+      "path": "schemas/extraction-bridge/v1/capture-folder-result.schema.json",
+      "blob": "53111001843b9a650123756eff2471dc220da1ea"
+    },
+    {
+      "path": "schemas/mode-b/v1/layout-font-fingerprint.schema.json",
+      "blob": "7b92ff507fc1c4b83f15c1f6289957847a52564c"
+    },
+    {
+      "path": "schemas/mode-b/v1/new-type-candidate.schema.json",
+      "blob": "9283442d3c514af77891a4918b36cb4c807473bb"
+    },
+    {
+      "path": "schemas/mode-b/v1/onboarding-verdict.schema.json",
+      "blob": "0de8a1ac52c09829c896f7479976f1d7a36f516f"
+    },
+    {
+      "path": "schemas/mode-b/v1/template-bank.schema.json",
+      "blob": "8f0c8d230416d545026548ffb7da3ec736f6a0c8"
+    },
+    {
+      "path": "scripts/synthetic_thermal_invoice.py",
+      "blob": "8e7aadfe133532f00d742286a67a8ab5cce8c700"
+    },
+    {
+      "path": "scripts/windows_cli_entry.py",
+      "blob": "ed5e8cabd5043590dfc4a08a05702a8264716ea8"
+    },
+    {
+      "path": "src/e05_template_bank/__init__.py",
+      "blob": "60d080081c954d3d824255cdbb84739987b52d23"
+    },
+    {
+      "path": "src/e05_template_bank/confidence.py",
+      "blob": "4da1b4f8454f8e742e178803e0c12d069b6df62d"
+    },
+    {
+      "path": "src/e05_template_bank/template.py",
+      "blob": "fe1215690e5cdc8597105a6d1d3600e7811c2e76"
+    },
+    {
+      "path": "src/e05_template_bank/template_bank.py",
+      "blob": "ba2132ab355a7d56a56cbf303f095aa096b1711d"
+    },
+    {
+      "path": "src/e06_onboarding_verdict/__init__.py",
+      "blob": "dfa466b20f0cace87f8281b9498c18a9475cf7e0"
+    },
+    {
+      "path": "src/e06_onboarding_verdict/reason_codes.py",
+      "blob": "17bfd11f259f21e63a332903a2d78901f4e9e496"
+    },
+    {
+      "path": "src/e06_onboarding_verdict/thresholds.py",
+      "blob": "11172e3ec54102c54b7f2b3c79d73befd3e89ce0"
+    },
+    {
+      "path": "src/e06_onboarding_verdict/verdict.py",
+      "blob": "978a80d94b64e66a1d64a4540cf81d5380696c85"
+    },
+    {
+      "path": "src/e08_new_type_flow/__init__.py",
+      "blob": "61171a53acbeb532e1b1d0c21e507b3296efdca5"
+    },
+    {
+      "path": "src/e08_new_type_flow/audit.py",
+      "blob": "2e8ba605441cdde68eb671f0cb63b2e7654f823f"
+    },
+    {
+      "path": "src/e08_new_type_flow/candidate.py",
+      "blob": "5d59c3194896c5945996b10022315374a225dd8b"
+    },
+    {
+      "path": "src/e08_new_type_flow/detector.py",
+      "blob": "887ca75857951781176d028324f81752860efd96"
+    },
+    {
+      "path": "src/e08_new_type_flow/mini_onboarding.py",
+      "blob": "b1d2481a3d9c54d8dc96eb8575e55499d201a369"
+    },
+    {
+      "path": "src/glyph_drift_baseline_v1.json",
+      "blob": "07a298c038db222cf05422b84fc40d1d2f9d7657"
+    },
+    {
+      "path": "src/image_extraction_adapter/CAPTURE_FOLDER_ADAPTER.md",
+      "blob": "7af1080357fc517f794eddb24d3c04b2714c35b8"
+    },
+    {
+      "path": "src/image_extraction_adapter/README.md",
+      "blob": "3c17b92220b0d0b2e86aada651079a3d9cba8558"
+    },
+    {
+      "path": "src/image_extraction_adapter/__init__.py",
+      "blob": "2de798dbed6673c6027f85b2964f5988393c7582"
+    },
+    {
+      "path": "src/image_extraction_adapter/adapter.py",
+      "blob": "5ee6546737daf3ca27e2a456b7ca1eb0735bce23"
+    },
+    {
+      "path": "src/image_extraction_adapter/canonical_invoice.py",
+      "blob": "7c413294e2521d753f2f824c6ec820f11dc8a297"
+    },
+    {
+      "path": "src/image_extraction_adapter/capture_folder.py",
+      "blob": "4d069d6b3feb6e0b1615ed376393eab88f467b73"
+    },
+    {
+      "path": "src/image_extraction_adapter/capture_triage.py",
+      "blob": "4e2d9f2aa7509f37f896e8408378f96187f278af"
+    },
+    {
+      "path": "src/image_extraction_adapter/cli.py",
+      "blob": "28d8772b4bd1d3268e152f4753f6b59652304473"
+    },
+    {
+      "path": "src/image_extraction_adapter/drift_monitor.py",
+      "blob": "2a61288844edca597986e71ebc97439af6e0efa0"
+    },
+    {
+      "path": "src/image_extraction_adapter/glyph_classifier.py",
+      "blob": "4d107089835578f61481b3a377f302a0c8b8c110"
+    },
+    {
+      "path": "src/image_extraction_adapter/layout_profiles.py",
+      "blob": "9a7d51c853f0e9909f6f93379ff1f1012a1c4cc6"
+    },
+    {
+      "path": "src/image_extraction_adapter/layout_profiles_v1.json",
+      "blob": "c0402a0d87c945b4b8c97278fdfa5a7b4536285c"
+    },
+    {
+      "path": "src/image_extraction_adapter/model.py",
+      "blob": "8bc7d99b3e463315190ae5daedce78d7dd089867"
+    },
+    {
+      "path": "src/image_extraction_adapter/multi_evidence.py",
+      "blob": "41b537d5d3d6023e46899ec3a33155f8bfb967d7"
+    },
+    {
+      "path": "src/image_extraction_adapter/ocr.py",
+      "blob": "6a6864705b67f690ff6fed97542a698a9d59bf2a"
+    },
+    {
+      "path": "src/image_extraction_adapter/onboarding_cli.py",
+      "blob": "046a976c8dbb56b65c732e4d897b9bba7e482571"
+    },
+    {
+      "path": "src/image_extraction_adapter/parser.py",
+      "blob": "17a763d8e10b3f10503304e24f93e254fb078b15"
+    },
+    {
+      "path": "src/image_extraction_adapter/pipeline_v0.py",
+      "blob": "870e80c7b72e04823f588f95cfc7440763976ee2"
+    },
+    {
+      "path": "src/image_extraction_adapter/preprocessing.py",
+      "blob": "3204e938761528c9b5088ce35cdf585d11461058"
+    },
+    {
+      "path": "src/run_name_cluster_experiment.py",
+      "blob": "927029ebb0cb7570df64dc56a2d12ebb4452df6f"
+    },
+    {
+      "path": "src/templates_bank_default.json",
+      "blob": "4a99f93ed2416a8f5ee1cba08217318e3b0d3b41"
+    }
+  ]
+}

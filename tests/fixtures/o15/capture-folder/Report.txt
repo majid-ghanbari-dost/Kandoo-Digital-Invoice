@@ -1,0 +1,4 @@
+SYNTHETIC KandooPrintProbe Report
+Spool Job ID: o15-synthetic-001
+Page Count: 1
+SPL SHA-256: 2f97d20cf57a268e327f13ef38dc302e3b600bb5c2c4c52ede7a6172d4bbc015

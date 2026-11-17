@@ -1,0 +1,20 @@
+{
+  "demo_version": "o15.capture-demo.v1",
+  "capture_status": "BLOCKED",
+  "capture_verdict": "REJECT",
+  "page_count": 1,
+  "canonical_invoice_v0": null,
+  "canonical_exit_code": 20,
+  "canonical_note": "REJECT: extraction is blocked; no Canonical Invoice was emitted.\n  No table geometry was detected.\n  blocked extraction has no Canonical Invoice candidate",
+  "issued_invoice_v1_1_recorded_fields": {
+    "customer_name": "Synthetic customer",
+    "payments": [
+      {
+        "type": "cash",
+        "amount": 1080
+      }
+    ],
+    "currency_unit": "rial",
+    "remaining_balance": null
+  }
+}

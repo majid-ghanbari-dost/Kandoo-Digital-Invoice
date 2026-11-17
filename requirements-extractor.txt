@@ -1,0 +1,3 @@
+# Runtime pins for deterministic local extraction and cross-platform golden output.
+Pillow==11.1.0
+jsonschema==4.26.0

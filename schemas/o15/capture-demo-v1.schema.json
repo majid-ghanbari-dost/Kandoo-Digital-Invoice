@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:o15:capture-demo:1",
+  "title": "O15 local capture demo result v1",
+  "type": "object",
+  "required": [
+    "demo_version",
+    "capture_status",
+    "capture_verdict",
+    "page_count",
+    "canonical_invoice_v0",
+    "canonical_exit_code",
+    "canonical_note",
+    "issued_invoice_v1_1_recorded_fields"
+  ],
+  "properties": {
+    "demo_version": { "const": "o15.capture-demo.v1" },
+    "capture_status": { "enum": ["ACCEPT", "REVIEW", "REJECT", "BLOCKED", "ERROR"] },
+    "capture_verdict": { "enum": ["ACCEPT", "REVIEW", "REJECT"] },
+    "page_count": { "type": "integer", "minimum": 1 },
+    "canonical_invoice_v0": { "type": ["object", "null"] },
+    "canonical_exit_code": { "type": ["integer", "null"], "enum": [0, 10, 20, 30, null] },
+    "canonical_note": { "type": ["string", "null"] },
+    "issued_invoice_v1_1_recorded_fields": { "type": ["object", "null"] }
+  },
+  "additionalProperties": false
+}

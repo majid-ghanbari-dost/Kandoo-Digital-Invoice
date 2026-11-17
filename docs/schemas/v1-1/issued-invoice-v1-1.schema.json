@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kandoo.cloud/schemas/v1-1/issued-invoice-v1-1.schema.json",
+  "title": "PROPOSED v1.1 — recorded fields on the Hub's issued invoice record (response_snapshot.response.invoice)",
+  "description": "PM-ordered extension shape (PM ORDER 9 P-01). UNCONFIRMED U14: proposed, additive, optional; the frozen Hub does not emit these fields yet. RECORDED VALUES ONLY — the Cloud never computes, infers, defaults, or enriches them. remaining_balance is a recorded value, never computed. currency_unit is the per-store unit AS RECORDED (rial|toman), never assumed. Amounts are unscaled integers in the recorded currency_unit. Invalid v1.1 content fails the ingest transaction (fail closed, no partial projection). No legal or tax meaning is attached to any field.",
+  "type": "object",
+  "properties": {
+    "customer_name": {
+      "type": ["string", "null"],
+      "description": "Optional customer display name, recorded as delivered.",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "payments": {
+      "type": ["array", "null"],
+      "description": "Optional list of recorded payments. Never used to compute anything.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "enum": ["card-reader", "card-to-card", "cash", "credit"] },
+          "amount": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["type", "amount"],
+        "additionalProperties": false
+      }
+    },
+    "currency_unit": {
+      "enum": ["rial", "toman", null],
+      "description": "Per-store currency unit AS RECORDED by the Hub. When absent, no unit is assumed; v1.0 *_rials field names remain the record."
+    },
+    "remaining_balance": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "RECORDED remaining balance in currency_unit. NEVER computed by the Cloud (not payable − Σpayments, not any other derivation)."
+    }
+  },
+  "additionalProperties": true
+}

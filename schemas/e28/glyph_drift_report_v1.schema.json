@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:e28:glyph-drift-report:1",
+  "title": "E-28 per-symbol Glyph drift report v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "reason",
+    "baseline_id",
+    "template_library_id",
+    "mean_distance_by_symbol",
+    "triggered_symbols",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema_version": { "const": "e28.glyph-drift-report.v1" },
+    "status": { "enum": ["CLEAR", "REVIEW", "NOT_EVALUATED"] },
+    "reason": { "type": ["string", "null"] },
+    "baseline_id": { "type": ["string", "null"] },
+    "template_library_id": { "type": ["string", "null"] },
+    "mean_distance_by_symbol": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "mean_distance",
+          "glyph_count",
+          "baseline_mean",
+          "bound",
+          "absolute_delta"
+        ],
+        "properties": {
+          "mean_distance": { "type": ["number", "null"], "minimum": 0 },
+          "glyph_count": { "type": ["integer", "null"], "minimum": 0 },
+          "baseline_mean": { "type": ["number", "null"], "minimum": 0 },
+          "bound": { "type": ["number", "null"], "minimum": 0 },
+          "absolute_delta": { "type": ["number", "null"], "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "triggered_symbols": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "diagnostics": { "type": "array", "items": { "type": "string" } },
+    "pipeline_status": { "enum": ["AUTO_CANDIDATE", "REVIEW", "REJECT"] }
+  },
+  "additionalProperties": false
+}
