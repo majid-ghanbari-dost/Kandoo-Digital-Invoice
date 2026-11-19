@@ -1,0 +1,14 @@
+name: Workflow Write Permission Probe
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  permission-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm workflow file can be registered
+        run: echo "Workflow write permission probe succeeded."
