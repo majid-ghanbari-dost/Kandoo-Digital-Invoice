@@ -1,199 +1,246 @@
-# KANDOO DIGITAL INVOICE — AGENT HANDOFF
+# KANDOO DIGITAL INVOICE — سند تحویل عامل
 
-> This file is the mandatory project handoff and operational source for onboarding agents.
-> It must be updated at the end of every meaningful project conversation/change affecting this repository.
-> It is NOT a replacement for authoritative specs/registers; those remain authoritative for technical contracts.
+> این فایل سند الزامی تحویل پروژه و مرجع اجرایی برای راه‌اندازی عامل‌های تازه است.
+> در پایان هر گفت‌وگوی معنادار پروژه یا هر تغییری که بر این مخزن اثر می‌گذارد، باید به‌روز شود.
+> این فایل جایگزین مشخصات یا دفترهای ثبت مرجع نیست؛ مرجع قراردادهای فنی همچنان همان اسناد هستند.
 
-## 1. Project Identity
+## وضعیت جاری تحویل چندعاملی — فعال
 
-Repository: `majid-ghanbari-dost/Kandoo-Digital-Invoice`
-Purpose: dedicated development line for Kandoo Digital Invoice / Holoo capture / canonicalization work.
-Parent project: `majid-ghanbari-dost/Kandoo`
+**آخرین به‌روزرسانی:** 2026-11-20
 
-This repository must contain only the Digital Invoice project line and its directly required artifacts.
+### پیشینهٔ کوتاه پروژه
 
-Conceptual relationship:
+این مخزن کد Python و مستندات خط صورتحساب دیجیتال Kandoo است؛ کار جاری آن شامل استخراج از ورودی‌های چاپ Holoo و کانونی‌سازی است. نشانی مخزن از مبدأ Git همین گردش‌کار تأیید شده است.
 
-Kandoo (parent)
-└── Digital Invoice development line
+### وضعیت: انجام‌شده / در انتظار / گام بعدی
+
+- **انجام‌شده:** سازوکار تحویل پایدار چندعاملی در این مخزن فعال شد. این فایل مرجع ماندگار برای ازسرگیری کار است؛ عامل تازه باید ابتدا آن را کامل بخواند.
+- **مرجع هماهنگی:** ابلاغ «PROJECT HANDOFF BRIEF — MULTI-AGENT COLLABORATION»، نسخهٔ 1.0، ارائه‌شده در پیام Owner. این ابلاغ مرجع قواعد همکاری است و خلاصهٔ اجرایی آن در همین فایل نگهداری می‌شود.
+- **وضعیت سازوکار:** طبق تأیید مدیر، تحویل پایدار در هر سه مخزن C#، PHP و Python فعال است.
+- **در انتظار:** E-63 همچنان `DELIVERED-pending-acceptance` است و پذیرش نهایی مالک را ندارد. E-65 همچنان `NOT STARTED` می‌ماند؛ تا تصمیم صریح مالک، هیچ پیاده‌سازی، تگ یا اجرای CI انجام نشود. هیچ تغییری در sandbox یا ادغامی به `main` مجاز نیست.
+- **گام بعدی:** پیگیری کارهای باز و تصمیم‌های مالک/مدیر طبق بخش «موارد باز»؛ هیچ کار E-65 پیش از تصمیم صریح آغاز نشود.
+
+### تصمیم‌ها و دلیل‌ها
+
+1. **نقش‌ها:** Owner فقط پیام‌رسان میان Manager و تیم‌های عامل است؛ از او توضیح فنی نخواهید و پرسش فنی نپرسید. Manager هماهنگ‌کننده است: کارها را برنامه‌ریزی می‌کند، دستور می‌نویسد و گزارش تیم‌ها را یکپارچه می‌کند. سه تیم C#، PHP و Python هرکدام مخزن GitHub جداگانه دارند.
+2. **مرجعیت:** مخزن‌های GitHub مرجع پایدار پروژه‌اند، نه تاریخچهٔ گفت‌وگو. این فایل پس از هر رویداد عمده، تصمیم یا مانع به‌روز شود.
+3. **گزارش‌دهی:** هر گزارش فقط دو مورد را بیان کند: (الف) چه مقدار انجام شده و (ب) اکنون چه کاری باید انجام شود. نام فایل‌ها، نشانی‌ها، فرمان‌ها و شناسه‌های فنی را در خط جداگانه یا درون کد بنویسید تا هنگام بازگویی بدخوانی نشوند.
+4. **انتقال فایل:** فایل‌ها را از طریق Owner جابه‌جا نکنید؛ از مخزن مربوط به هر تیم استفاده کنید.
+5. **ابهام:** اگر اطلاعاتی ناکافی است، آن را در بخش پرسش‌های باز همین فایل ثبت کنید و با بخش روشن کار ادامه دهید؛ از Owner نخواهید معنای فنی را توضیح دهد.
+
+### نشانی مخزن
+
+مخزن جاری (Python؛ مبدأ Git تأییدشده):
+
+`https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice`
+
+مخزن C# (نشانی ارائه‌شده در ابلاغ):
+
+`https://github.com/majid-ghanbari-dost/Kandoo`
+
+مخزن PHP (تأییدشده از سوی مدیر):
+
+`https://github.com/majid-ghanbari-dost/kandoo-cloud-php`
+
+**نشانی هر سه مخزن تأیید شده است؛ سازوکار تحویل در هر سه فعال است.**
+
+### موانع، موارد باز و پرسش‌ها
+
+- **دسترسی نوشتن:** دسترسی نوشتن هر تیم هنوز مستقلاً بررسی نشده است؛ آزمون نوشتن یا push آزمایشی انجام ندهید.
+- **بازتحویل (redelivery):** نیاز تکمیلیِ یادشده در نشست پیشین، متن کامل ندارد. این مورد تا دریافت جزئیات از Manager باز است و کارهای روشن را متوقف نمی‌کند.
+- **ناسازگاری تاریخ:** ابلاغ «PROJECT HANDOFF BRIEF» تاریخ نهایی‌شدن `2026-11-20` را ذکر می‌کند، درحالی‌که نسخهٔ پیشین این سند تاریخ `2026-10-12` را درج کرده بود. تاریخ این نسخه بنا بر دستور مدیر `2026-11-20` است؛ مدیر باید تأیید کند که تاریخ ابلاغ عمدی است یا خطای ثبت.
+- **وضعیت درخت کار پیش از این به‌روزرسانی:** شاخهٔ جاری `arena/d0587e71-kandoo-digital-invoice` و `HEAD` برابر `1b79e630a8f476ed13d2d9fa7b6fb1c3de391cd0` بود. درخت کار همچنین سند هماهنگیِ تغییر‌یافته و پوشه‌ها/فایل‌های ردیابی‌نشده داشت. آن‌ها را با `git add .`، پاک‌سازی یا push ناخواسته وارد تغییر این سند نکنید؛ پیش از همگام‌سازی، وضعیتشان جداگانه روشن شود.
+
+## ۱. هویت پروژه
+
+مخزن: `majid-ghanbari-dost/Kandoo-Digital-Invoice`
+هدف: خط توسعهٔ اختصاصی صورتحساب دیجیتال Kandoo، دریافت برداشت از Holoo و کانونی‌سازی.
+پروژهٔ مادر: `majid-ghanbari-dost/Kandoo`
+
+این مخزن باید فقط شامل خط پروژهٔ صورتحساب دیجیتال و مصنوعات مستقماً موردنیاز آن باشد.
+
+رابطهٔ مفهومی:
+
+Kandoo (پروژهٔ مادر)
+└── خط توسعهٔ صورتحساب دیجیتال
     └── Kandoo-Digital-Invoice
 
-The repositories are intentionally separate during development. At a later integration point the Digital Invoice line may be synchronized/merged back into the parent Kandoo project.
+این دو مخزن در زمان توسعه عمداً جدا نگه داشته می‌شوند. در مرحلهٔ یکپارچه‌سازی بعدی، خط صورتحساب دیجیتال ممکن است با پروژهٔ مادر Kandoo همگام یا ادغام شود.
 
-## 2. Mandatory Collaboration Rule
+## ۲. قاعدهٔ الزامی همکاری
 
-At the end of every meaningful project conversation or implementation change concerning this repository:
+در پایان هر گفت‌وگوی معنادار پروژه یا هر تغییر اجرایی مربوط به این مخزن:
 
-1. Update this file with the new verified state.
-2. Record completed/changed WPs, decisions, blockers, ownership and next executable work.
-3. Update relevant authoritative specs/registers/code/tests in the same project change.
-4. Commit the resulting state.
-5. Do not claim a change is integrated until the repository state reflects it.
+۱. این فایل را با وضعیت تازه و تأییدشده به‌روز کنید.
+۲. بسته‌های کاری تکمیل‌شده یا تغییریافته، تصمیم‌ها، موانع، مسئولیت‌ها و کار اجرایی بعدی را ثبت کنید.
+۳. مشخصات، دفترهای ثبت، کد یا آزمون‌های مرجع مرتبط را در همان تغییر پروژه به‌روز کنید.
+۴. وضعیت حاصل را با `commit` ثبت کنید.
+۵. تا وقتی وضعیت مخزن تغییر را نشان نداده است، ادعا نکنید که تغییر یکپارچه شده است.
 
-Administrative discussion that causes no project-state change need not create a commit.
+گفت‌وگوی اداری که هیچ تغییری در وضعیت پروژه ایجاد نمی‌کند، نیازمند ثبت تغییر نیست.
 
-### Automatic Project-Sync Policy
+### سیاست همگام‌سازی خودکار پروژه
 
-For every conversation that produces a real project output/change, the coordinator must:
-- update the actual project artifact in the authoritative repository when the available connector permits it;
-- update this handoff in the same change/commit;
-- update `KANDOO_AGENT_COORDINATION.md` when ownership or execution state changes;
-- report the exact repository commit/HEAD in the final report;
-- never claim source integration when only a local/archive artifact was produced.
+برای هر گفت‌وگویی که به خروجی یا تغییر واقعی پروژه می‌انجامد، هماهنگ‌کننده باید:
+- در صورت فراهم‌بودن اتصال لازم، مصنوع واقعی پروژه را در مخزن مرجع به‌روز کند؛
+- همین سند تحویل را در همان تغییر و همان `commit` به‌روز کند؛
+- هنگام تغییر مسئولیت یا وضعیت اجرا، `KANDOO_AGENT_COORDINATION.md` را نیز به‌روز کند؛
+- در گزارش نهایی، شناسهٔ دقیق `commit` و `HEAD` مخزن را اعلام کند؛
+- اگر فقط مصنوع محلی یا آرشیوی ساخته شده است، ادعای یکپارچه‌سازی منبع نکند.
 
-If the current tool environment cannot transfer a required local artifact into GitHub, record that limitation here and continue using the verified artifact as the source package; do not fabricate a successful sync.
+اگر محیط ابزار جاری نتواند مصنوع محلی لازم را به GitHub منتقل کند، این محدودیت را اینجا ثبت کنید و از مصنوع تأییدشده به‌عنوان بستهٔ منبع استفاده کنید؛ همگام‌سازی موفق را جعل نکنید.
 
-## 3. Roles
+## ۳. نقش‌ها و مدل همکاری چندعاملی
 
-Product Owner / Final Decision Maker: user
-Technical Manager / Architect / Coordinator: ChatGPT
-Agent 1: current implementation agent
-Agent 2: second implementation/research agent
+- **مالک (Owner):** انسانِ پیام‌رسان میان مدیر و تیم‌های عامل. نقش او در این هماهنگی فقط رساندن پیام‌هاست؛ از او توضیح فنی نخواهید و پرسش فنی از او نپرسید.
+- **مدیر (Manager):** دستیار هماهنگ‌کننده؛ کارها را برنامه‌ریزی و دستورها را می‌نویسد و گزارش‌های تیم‌ها را یکپارچه می‌کند.
+- **تیم‌های عامل:** سه تیم C#, PHP و Python؛ هر تیم در مخزن GitHub خودش کار می‌کند.
+- **این مخزن:** مخزن کد Python صورتحساب دیجیتال است؛ نشانی مبدأ Git در بخش وضعیت جاری ثبت شده است.
 
-Each WP has one owner. Agents must not concurrently modify the same WP/files.
+هر بستهٔ کاری فقط یک تیم مسئول دارد. تیم‌ها نباید هم‌زمان فایل‌ها یا بستهٔ کاری فعال یکدیگر را تغییر دهند.
 
-## 4. Collaboration Rules
+## ۴. قواعد همکاری
 
-- Frozen decisions are not reopened without direct contradictory evidence.
-- No Architecture Loop.
-- If contract + acceptance criteria are sufficient, implement directly.
-- A mission should continue through multiple executable WPs when dependencies and ownership permit.
-- Stop only at a real boundary: PO decision, missing contract/AC, real-world evidence requirement, contradiction with frozen architecture, or genuine technical blocker.
-- Reports/artifact extraction are not independent project phases.
-- Agent branches must not overwrite another agent's work.
-- Main is the integration/source branch.
-- Every substantive implementation must be tested and committed.
-- Full archive + manifest + SHA-256 remain required for delivery checkpoints.
+- تصمیم‌های تثبیت‌شده بدون شواهد مستقیم و متناقض دوباره باز نمی‌شوند.
+- چرخهٔ بازنگری معماری ایجاد نکنید.
+- اگر قرارداد و معیارهای پذیرش کافی هستند، مستقیماً پیاده‌سازی کنید.
+- مأموریت را در چند بستهٔ کاری اجرایی ادامه دهید، مشروط بر اینکه وابستگی‌ها و مسئولیت‌ها اجازه دهند.
+- فقط در مرز واقعی توقف کنید: تصمیم مالک محصول، قرارداد یا معیار پذیرشِ مفقود، نیاز به شواهد دنیای واقعی، تناقض با معماری تثبیت‌شده یا مانع فنی واقعی.
+- استخراج گزارش یا مصنوعات، مرحلهٔ مستقل پروژه محسوب نمی‌شود.
+- شاخهٔ یک عامل نباید کار عامل دیگر را بازنویسی کند.
+- شاخهٔ `main` شاخهٔ یکپارچه‌سازی و منبع است.
+- هر پیاده‌سازی ماهوی باید آزموده و با `commit` ثبت شود.
+- در نقاط تحویل، آرشیو کامل به‌همراه فهرست و SHA-256 همچنان لازم است.
 
-## 5. Frozen Architecture / Domain Principles
+## ۵. معماری تثبیت‌شده و اصول دامنه
 
-- Business → Store → Users/Devices.
-- SQLite local Outbox ↔ Cloud API ↔ PostgreSQL.
-- OperationId = idempotency key.
-- Global Revision = sync cursor.
-- AggregateVersion / OCC with base_version.
-- No silent overwrite.
-- Inventory is ledger-based.
-- Negative inventory is allowed.
-- Inventory shortage alone must not reject a Sale.
-- CorrelationId is not a transaction/FK.
-- Product deactivation uses is_active=false.
-- Employee cannot final-confirm Product Candidate.
-- Customer capture cannot auto-create a Customer.
-- Canonical Invoice v1 is source-independent.
-- UNRESOLVED and provenance are allowed.
-- Native path: Sale → Invoice → Digital Invoice.
-- External captures enter domain only through Canonicalization Gate.
-- Gate outcomes: AUTO / REVIEW / REJECT.
-- External capture must not silently create Sale / Inventory / KPI.
-- Digital Invoice lifecycle: DRAFT → EXTRACTED → VALIDATED → ISSUED, plus REVOKED / SUPERSEDED.
-- Holoo is an external accounting/tax system.
-- Current Holoo path: Holoo → Print Spooler → Kandoo Agent → Raw Capture → durable local storage → extraction/recognition → Canonicalization Gate.
-- No real production Holoo DB connection is permitted by the current project boundary.
+- کسب‌وکار ← فروشگاه ← کاربران و دستگاه‌ها.
+- صف خروجی محلی SQLite ↔ درگاه ابری ↔ PostgreSQL.
+- `OperationId` کلید تکرارناپذیری است.
+- نسخهٔ سراسری، نشانگر همگام‌سازی است.
+- `AggregateVersion` و کنترل هم‌زمانی خوش‌بینانه با `base_version`.
+- بازنویسی خاموش ممنوع است.
+- موجودی بر پایهٔ دفترکل است.
+- موجودی منفی مجاز است.
+- کمبود موجودی به‌تنهایی نباید فروش را رد کند.
+- `CorrelationId` تراکنش یا کلید خارجی نیست.
+- غیرفعال‌کردن کالا با `is_active=false` انجام می‌شود.
+- کارمند نمی‌تواند نامزد کالا را نهایی تأیید کند.
+- برداشت مشتری نباید خودکار مشتری بسازد.
+- نسخهٔ ۱ صورتحساب کانونی مستقل از منبع است.
+- وضعیت `UNRESOLVED` و ثبت خاستگاه مجازند.
+- مسیر بومی: فروش ← صورتحساب ← صورتحساب دیجیتال.
+- برداشت‌های بیرونی فقط از دروازهٔ کانونی‌سازی وارد دامنه می‌شوند.
+- پیامدهای دروازه: `AUTO` / `REVIEW` / `REJECT`.
+- برداشت بیرونی نباید خاموش فروش، موجودی یا شاخص کلیدی عملکرد بسازد.
+- چرخهٔ عمر صورتحساب دیجیتال: `DRAFT` ← `EXTRACTED` ← `VALIDATED` ← `ISSUED`، به‌علاوهٔ `REVOKED` / `SUPERSEDED`.
+- Holoo سامانهٔ بیرونی حسابداری و مالیاتی است.
+- مسیر کنونی Holoo: Holoo ← Print Spooler ← Kandoo Agent ← برداشت خام ← ذخیره‌سازی محلی پایدار ← استخراج و بازشناسی ← دروازهٔ کانونی‌سازی.
+- اتصال به پایگاه دادهٔ واقعی تولیدی Holoo در مرز کنونی پروژه مجاز نیست.
 
-## 6. Historical P12/Bootstrap Snapshot (pre-O15; superseded by Section 11)
+## ۶. نمای تاریخی P12 و راه‌اندازی اولیه (پیش از O15؛ بخش ۱۱ مرجع جاری است)
 
-> The statements below preserve the handoff inherited at repository bootstrap. They are not the current execution state of the active Arena O15 branch; Section 11 is authoritative for current state.
+> عبارت‌های زیر برای حفظ سند تحویل هنگام راه‌اندازی مخزن ثبت شده‌اند. این‌ها وضعیت اجرای جاری شاخهٔ فعال Arena O15 نیستند؛ بخش ۱۱ مرجع وضعیت فعلی است.
 
-P1–P10: completed/frozen.
-WP-11.1: implemented, tested, packaged and accepted at implementation level.
-WP-12.1: implemented and tested.
-WP-12.2: implemented and tested.
-WP-12.3: PO/G4 decision boundary; D-07/D-08/DEF2 require ratification.
-WP-11.2: Adapter must NOT be implemented until its required decisions/contract are resolved; a Decision Package exists.
+P1 تا P10: تکمیل و تثبیت‌شده.
+WP-11.1: پیاده‌سازی، آزمون، بسته‌بندی و در سطح اجرا پذیرفته شده بود.
+WP-12.1: پیاده‌سازی و آزمون شده بود.
+WP-12.2: پیاده‌سازی و آزمون شده بود.
+WP-12.3: مرز تصمیم PO/G4؛ تصمیم‌های D-07/D-08/DEF2 به تصویب نیاز دارند.
+WP-11.2: تا حل تصمیم‌ها و قراردادهای لازم نباید واسط پیاده‌سازی شود؛ بستهٔ تصمیم موجود است.
 
-Latest reported P12 implementation source anchor: `d8dbc29`.
-Latest reported final delivery/hygiene commits in the previous working project: `a73fde5`, `574444f`.
-These commit IDs refer to the previous working project history and are not yet present in this newly-created repository.
+آخرین شناسهٔ منبع گزارش‌شده برای پیاده‌سازی P12: `d8dbc29`.
+آخرین ثبت‌های گزارش‌شدهٔ تحویل و پاک‌سازی در پروژهٔ کاری قبلی: `a73fde5`، `574444f`.
+این شناسه‌ها متعلق به تاریخچهٔ پروژهٔ کاری پیشین هستند و هنوز در مخزن تازه‌ساخته‌شدهٔ جاری وجود ندارند.
 
-Latest verified transfer package available for bootstrap:
-- File: `kandoo-current-implementation10.zip`
-- ZIP SHA-256: `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`
-- Project files inside ZIP: 281
-- Total ZIP entries: 282 (281 project files + embedded manifest)
-- Manifest reports: 281 files
-- Manifest verification: 281/281 file hashes matched; 0 missing; 0 extra; 0 size mismatches.
-- Project content types verified: 248 Python, 33 Markdown, 1 text manifest.
-- This package is the current authoritative transfer candidate and supersedes the older 277-file delivery package for bootstrap purposes.
-- The package includes source anchor `54211b6` according to its embedded manifest.
+بستهٔ انتقالِ تأییدشدهٔ موجود برای راه‌اندازی:
+- پرونده: `kandoo-current-implementation10.zip`
+- SHA-256 آرشیو: `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`
+- تعداد پرونده‌های پروژه در آرشیو: 281
+- تعداد کل عضوهای ZIP: 282 (281 پروندهٔ پروژه و یک فهرستِ درون‌گنجانده‌شده)
+- تعداد اعلام‌شده در فهرست: 281 پرونده.
+- نتیجهٔ بررسی فهرست: هشِ 281 از 281 پرونده تطبیق داشت؛ هیچ پروندهٔ مفقود یا اضافه و هیچ اختلاف اندازه‌ای نبود.
+- گونه‌های محتوای پروژهٔ تأییدشده: 248 پروندهٔ Python، 33 پروندهٔ Markdown و یک فهرست متنی.
+- این بسته، برای راه‌اندازی، نامزد انتقال مرجع جاری است و جایگزین بستهٔ تحویل قدیمی‌ترِ 277 پرونده‌ای می‌شود.
+- بر اساس فهرست درون‌گنجانده‌شده، بسته شامل شناسهٔ منبع `54211b6` است.
 
-Latest reported verification from the working project:
-- WP-12.1 dedicated tests: 90/90, repeated independently ×3.
-- WP-12.2 dedicated tests: 33/33, repeated independently ×3.
-- Smoke: 19/19.
-- Full regression: 1439/1440 passed, with one known pre-existing date-sensitive flake:
+آخرین نتیجهٔ تأییدشدهٔ گزارش‌شده از پروژهٔ کاری:
+- آزمون‌های اختصاصی WP-12.1: 90 از 90، با سه بار تکرار مستقل.
+- آزمون‌های اختصاصی WP-12.2: 33 از 33، با سه بار تکرار مستقل.
+- آزمون دود: 19 از 19.
+- بازگشت کامل: 1439 از 1440 گذشت؛ یک آزمون حساس به تاریخ از پیش متزلزل بود:
   `test_ir_provenance::test_no_raw_pipeline_values_are_stored`.
-- No new regression failure was reported.
+- شکست بازگشتی تازه‌ای گزارش نشده بود.
 
-## 7. Historical Agent Ownership Snapshot (pre-O15; superseded by Section 11)
+## ۷. نمای تاریخی مسئولیت عامل‌ها (پیش از O15؛ بخش ۱۱ مرجع جاری است)
 
-Agent 1:
-- Owns the active P12 execution stream until it reaches its genuine PO/evidence boundary.
-- Must not assume this new repository already contains the working tree.
+عامل ۱:
+- تا رسیدن جریان اجرایی P12 به مرز واقعی تصمیم مالک محصول یا نیاز به شواهد، مسئول آن جریان بود.
+- نباید فرض کند که مخزن تازه‌ساخته‌شده از قبل درخت کاری پروژه را دارد.
 
-Agent 2:
-- Owns independent work only after inspecting this repository and coordination state.
-- Must not modify Agent 1's active WP/files concurrently.
+عامل ۲:
+- فقط پس از بررسی مخزن و وضعیت هماهنگی، کار مستقل را بر عهده می‌گیرد.
+- نباید هم‌زمان بستهٔ کاری یا فایل فعال عامل ۱ را تغییر دهد.
 
-## 8. Historical Real Boundaries (pre-O15; superseded by Section 11)
+## ۸. مرزهای واقعی تاریخی (پیش از O15؛ بخش ۱۱ مرجع جاری است)
 
-1. P12.3: PO/G4 ratification of D-07, D-08 and DEF2.
-2. WP-11.2: required source mapping/authority/sync/conflict/write-back decisions and sufficient contract before Adapter implementation.
-3. Repository bootstrap: actual 281-file project tree must still be transferred from the verified local ZIP into `main`.
+۱. P12.3: تصویب D-07، D-08 و DEF2 از سوی PO/G4.
+۲. WP-11.2: تصمیم‌های لازم دربارهٔ نگاشت منبع، مرجعیت منبع، همگام‌سازی، تعارض و بازنویسی، به‌علاوهٔ قرارداد کافی پیش از پیاده‌سازی واسط.
+۳. راه‌اندازی مخزن: درخت واقعی 281 پرونده‌ای پروژه باید هنوز از ZIP محلیِ تأییدشده به `main` منتقل شود.
 
-## 9. Historical Repository Bootstrap Status (pre-O15; superseded by Section 11)
+## ۹. وضعیت تاریخی راه‌اندازی مخزن (پیش از O15؛ بخش ۱۱ مرجع جاری است)
 
-The repository contains the collaboration/handoff files, but the actual 281-file implementation tree has not yet been transferred.
+مخزن شامل پرونده‌های همکاری و تحویل است، اما در آن زمان درخت پیاده‌سازی 281 پرونده‌ای هنوز منتقل نشده بود.
 
-Verified transfer candidate:
-`kandoo-current-implementation10.zip` with SHA-256 `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`.
+نامزد انتقال تأییدشده:
+`kandoo-current-implementation10.zip` با SHA-256 برابر با `b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753`.
 
-The current GitHub connector has repository write permissions but no bulk local-directory upload/Git-push operation. Therefore the ZIP cannot be truthfully represented as integrated source until the 281 files are actually written to Git.
+اتصال GitHub جاری مجوز نوشتن در مخزن دارد، اما ابزار انتقال گروهیِ پوشهٔ محلی یا اجرای `git push` را ندارد. بنابراین تا وقتی 281 پرونده واقعاً در Git نوشته نشده‌اند، نمی‌توان ZIP را صادقانه به‌عنوان منبع یکپارچه‌شده معرفی کرد.
 
-Next bootstrap action:
-- transfer the exact 281 project files without reconstruction or modification;
-- preserve the embedded manifest;
-- verify repository file count/content against the transfer package;
-- update this handoff with actual repository HEAD and verification results.
+اقدام بعدیِ تاریخی برای راه‌اندازی:
+- دقیقاً همان 281 پروندهٔ پروژه را بدون بازسازی یا تغییر منتقل کنید؛
+- فهرست درون‌گنجانده‌شده را نگه دارید؛
+- تعداد و محتوای پرونده‌های مخزن را با بستهٔ انتقال تطبیق دهید؛
+- این سند را با `HEAD` واقعی مخزن و نتیجهٔ بررسی به‌روز کنید.
 
-## 10. Handoff Protocol
+## ۱۰. روش تحویل
 
-Every agent joining this project must:
+هر عاملی که به این پروژه می‌پیوندد باید:
 
-1. Read this file completely.
-2. Inspect current Git HEAD and working tree.
-3. Read authoritative registers/specs.
-4. Read `KANDOO_AGENT_COORDINATION.md`.
-5. Identify active WP ownership before editing anything.
-6. Work only inside its assigned ownership boundary.
-7. Run required tests/regression/smoke.
-8. Commit.
-9. Update this handoff and coordination state.
-10. Report exact commit, tests, blockers and next executable work.
+۱. این فایل را کامل بخواند.
+۲. `HEAD` و درخت کاری جاری Git را بررسی کند.
+۳. دفترهای ثبت و مشخصات مرجع را بخواند.
+۴. `KANDOO_AGENT_COORDINATION.md` را بخواند.
+۵. پیش از هر ویرایش، مسئولیت بستهٔ کاری فعال را مشخص کند.
+۶. فقط در محدودهٔ مسئولیت واگذارشده کار کند.
+۷. آزمون‌ها، بازگشت و آزمون دود لازم را اجرا کند.
+۸. تغییر را با `commit` ثبت کند.
+۹. این سند و وضعیت هماهنگی را به‌روز کند.
+۱۰. شناسهٔ دقیق ثبت، آزمون‌ها، موانع و کار اجرایی بعدی را گزارش دهد.
 
-Never infer missing technical contracts from this handoff when an authoritative spec/register is available.
+وقتی مشخصات یا دفتر ثبت مرجع فنی موجود است، قرارداد فنی مفقود را از روی این سند حدس نزنید.
 
-## 11. Current O15 Execution State — updated 2026-10-12
+## ۱۱. وضعیت اجرای جاری O15 — به‌روزشده در 2026-10-12
 
-> This section is authoritative for the active Arena branch. Sections 6–9 preserve an older pre-O15 bootstrap snapshot and are historical only.
+> این بخش مرجع شاخهٔ فعال Arena است. بخش‌های ۶ تا ۹ فقط نمای تاریخیِ پیش از O15 را نگه می‌دارند.
 
-- Repository: `majid-ghanbari-dost/Kandoo-Digital-Invoice`.
-- Active branch: `arena/d0587e71-kandoo-digital-invoice`; never switch branches, merge, or push to `main` for this order.
-- E-62 source anchor before the E-64 handoff/report changes: `5a126ae9fb82bef77662ed6dd380638c90612ceb`, tagged `o15-E-62`.
-- E-60: **COMPLETE**. Final accepted tag `o15-E-60-fix-1`; SHA `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`. The earlier `o15-E-60` tag remains on the initial commit and is not the accepted final version.
-- E-61: **COMPLETE**. Tag `o15-E-61`; SHA `595d84120a33fd720b9871dc2a2b3b7715b60570`. C-84's value/confidence/crop-region and frozen result contract remain unchanged. Without independent expected-value labels, accuracy is `NOT_SCORED` and `extracted_but_wrong` is `null`.
-- E-62: **COMPLETE**. Tag `o15-E-62`; SHA `5a126ae9fb82bef77662ed6dd380638c90612ceb`. Local label templates validate against the O15 schema, default to pending values, and do not update Glyph or enable online learning.
-- E-63: **DELIVERED — task and evidence are documented; this is not final acceptance.** Extractor result is `REVIEW`, not `AUTO` and not an accuracy PASS. The owner retains final acceptance. The report separates technical health, extraction quality, and criterion compliance with evidence. Synthetic input and raw outputs stayed in the sandbox; the remote transfer branch was deleted after validation. No capture payload, file hash/size, OCR value, or raw output is in Git.
-- E-63 initial run: source tag `o15-E-60-fix-1`, SHA `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`, Linux/Pillow `11.1.0`, returned `BLOCKED / REJECT` (exit `20`), one blocked page, zero numeric candidates. `src/image_extraction_adapter/preprocessing.py:642` called missing `Image.get_flattened_data()`; the default E-05 bank was also unavailable because its real fixture JSONs are absent. This first result is retained, not overwritten.
-- E-63 fix-forward: tag `o15-E-63-fix-1`, commit/SHA `89f78b2099d0f15d01bbf84bd68cc1a997c754c2`. Diff: only replace `line_mask.get_flattened_data()` with Pillow-11.1-compatible `line_mask.getdata()`; Pillow pin, extraction semantics, banks, schemas and workflow are unchanged. `test_line_mask_flattened_pixel_count_uses_pillow_11_1_data_api` asserts the expected 30-pixel removal, cleaned output, and unchanged input on a synthetic grayscale image.
-- E-63 verification: full local suite `1702 passed`; `scripts/verify_o15_e60.py` PASS. Branch CI [44080880091](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44080880091) and tag CI [44081030928](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44081030928) succeeded.
-- E-63 artifact status: E-60 run `44030430963`, artifact ID `14305290850`, declared digest `sha256:60f9baee9b8910d2817878d9777627b60ae3dde275d74cc8263eb53c9d5be083`. One authenticated API retry returned EOF and zero bytes; **actual artifact hash was not verified**. Per executive instruction, E-63 proceeded from Linux source at the approved fix-forward tag/SHA.
-- E-63 final aggregate: two post-fix runs from the exact tag/SHA produced identical aggregate metrics; each had one invoice/one page, exit `10`, result `REVIEW`, zero blocked pages/errors, and schema-valid result/demo JSON. There were nine numeric candidates and all nine `REVIEW`; confidence bins `[0,25)=0`, `[25,50)=0`, `[50,75)=0`, `[75,100]=9`, `UNSCORED=0`; E-06 `REVIEW` (`PARTIAL_MATCH`, `NEW_LAYOUT`). Glyph templates loaded (17 row/10 payable); glyph drift `REVIEW`. E-05 bank `UNAVAILABLE`/zero templates. Accuracy `NOT_SCORED`, `extracted_but_wrong: null`.
-- E-63 disposition per executive: **DELIVERED** means the task is documented, not accepted; final acceptance remains with the owner. Exactly these items remain **NOT-VERIFIED**: Holoo origin, artifact, and diversity. Input structure/count/integrity/reporting evidence and the `NOT_SCORED` limitation remain as in the report; no result number was added or reinterpreted.
-- Transfer cleanup: `git push origin --delete o15-e63-transfer` succeeded; the removed branch's last SHA was `d042001f8827fe591cfa428e859c91ff1846fa45`. The branch was not recreated. Input and outputs remain sandbox-only.
-- E-64: handoff, coordination, and status report are recorded at tag `o15-E-64`, SHA `d01d82d30799089a1b64422900cfb01897dad580`; branch CI [44035893690](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035893690) and tag CI [44035895508](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035895508) succeeded.
-- E-65 (STRETCH): **NOT STARTED.** E-63 is dispositioned `DELIVERED` (not final acceptance). The authoritative repository documents state only the label “Holoo v1.2 stretch” and provide no executable scope/acceptance criteria. Under the manager's two-step gate, do not implement or tag until the owner supplies complete written criteria.
+- مخزن: `majid-ghanbari-dost/Kandoo-Digital-Invoice`.
+- شاخهٔ فعال: `arena/d0587e71-kandoo-digital-invoice`؛ برای این مأموریت شاخه را عوض نکنید، ادغام نکنید و به `main` فشار ندهید.
+- شناسهٔ منبع E-62 پیش از تغییرهای سند تحویل و گزارش E-64: `5a126ae9fb82bef77662ed6dd380638c90612ceb`، با برچسب `o15-E-62`.
+- E-60: **تکمیل‌شده**. برچسب نهایی پذیرفته‌شده `o15-E-60-fix-1`؛ شناسهٔ ثبت `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`. برچسب قدیمی‌تر `o15-E-60` روی ثبت آغازین باقی مانده و نسخهٔ نهایی پذیرفته‌شده نیست.
+- E-61: **تکمیل‌شده**. برچسب `o15-E-61`؛ شناسهٔ ثبت `595d84120a33fd720b9871dc2a2b3b7715b60570`. قرارداد تثبیت‌شدهٔ C-84 برای مقدار، اطمینان و ناحیهٔ برش تغییر نکرده است. بدون برچسب‌های مستقلِ مقدار موردانتظار، دقت `NOT_SCORED` و `extracted_but_wrong` برابر `null` است.
+- E-62: **تکمیل‌شده**. برچسب `o15-E-62`؛ شناسهٔ ثبت `5a126ae9fb82bef77662ed6dd380638c90612ceb`. الگوهای برچسب‌گذاری محلی با شِمای O15 اعتبارسنجی می‌شوند، به‌طور پیش‌فرض در انتظار می‌مانند و گلیف یا یادگیری برخط را به‌روز نمی‌کنند.
+- E-63: **تحویل‌شده؛ پذیرش نهایی مالک در انتظار است.** تکلیف و شواهد مستند شده‌اند، اما این به‌معنای پذیرش نهایی نیست. نتیجهٔ استخراج `REVIEW` است، نه `AUTO` و نه قبولی دقت. گزارش، سلامت فنی، کیفیت استخراج و انطباق با معیارها را جداگانه مستند می‌کند. ورودی ساختگی و خروجی خام در محیط جداشده ماندند؛ شاخهٔ انتقال راه‌دور پس از اعتبارسنجی حذف شد. هیچ دادهٔ برداشت، اندازه یا هشِ پرونده، مقدار OCR یا خروجی خام در Git نیست.
+- اجرای نخست E-63: کد منبع برچسب `o15-E-60-fix-1`، شناسهٔ ثبت `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`، Linux/Pillow `11.1.0`، با `BLOCKED / REJECT` و کد خروج `20` پایان یافت؛ یک صفحه مسدود و صفر نامزد عددی داشت. `src/image_extraction_adapter/preprocessing.py:642` فراخوانی ناموجود `Image.get_flattened_data()` داشت؛ بانک پیش‌فرض E-05 نیز به‌علت نبود پرونده‌های JSON نمونهٔ واقعی در دسترس نبود. این نتیجهٔ نخست حذف یا جایگزین نشده است.
+- اصلاح محدود E-63: برچسب `o15-E-63-fix-1`، شناسهٔ ثبت `89f78b2099d0f15d01bbf84bd68cc1a997c754c2`. تنها فراخوانی `line_mask.get_flattened_data()` با روش سازگارِ موجود در Pillow 11.1 یعنی `line_mask.getdata()` جایگزین شد؛ نسخهٔ وابستگی، منطق استخراج، بانک‌ها، شِماها و روندکار تغییر نکردند. آزمون `test_line_mask_flattened_pixel_count_uses_pillow_11_1_data_api` حذف موردانتظار 30 پیکسل، پاک‌شدن خط در خروجی و ثابت‌ماندن تصویر ورودی را بررسی می‌کند.
+- تأیید E-63: مجموعهٔ کامل محلی، 1702 آزمونِ گذرانده داشت؛ `scripts/verify_o15_e60.py` گذشت. اجرای خودکار شاخه [44080880091](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44080880091) و اجرای خودکار برچسب [44081030928](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44081030928) موفق بود.
+- وضعیت بستهٔ ساخت E-63: اجرای برچسب E-60 با شناسهٔ `44030430963`، شناسهٔ بستهٔ ساخت `14305290850` و چکیدهٔ اعلامی `sha256:60f9baee9b8910d2817878d9777627b60ae3dde275d74cc8263eb53c9d5be083` بود. دریافت مجدد از طریق رابط برنامه‌نویسی احرازشده به EOF و پروندهٔ صفر‌بایتی انجامید؛ **هش واقعی بستهٔ ساخت تأیید نشد**. طبق مجوز مدیر اجرا، E-63 از کد منبع Linux در برچسب و شناسهٔ ثبت اصلاح‌شده ادامه یافت.
+- تجمیع نهایی E-63: دو اجرای پس از اصلاح از همان برچسب و شناسهٔ ثبت، شاخص‌های تجمیعی یکسان دادند؛ هر اجرا یک صورتحساب و یک صفحه، کد خروج `10`، نتیجهٔ `REVIEW`، صفر صفحهٔ مسدود یا خطا، و دو خروجی JSON معتبر با شِما داشت. ۹ نامزد عددی بودند و هر ۹ مورد `REVIEW`؛ بازه‌های اطمینان `[0,25)=0`، `[25,50)=0`، `[50,75)=0`، `[75,100]=9` و `UNSCORED=0` بودند؛ E-06 برابر `REVIEW` با `PARTIAL_MATCH` و `NEW_LAYOUT` بود. الگوهای گلیف بارگذاری شدند (نمایهٔ `row`: هفده الگو؛ `payable`: ده الگو) و پایشگر لغزش گلیف، `REVIEW` داد. بانک E-05 `UNAVAILABLE` و دارای صفر الگو بود. دقت `NOT_SCORED` و `extracted_but_wrong` برابر `null` ماند.
+- تعیین وضعیت E-63 به دستور مدیر اجرا: **`DELIVERED`** یعنی تکلیف مستند شده، نه پذیرفته‌شده؛ پذیرش نهایی با مالک است. دقیقاً این موارد `NOT-VERIFIED` باقی می‌مانند: مبدأ Holoo، بستهٔ ساخت و تنوع. شواهد ساختار، تعداد، یکپارچگی و گزارش‌دهی ورودی و محدودیت `NOT_SCORED` همان موارد ثبت‌شده در گزارش‌اند؛ عدد تازه‌ای اضافه یا تفسیر نشده است.
+- پاک‌سازی انتقال: حذف راه‌دور `o15-e63-transfer` با `git push origin --delete o15-e63-transfer` موفق شد؛ آخرین شناسهٔ ثبت آن `d042001f8827fe591cfa428e859c91ff1846fa45` بود. شاخه بازسازی نشد. ورودی و خروجی‌ها فقط در محیط جداشده باقی ماندند.
+- E-64: سند تحویل، هماهنگی و گزارش وضعیت با برچسب `o15-E-64` و شناسهٔ ثبت `d01d82d30799089a1b64422900cfb01897dad580` ثبت شده‌اند؛ اجرای خودکار شاخه [44035893690](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035893690) و اجرای خودکار برچسب [44035895508](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035895508) موفق بود.
+- E-65 (گسترش): **NOT STARTED**. مخزن فقط برچسب «Holoo v1.2 stretch» را دارد و دامنه یا معیار پذیرش اجراییِ مصوبی در آن نیست. پیش‌نویس فنیِ پیشنهادی با فرض‌های صریح در `docs/questions/Q-15-02.md` برای بررسی مالک ثبت شده است؛ این پیش‌نویس مجوز اجرا نیست. تا تأیید مکتوب مالک، هیچ پیاده‌سازی یا برچسبی آغاز نمی‌شود.
 
-Verification at E-62: focused E-60/E-61/E-62 tests `18 passed`; `scripts/verify_o15_e60.py` passed; full local suite `1701 passed in 167.58s`. Both E-62 CI workflows succeeded: branch run [44035249445](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035249445) and tag run [44035251303](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035251303). E-63 fix-forward CI and exact details are recorded above and in `docs/o15-final-report.md`. All recent workflow notices were non-blocking Node.js 20 deprecations.
+تأیید E-62: آزمون‌های متمرکز E-60/E-61/E-62، 18 مورد گذرانده داشتند؛ `scripts/verify_o15_e60.py` گذشت؛ مجموعهٔ کامل محلی 1701 آزمون را در 167.58 ثانیه گذراند. هر دو روندکار خودکار مربوط به E-62 موفق بودند: اجرای شاخه [44035249445](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035249445) و اجرای برچسب [44035251303](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44035251303). جزئیات دقیق اصلاح E-63 و اجرای خودکار آن در بالا و در `docs/o15-final-report.md` ثبت شده‌اند. هشدارهای اخیر روندکار دربارهٔ پایان پشتیبانی Node.js 20 غیرمسدودکننده بودند.
 
-**Next executable action:** Quote the existing E-65 label and gating statements from `AGENT_HANDOFF.md`, `KANDOO_AGENT_COORDINATION.md`, and the O15 order documents. They do not provide executable scope/acceptance criteria. Send the owner a request/template for the missing scope; do not implement or tag. E-63 is already dispositioned `DELIVERED` (not final acceptance). Preserve E-63 records and keep capture files/raw outputs outside Git.
+**کار اجرایی بعدی:** پیش‌نویس پیشنهادی دامنه و معیارهای E-65 در `docs/questions/Q-15-02.md` را برای تأیید یا اصلاح به مالک ارائه کنید. تا دریافت تأیید مکتوب، E-65 را پیاده‌سازی یا برچسب‌گذاری نکنید. E-63 همچنان `DELIVERED` و در انتظار پذیرش نهایی مالک است. سوابق E-63 را حفظ کنید و پرونده‌های برداشت و خروجی خام را بیرون از Git نگه دارید.
