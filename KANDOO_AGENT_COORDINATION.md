@@ -1,46 +1,46 @@
-# KANDOO DIGITAL INVOICE — O15 AGENT COORDINATION
+# KANDOO DIGITAL INVOICE — هماهنگی عامل‌های O15
 
-## Current execution context
+## زمینهٔ اجرای جاری
 
-- Repository: `majid-ghanbari-dost/Kandoo-Digital-Invoice`
-- Active Arena branch: `arena/d0587e71-kandoo-digital-invoice`
-- O15 work stays on this branch; do not switch branches, merge to `main`, push to `main`, or open/merge a PR without explicit authorization.
-- `docs/o15-final-report.md` and `AGENT_HANDOFF.md` contain the E-63 three-axis evidence and current E-65 gate.
+- مخزن: `majid-ghanbari-dost/Kandoo-Digital-Invoice`
+- شاخهٔ فعال Arena: `arena/d0587e71-kandoo-digital-invoice`
+- کارهای O15 فقط روی همین شاخه انجام می‌شوند؛ بدون مجوز صریح شاخه را عوض نکنید، با `main` ادغام نکنید، به `main` فشار ندهید و درخواست ادغام باز یا ادغام نکنید.
+- `docs/o15-final-report.md` و `AGENT_HANDOFF.md` شواهد سه‌محوری E-63 و دروازهٔ جاری E-65 را در بر دارند.
 
-## Ownership and status
+## مسئولیت و وضعیت
 
-| Work item | Owner | Status |
+| بستهٔ کاری | مسئول | وضعیت |
 |---|---|---|
-| E-60 Windows extractor bundle / CLI | Arena implementation agent | COMPLETE — `o15-E-60-fix-1`; branch and tag CI green |
-| E-61 local evidence / offline review queue | Arena implementation agent | COMPLETE — `o15-E-61`; branch and tag CI green |
-| E-62 operator-label template | Arena implementation agent | COMPLETE — `o15-E-62`; branch and tag CI green |
-| E-63 sandbox measurement | Arena implementation agent | DELIVERED — task/evidence documented from `o15-E-63-fix-1`; extractor output `REVIEW`; this is not final acceptance, which remains with owner |
-| E-64 handoff / status report | Arena implementation agent | COMPLETE — `o15-E-64`; branch and tag CI green |
-| E-65 Holoo v1.2 stretch | Arena implementation agent after owner supplies executable criteria | NOT STARTED — executable scope/acceptance criteria are not specified in the authoritative repository text |
+| بستهٔ اجرایی Windows و رابط خط فرمان در E-60 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-60-fix-1`؛ اجرای خودکار شاخه و برچسب موفق |
+| شواهد محلی و صف بازبینیِ بی‌نیاز از شبکه در E-61 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-61`؛ اجرای خودکار شاخه و برچسب موفق |
+| الگوی برچسب‌گذاری اپراتور E-62 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-62`؛ اجرای خودکار شاخه و برچسب موفق |
+| اندازه‌گیری در محیط جداشدهٔ E-63 | عامل پیاده‌سازی Arena | **تحویل شواهد پذیرفته شد، با محدودیت‌ها** — مدیر به نمایندگی از مالک پذیرفت؛ نتیجه `REVIEW`، امتیازدهی `NOT_SCORED` و مبدأ Holoo، بستهٔ ساخت و تنوع `NOT-VERIFIED` می‌مانند؛ این پذیرش کیفیت یا دقت را تأیید نمی‌کند و مجوز امتیازدهی مجدد نیست |
+| سند تحویل و گزارش وضعیت E-64 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-64`؛ اجرای خودکار شاخه و برچسب موفق |
+| گسترش Holoo v1.2 در E-65 | عامل پیاده‌سازی Arena در مجموعهٔ مأموریت بعدی | اجازهٔ تدوین دامنه و معیارها داده شد؛ اجرا به مجموعهٔ بعدی موکول است؛ پیاده‌سازی `NOT STARTED`، بدون پیش‌نویس تازه، تگ یا CI در مأموریت جاری |
 
-`docs/questions/Q-15-01.md` records the resolved source-baseline issue. `docs/questions/Q-15-02.md` records E-63 as DELIVERED (documented, not accepted), transfer cleanup, and the three NOT-VERIFIED items.
+`docs/questions/Q-15-01.md` مسئلهٔ مبنای منبع را که حل شده ثبت می‌کند. `docs/questions/Q-15-02.md` سابقهٔ E-63 و پیش‌نویس قبلی E-65 را نگه می‌دارد؛ تصمیم‌های جاری در `AGENT_HANDOFF.md` ثبت شده‌اند: تحویل شواهد E-63 با محدودیت پذیرفته شد و اجازهٔ تدوین E-65 فقط برای مجموعهٔ مأموریت بعدی داده شد.
 
-## Coordination rules
+## قواعد هماهنگی
 
-1. One work item has one owner; do not edit another agent's active files.
-2. Keep frozen contracts and golden outputs unchanged absent a documented blocker and explicit approval.
-3. Record substantive technical decisions in `docs/decisions-made.md` with choice, reason, and rejected alternative.
-4. Do not claim accuracy without independent expected-value labels. E-63 accuracy remains `NOT_SCORED` and `extracted_but_wrong` remains `null`.
-5. Capture data, OCR values, images/crops, raw result JSON, and logs stay only in a temporary sandbox directory. Only aggregate statuses/counts and sanitized technical reasons may be documented. No capture content enters any repository, commit, tag, CI, or workflow.
-6. E-63 initial `BLOCKED / REJECT` result is retained in report/handoff. Fix-forward changed only `get_flattened_data()` to equivalent `getdata()` under Pillow `11.1.0`; no dependency bump, glyph-bank modification, extraction threshold, output contract, schema, workflow, or golden change.
-7. The specific equivalence/regression test is `test_line_mask_flattened_pixel_count_uses_pillow_11_1_data_api`; it checks the expected removal count, cleaned output, and that the source image stays unchanged. Full local suite and Ubuntu/Windows CI passed on the tagged fix commit.
-8. E-60 workflow artifact ID `14305290850` has declared digest `sha256:60f9baee9b8910d2817878d9777627b60ae3dde275d74cc8263eb53c9d5be083`. One authenticated API retry returned EOF and zero bytes; actual artifact hash remains unverified. E-63 used the approved Linux source tag `o15-E-63-fix-1` as executive-authorized.
-9. Remote `o15-e63-transfer` was deleted after exact capture size/SHA validation. It was not recreated; input and raw outputs remain sandbox-only.
-10. E-63 is not automatically accepted by a green code CI or a weak/strong extraction result. Report technical health, actual extraction quality, and checklist compliance separately, with uncertain provenance/accuracy explicitly marked.
-11. E-63 is dispositioned DELIVERED (documented, not final acceptance). E-65 may not start until complete written E-65 scope/acceptance criteria are available; it then requires its own tag and green branch/tag CI. Do not treat E-63 delivery as acceptance.
+۱. هر بستهٔ کاری فقط یک مسئول دارد؛ فایل فعال عامل دیگر را ویرایش نکنید.
+۲. قراردادهای تثبیت‌شده و خروجی‌های مرجع را بدون مانع مستند و مجوز صریح تغییر ندهید.
+۳. تصمیم‌های فنی ماهوی را همراه با گزینهٔ انتخاب‌شده، دلیل و گزینهٔ ردشده در `docs/decisions-made.md` ثبت کنید.
+۴. بدون برچسب‌های مستقلِ مقدار موردانتظار، ادعای دقت نکنید. دقت E-63 `NOT_SCORED` و `extracted_but_wrong` همچنان `null` است.
+۵. دادهٔ برداشت، مقدارهای OCR، تصویرها و برش‌ها، JSON خام نتیجه و گزارش‌های خام فقط در فضای موقتِ جداشده نگه داشته شوند. فقط وضعیت‌ها و شمارهای تجمیعی و علت‌های فنیِ پالوده را می‌توان مستند کرد. محتوای برداشت نباید وارد مخزن، ثبت، برچسب، اجرای خودکار یا روندکار شود.
+۶. نتیجهٔ آغازین E-63 با وضعیت `BLOCKED / REJECT` در گزارش و سند تحویل حفظ شده است. اصلاح محدود فقط `get_flattened_data()` را با روش هم‌ارز `getdata()` در Pillow `11.1.0` جایگزین کرد؛ نسخهٔ وابستگی، بانک گلیف، آستانهٔ استخراج، قرارداد خروجی، شِما، روندکار و خروجی مرجع تغییر نکردند.
+۷. آزمون مشخص برابری و بازگشت `test_line_mask_flattened_pixel_count_uses_pillow_11_1_data_api` است؛ شمار حذف موردانتظار، خروجی پاک‌شده و دست‌نخورده‌ماندن تصویر منبع را می‌سنجد. مجموعهٔ کامل محلی و اجرای خودکار در Ubuntu و Windows روی ثبت اصلاح‌شده موفق شدند.
+۸. شناسهٔ بستهٔ ساخت روندکار E-60 برابر `14305290850` است و چکیدهٔ اعلامی آن `sha256:60f9baee9b8910d2817878d9777627b60ae3dde275d74cc8263eb53c9d5be083` است. دریافت مجدد از طریق رابط برنامه‌نویسی احرازشده به EOF و پروندهٔ صفر‌بایتی انجامید؛ هش واقعی بسته تأیید نشده است. E-63 با مجوز صریح مدیر اجرا از کد منبع Linux در برچسب تأییدشدهٔ `o15-E-63-fix-1` استفاده کرد.
+۹. شاخهٔ راه‌دور `o15-e63-transfer` پس از تطبیق دقیق اندازه و SHA برداشت حذف شد. بازسازی نشد؛ ورودی و خروجی خام فقط در محیط جداشده ماندند.
+۱۰. موفقیت بررسی‌های خودکارِ کد یا نتیجهٔ استخراجِ ضعیف یا قوی به‌تنهایی به‌معنای پذیرش خودکار E-63 نیست. سلامت فنی، کیفیت واقعی استخراج و انطباق با چک‌لیست را جداگانه گزارش کنید و خاستگاه یا دقت نامطمئن را صریح نشان دهید.
+۱۱. تحویل شواهد E-63 با محدودیت پذیرفته شده است؛ نتیجه `REVIEW`، امتیازدهی `NOT_SCORED` و موارد مبدأ Holoo، بستهٔ ساخت و تنوع `NOT-VERIFIED` باقی می‌مانند. اجازهٔ تدوین دامنه و معیارهای E-65 برای مجموعهٔ مأموریت بعدی داده شده، اما E-65 در مأموریت جاری `NOT STARTED` می‌ماند؛ پیش‌نویس تازه، پیاده‌سازی، تگ یا CI انجام نشود.
 
-## E-63 evidence summary
+## خلاصهٔ شواهد E-63
 
-- Initial source `o15-E-60-fix-1` / SHA `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`: `BLOCKED / REJECT`, exit `20`, one blocked page and zero numeric candidates. `preprocessing.py:642` called `Image.get_flattened_data()`, absent in pinned Pillow `11.1.0`; E-05 default fixtures were also unavailable.
-- Fix tag `o15-E-63-fix-1` / SHA `89f78b2099d0f15d01bbf84bd68cc1a997c754c2`: one API call replacement and the named synthetic regression test. Full suite `1702 passed`, parity verifier PASS; branch CI [44080880091](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44080880091) and tag CI [44081030928](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44081030928) succeeded on Ubuntu and Windows.
-- Two post-fix runs from that exact tag/source had identical aggregates and schema-valid JSON: one invoice/page, exit `10`, verdict `REVIEW`, nine candidates all `REVIEW`, E-06 `PARTIAL_MATCH`/`NEW_LAYOUT`; default Glyph templates loaded, glyph drift `REVIEW`; E-05 bank unavailable; accuracy `NOT_SCORED`.
-- Criteria disposition is detailed per item in `docs/o15-final-report.md`. E-63 is DELIVERED, not accepted. Exactly three items are NOT-VERIFIED: Holoo origin, artifact, and diversity. Accuracy remains `NOT_SCORED`; no quality acceptance is inferred.
+- اجرای نخست از کد منبع `o15-E-60-fix-1` / شناسهٔ ثبت `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`: `BLOCKED / REJECT`، کد خروج `20`، یک صفحهٔ مسدود و صفر نامزد عددی. `preprocessing.py:642` متد `Image.get_flattened_data()` را صدا می‌زد که در Pillow قفل‌شدهٔ `11.1.0` وجود نداشت؛ نمونه‌های آزمونیِ پیش‌فرض E-05 نیز در دسترس نبودند.
+- برچسب اصلاح `o15-E-63-fix-1` / شناسهٔ ثبت `89f78b2099d0f15d01bbf84bd68cc1a997c754c2`: تنها یک فراخوانی رابط برنامه‌نویسی جایگزین و آزمون بازگشت ساختگیِ نام‌برده‌شده افزوده شد. مجموعهٔ کامل 1702 آزمون را گذراند و بررسی برابری موفق بود؛ اجرای خودکار شاخه [44080880091](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44080880091) و برچسب [44081030928](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44081030928) در Ubuntu و Windows موفق بود.
+- دو اجرای پس از اصلاح از همان برچسب و کد منبع، شاخص‌های تجمیعی یکسان و JSON معتبر با شِما دادند: یک صورتحساب و یک صفحه، کد خروج `10`، نتیجهٔ `REVIEW`، هر نه نامزد `REVIEW`، و E-06 با `PARTIAL_MATCH` و `NEW_LAYOUT`؛ الگوهای پیش‌فرض گلیف بارگذاری شدند، لغزش گلیف `REVIEW` بود، بانک E-05 در دسترس نبود و دقت `NOT_SCORED` ماند.
+- تعیین وضعیت هر معیار در `docs/o15-final-report.md` آمده است. تحویل شواهد E-63 با محدودیت پذیرفته شد؛ نتیجه `REVIEW` و دقت `NOT_SCORED` باقی می‌مانند و دقیقاً سه مورد مبدأ Holoo، بستهٔ ساخت و تنوع `NOT-VERIFIED` هستند. این تصمیم پذیرش کیفیت یا دقت نیست.
 
-## Next executable action
+## کار اجرایی بعدی
 
-Quote the existing E-65 text from the authoritative handoff/coordination/order documents and ask the owner to supply the missing executable scope/acceptance criteria. E-63 is already DELIVERED (not accepted). Do not implement or tag E-65 while its written scope remains incomplete. When complete criteria are supplied, use the current branch, run full suite/parity, create the E-65 tag, and verify green branch/tag CI. Do not alter `main` or copy E-63 data/raw output into the repository.
+پس از ثبت تصمیم‌ها در `AGENT_HANDOFF.md` و انجام commit مستنداتی جاری، مأموریت بسته و عامل در انتظار مجموعهٔ بعدی بماند. E-65 در این مأموریت تدوین یا پیاده‌سازی نمی‌شود؛ تگ یا CI تازه‌ای نیز اجرا نکنید. `main` را تغییر ندهید و داده یا خروجی خام E-63 را وارد مخزن نکنید.
