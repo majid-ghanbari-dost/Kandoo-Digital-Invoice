@@ -49,8 +49,9 @@
 - E-71: سه layout ساختگی و train/holdout مستقل آماده‌اند. سنجهٔ محلی برای هر layout `layout-match=1/1` و `numeric=5/5`، با `EXTRACTED-but-wrong=0` بود؛ نتیجه فقط synthetic است.
 - E-72: addendum افزایشی و بردار ساختگی در فایل‌های جدیدند؛ verifier و 3 آزمون موفق شدند. بردار 1505 بایت است و SHA-256 آن `0885c7571fb3ccc781f1a73e5505cd94805b065fb13e93f35fa4feb12d061d36` است؛ قراردادهای منجمد تغییر نکردند.
 - E-73: منطق fail-closed و ابزار batch افزوده شد؛ آزمون‌های ساختگی `6 passed`. تطبیق با ساختار یک نمونهٔ واقعیِ مجاز **BLOCKED** است؛ نمونه در checkout نبود و دادهٔ واقعی وارد مخزن/CI نمی‌شود.
-- E-74: `scripts/run_order16_harness.py` یک فرمان کامل است؛ suite محلی `1717 passed`، O15 verifier و E-70 source smoke گذشتند و numeric gate برای هر سه layout `5/5` با `EXTRACTED-but-wrong=0` شد. هنوز push/CI راه‌دور اجرا نشده است.
-- E-75: **DEFERRED / BLOCKED** تا سبزشدن همهٔ MUSTها؛ blocker نمونهٔ واقعی E-73 مانع اندازه‌گیری bundle است.
+- E-74: `scripts/run_order16_harness.py` یک فرمان کامل است؛ suite محلی `1717 passed`، O15 verifier و E-70 source smoke گذشتند و numeric gate برای هر سه layout `5/5` با `EXTRACTED-but-wrong=0` شد. اجرای راه‌دور [44885771939](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44885771939) برای ثبت `74375ff090b09649414ce4a7eb1fdfc4d15284ca` در هر دو کار Ubuntu و Windows موفق شد؛ Windows bundle و summary artifact بارگذاری شدند.
+- بررسی API: هر دو job/step موفق؛ فقط یک warning از منسوخ‌شدن Node.js 20 در actionها برای هر کار و هیچ annotation خطا. artifact summary 722 بایت و bundle 14,055,998 بایت، هر دو موجود و منقضی‌نشده بودند. دانلود محتوای artifact به EOF رسید و فقط metadata بررسی شد.
+- E-75: **DEFERRED / BLOCKED** تا تأیید همهٔ MUSTها؛ blocker نمونهٔ واقعی E-73 مانع اندازه‌گیری before/after اندازه و startup است.
 - E-65: فقط پیش‌نویس مستنداتیِ غیرمصوب در `docs/e65-holoo-v1-2-proposal.md` ساخته شد؛ پیاده‌سازی `NOT STARTED` است.
 - Tag: سفارش tag می‌خواهد، اما Rules v2 ساخت tag توسط عامل را منع می‌کند؛ تعارض **BLOCKED** و هیچ tag ساخته نشد.
 - PR: قواعد نشست فقط شاخهٔ جاری Arena را مجاز می‌کند، درحالی‌که Rules v2 برای هر کار PR جدا می‌خواهد؛ ایجاد PRهای تفکیک‌شده ممکن نیست و هیچ PR ادغام نمی‌شود.
@@ -59,4 +60,4 @@
 
 ## کار اجرایی بعدی
 
-تکمیل بررسی محلی، ثبت گزارش‌های فارسی E-70 تا E-74، commit و push فقط به شاخهٔ فعال، سپس بررسی اجرای CI و artifactها از API است. E-75 تا عبور همهٔ MUSTها اجرا نمی‌شود؛ `main` تغییر نمی‌کند، tag ساخته نمی‌شود و PR ادغام نمی‌شود.
+گزارش‌های فارسی E-70 تا E-75 در `docs/reports/` افزوده شده‌اند؛ گام بعدی commit و push این گزارش‌ها فقط به شاخهٔ جاری و سپس بررسی API اجرای تازه است. E-75 تا تأیید واقعی E-73 و سبزشدن همهٔ MUSTها آغاز نمی‌شود؛ `main` تغییر نمی‌کند، tag ساخته نمی‌شود و PR ادغام نمی‌شود.

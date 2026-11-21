@@ -261,9 +261,11 @@ WP-11.2: تا حل تصمیم‌ها و قراردادهای لازم نباید
 - E-71: سه layout ساختگی با train/holdout جداگانه آزموده شدند؛ smoke محلی نشان داد هر layout با دقت layout-match `1/1` و numeric `5/5`، `EXTRACTED-but-wrong=0` دارد. این فقط نتیجهٔ ساختگی است.
 - E-72: پیش‌نویس addendum فقط با فایل‌های افزایشی ساخته شد؛ قراردادهای منجمد دست‌نخورده‌اند. verifier بردار مصنوعی 1505 بایتی با SHA-256 `0885c7571fb3ccc781f1a73e5505cd94805b065fb13e93f35fa4feb12d061d36` را تأیید کرد.
 - E-73: شش آزمون بازگشت ساختگی گذشتند و منطق fail-closed افزوده شد؛ بررسی ساختار نمونهٔ واقعیِ مجاز هنوز **BLOCKED** است چون نمونه در checkout موجود نیست. دادهٔ واقعی باید محلی و git-ignored بماند.
-- E-74: یک فرمان، کل suite و verifierهای ساختگی را اجرا کرد؛ `1717 passed` و gate برابر `EXTRACTED-but-wrong=0` شد، با شمارش per-layout. push و اجرای خودکار هنوز در انتظارند.
-- E-75: **DEFERRED / BLOCKED**؛ MUST مربوط به تأیید ساختار واقعی E-73 هنوز بسته نشده، پس اندازه‌گیری bundle شروع نشده است.
+- E-74: یک فرمان، کل suite و verifierهای ساختگی را اجرا کرد؛ `1717 passed` و gate برابر `EXTRACTED-but-wrong=0` شد، با شمارش per-layout.
+- ثبت‌های E-65 تا E-74 روی شاخهٔ Arena پوش شدند؛ در اجرای راه‌دور [44885771939](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44885771939)، کارهای Ubuntu و Windows هر دو موفق شدند. Windows شامل build one-folder و smoke ساختگی E-70 بود.
+- بررسی API همان اجرا: هر دو job و همهٔ stepهای لازم موفق بودند؛ تنها annotationها هشدار منسوخ‌شدن Node.js 20 در actionهای موجود بودند و annotation خطای کد وجود نداشت. artifactهای harness (722 بایت) و Windows one-folder (14,055,998 بایت) در API موجود و منقضی‌نشده بودند. دانلود محتوای artifact در محیط به EOF از endpoint دانلود رسید؛ فقط metadata قابل تأیید بود.
+- اجرای CI، blocker واقعی E-73 را رفع نمی‌کند: نمونهٔ مجاز هنوز در checkout نیست. بنابراین E-75 همچنان `BLOCKED / DEFERRED` است و before/after bundle/startup اندازه‌گیری نشد.
 - پیش‌نویس مستنداتی E-65 در `docs/e65-holoo-v1-2-proposal.md` ثبت شد و غیرمصوب است؛ پیاده‌سازی E-65 همچنان `NOT STARTED` است.
 - تعارض tag همچنان **BLOCKED** است: ORDER 16 tag می‌خواهد، Rules v2 ساخت tag توسط عامل را منع می‌کند؛ هیچ tag ساخته نشد. محدودیت استفاده از یک شاخهٔ Arena در برابر نیاز PR جداگانه نیز مانع بازکردن PRهای مستقل است؛ هیچ PR ادغام نمی‌شود.
-- پس از push، سقف حداکثر ۱۵ push محرک CI برای هر کار رعایت شود و وضعیت run، annotationهای job و artifactها از API بررسی شوند. گزارش‌های فارسی هر task در `docs/reports/` ثبت خواهند شد.
-- گام بعدی: ثبت اجرای CI و گزارش‌ها، رفع خطای احتمالی بدون دست‌زدن به `main`، و ادامهٔ E-70 تا E-74 در همین شاخه. E-75 تا سبزشدن همهٔ MUSTها آغاز نمی‌شود.
+- گزارش‌های فارسی E-70 تا E-75 در `docs/reports/` ثبت شده‌اند. هر push بعدی باید پس از ارسال از نظر run، annotationها و artifactها با API بررسی شود و سقف ۱۵ push برای هر کار رعایت شود.
+- گام بعدی: commit و push همین گزارش‌ها و به‌روزرسانی وضعیت در همین شاخه، سپس بررسی اجرای CI تازه. `main` تغییر نمی‌کند؛ E-75 تا تأیید واقعی E-73 و سبزشدن همهٔ MUSTها آغاز نمی‌شود.
