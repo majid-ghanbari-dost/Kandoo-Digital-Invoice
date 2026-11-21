@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1020" viewBox="0 0 1500 1020">
+  <rect width="1500" height="1020" fill="#ffffff"/>
+  <g fill="#111111" font-family="DejaVu Sans, sans-serif">
+    <text x="85" y="100" font-size="48" font-weight="bold">SYNTHETIC INVOICE - OCR TEST ONLY</text>
+    <text x="85" y="190" font-size="36">INVOICE NO: SYNTH-IMG-001</text>
+    <text x="85" y="245" font-size="36">DATE: 2026-10-14</text>
+    <line x1="80" y1="295" x2="1420" y2="295" stroke="#222222" stroke-width="3"/>
+    <text x="85" y="365" font-size="34" font-weight="bold">ITEM | QUANTITY | UNIT PRICE | LINE TOTAL</text>
+    <line x1="80" y1="390" x2="1420" y2="390" stroke="#555555" stroke-width="2"/>
+    <text x="85" y="455" font-size="34">Synthetic Widget | 2 | 500.00 | 1000.00</text>
+    <line x1="80" y1="495" x2="1420" y2="495" stroke="#555555" stroke-width="2"/>
+    <text x="85" y="590" font-size="36">NET TOTAL: 1000.00</text>
+    <text x="85" y="650" font-size="36">TAX: 80.00</text>
+    <text x="85" y="740" font-size="42" font-weight="bold">AMOUNT DUE: 1080.00</text>
+    <text x="85" y="890" font-size="26" fill="#444444">All names, identifiers, quantities, and amounts are synthetic.</text>
+  </g>
+</svg>

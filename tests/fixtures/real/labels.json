@@ -1,0 +1,104 @@
+{
+  "label_status": "OPERATOR_CONFIRMED",
+  "invoices": [
+    {
+      "id": "29",
+      "path": "29.png",
+      "image_dimensions": [576, 1296],
+      "row_count": 4,
+      "column_boundaries": [116.0, 244.0, 293.0, 487.0, 527.0],
+      "row_bands": [[525, 596], [596, 664], [664, 732], [732, 801]],
+      "payable_bbox": [214, 820, 116, 28],
+      "values": {
+        "line.0.quantity": "۱",
+        "line.0.total": "۱,۴۵۰,۰۰۰",
+        "line.1.quantity": "۱",
+        "line.1.total": "۴,۸۷۰,۰۰۰",
+        "line.2.quantity": "۱",
+        "line.2.total": "۵۷۰,۰۰۰",
+        "line.3.quantity": "۱",
+        "line.3.total": "۵۷۰,۰۰۰",
+        "invoice.payable": "۷,۴۶۰,۰۰۰"
+      }
+    },
+    {
+      "id": "31",
+      "path": "31.png",
+      "image_dimensions": [576, 1224],
+      "row_count": 3,
+      "column_boundaries": [116.0, 244.0, 293.0, 487.0, 527.0],
+      "row_bands": [[525, 596], [596, 664], [664, 733]],
+      "payable_bbox": [214, 752, 116, 28],
+      "payable_label_note": "DERIVED_FROM_ARITHMETIC — operator confirmed line items; payable = sum of confirmed totals",
+      "values": {
+        "line.0.quantity": "۱",
+        "line.0.total": "۹۷۰,۰۰۰",
+        "line.1.quantity": "۱",
+        "line.1.total": "۹۷۰,۰۰۰",
+        "line.2.quantity": "۱",
+        "line.2.total": "۴۸۵,۰۰۰",
+        "invoice.payable": "۲,۴۲۵,۰۰۰"
+      }
+    },
+    {
+      "id": "32",
+      "path": "32.png",
+      "image_dimensions": [576, 1368],
+      "row_count": 5,
+      "column_boundaries": [116.0, 244.0, 293.0, 487.0, 527.0],
+      "row_bands": [[525, 596], [596, 664], [664, 732], [732, 800], [800, 868]],
+      "payable_bbox": [214, 888, 116, 28],
+      "values": {
+        "line.0.quantity": "۱",
+        "line.0.total": "۹۷۰,۰۰۰",
+        "line.1.quantity": "۱",
+        "line.1.total": "۳,۹۵۰,۰۰۰",
+        "line.2.quantity": "۱",
+        "line.2.total": "۱,۸۷۰,۰۰۰",
+        "line.3.quantity": "۱",
+        "line.3.total": "۹۷۰,۰۰۰",
+        "line.4.quantity": "۱",
+        "line.4.total": "۹۰,۰۰۰",
+        "invoice.payable": "۷,۸۵۰,۰۰۰"
+      }
+    },
+    {
+      "id": "33",
+      "path": "33.png",
+      "image_dimensions": [576, 1680],
+      "row_count": 13,
+      "column_boundaries": [116.0, 244.0, 293.0, 487.0, 527.0],
+      "row_bands": [[525, 596], [596, 664], [664, 732], [732, 800], [800, 868], [868, 936], [936, 1004], [1004, 1071], [1071, 1139], [1139, 1207], [1207, 1275], [1275, 1343], [1343, 1412]],
+      "payable_bbox": [199, 1431, 147, 28],
+      "values": {
+        "line.0.quantity": "۴",
+        "line.0.total": "۷,۸۸۰,۰۰۰",
+        "line.1.quantity": "۱۰",
+        "line.1.total": "۴,۸۵۰,۰۰۰",
+        "line.2.quantity": "۵",
+        "line.2.total": "۸,۷۵۰,۰۰۰",
+        "line.3.quantity": "۲",
+        "line.3.total": "۶,۴۰۰,۰۰۰",
+        "line.4.quantity": "۲۰",
+        "line.4.total": "۴۹,۴۰۰,۰۰۰",
+        "line.5.quantity": "۱",
+        "line.5.total": "۱,۵۷۰,۰۰۰",
+        "line.6.quantity": "۵",
+        "line.6.total": "۶,۹۰۰,۰۰۰",
+        "line.7.quantity": "۱",
+        "line.7.total": "۶,۸۷۰,۰۰۰",
+        "line.8.quantity": "۲",
+        "line.8.total": "۳,۷۰۰,۰۰۰",
+        "line.9.quantity": "۸",
+        "line.9.total": "۲۲۹,۶۰۰,۰۰۰",
+        "line.10.quantity": "۱۵",
+        "line.10.total": "۱۹,۰۵۰,۰۰۰",
+        "line.11.quantity": "۱",
+        "line.11.total": "۱,۳۸۰,۰۰۰",
+        "line.12.quantity": "۱",
+        "line.12.total": "۱,۵۷۰,۰۰۰",
+        "invoice.payable": "۳۴۷,۹۲۰,۰۰۰"
+      }
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "artifact_type": "kandoo.mode-b.template-bank",
+  "artifact_version": "1",
+  "created_at": "2026-10-30T00:00:00Z",
+  "mode": "B",
+  "store_id": "synthetic-second-store",
+  "template_bank": {
+    "algorithm_version": "e05-template-bank-v1",
+    "confidence_threshold": 0.85,
+    "currency_unit": "rial",
+    "templates": [
+      {
+        "amount_group_size": 3,
+        "amount_thousands_separator": ",",
+        "digit_alphabet": [
+          "۰",
+          "۱",
+          "۲",
+          "۳",
+          "۴",
+          "۵",
+          "۶",
+          "۷",
+          "۸",
+          "۹"
+        ],
+        "field_positions": [
+          {
+            "field_name": "line.total",
+            "x_end": 0.4244791666666667,
+            "x_start": 0.20225694444444445,
+            "y_end": 0.9558823529411765,
+            "y_reference": "row_fraction",
+            "y_start": 0.11764705882352941
+          },
+          {
+            "field_name": "line.quantity",
+            "x_end": 0.5095486111111112,
+            "x_start": 0.4244791666666667,
+            "y_end": 0.9558823529411765,
+            "y_reference": "row_fraction",
+            "y_start": 0.11764705882352941
+          },
+          {
+            "field_name": "line.description",
+            "x_end": 0.8463541666666666,
+            "x_start": 0.5095486111111112,
+            "y_end": 0.9558823529411765,
+            "y_reference": "row_fraction",
+            "y_start": 0.11764705882352941
+          },
+          {
+            "field_name": "line.sequence",
+            "x_end": 0.9157986111111112,
+            "x_start": 0.8463541666666666,
+            "y_end": 0.9558823529411765,
+            "y_reference": "row_fraction",
+            "y_start": 0.11764705882352941
+          },
+          {
+            "field_name": "invoice.payable",
+            "x_end": 0.4322916666666667,
+            "x_start": 0.2795138888888889,
+            "y_end": 1.362847222222222,
+            "y_reference": "page_over_width",
+            "y_start": 1.3333333333333333
+          }
+        ],
+        "known_row_counts": [
+          4
+        ],
+        "median_row_height_cv": 0.0,
+        "median_row_height_over_width": 0.11805555555555555,
+        "median_row_pitch_over_width": 0.11805555555555555,
+        "normalized_column_boundaries": [
+          0.20225694444444445,
+          0.4244791666666667,
+          0.5095486111111112,
+          0.8463541666666666,
+          0.9157986111111112
+        ],
+        "payable_bbox_height_over_width": 0.029513888888888888,
+        "payable_bbox_left_over_width": 0.2795138888888889,
+        "payable_bbox_width_over_width": 0.1527777777777778,
+        "payable_gap_over_width": 0.04861111111111111,
+        "row_count_max": 4,
+        "row_count_min": 4,
+        "source_invoice_ids": [
+          "learning-1",
+          "learning-2",
+          "learning-3"
+        ],
+        "table_top_over_width": 0.8125,
+        "template_id": "e05-layout-01"
+      }
+    ]
+  }
+}

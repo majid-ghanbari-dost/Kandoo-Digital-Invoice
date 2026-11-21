@@ -1,0 +1,15 @@
+{
+  "fixture_id": "e08-synthetic-corrupted-existing-layout",
+  "canonical_file": "corrupted-invoice.json",
+  "synthetic": true,
+  "test_only": true,
+  "production_data": false,
+  "derived_from": "../canonical/canonical-29.json (itself a label-derived synthetic test fixture)",
+  "construction": "Copied the existing-layout synthetic Canonical fixture and increased summary.payable by exactly 1 rial without changing line totals. The object remains structurally valid but fails E-06 arithmetic consistency.",
+  "layout_observation_source": "existing E-05 training geometry for invoice 29; test code assigns a fresh synthetic observation ID",
+  "expected_detection": "CORRUPTED",
+  "expected_verdict": "REJECT",
+  "expected_reason_codes": [
+    "NUMS_INCONSISTENT"
+  ]
+}

@@ -1,0 +1,2204 @@
+{
+  "all_product_name_crops": 25,
+  "cer_definition": "micro-averaged Levenshtein code-point edits / reference code points",
+  "engine_info": {
+    "parisaocr": {
+      "cuda_available": false,
+      "detector_sha256": "090f04abcd9d9a7498bc4ebf677e4cb9bdce1fe4197ddb7e529f1ef44e1ff94f",
+      "device": "CPU",
+      "engine": "ParisaOCR",
+      "kraken_version": "7.1.1",
+      "line_detector": "PP-OCRv6 small via RapidOCR/ONNX Runtime",
+      "module_version": "0.7.2",
+      "network_downloads_during_inference": false,
+      "package_version": "0.7.2",
+      "recognizer": "Kraken 7.1.1 / parisaocr-fa-0.1",
+      "recognizer_sha256": "cf41676c0cf590cd0a01ebb342faf1ce72c42e19a213984cbad6e5ddc91ae265",
+      "torch_version": "2.14.0+cu130"
+    },
+    "tesseract_fas": {
+      "binding": "tesserocr 2.12.0",
+      "engine": "Tesseract",
+      "engine_version": "tesseract 5.5.3",
+      "language": "fas",
+      "page_segmentation_mode": "SINGLE_LINE",
+      "traineddata_file": "fas.traineddata",
+      "traineddata_sha256": "db1c0a91208aff00d3cf1ed2c1d23f76419afd5f024688b4f71adc3f2ce4a505",
+      "traineddata_source": "tesseract-ocr/tessdata_fast@87416418657359cb625c412a48b6e1d6d41c29bd"
+    }
+  },
+  "engine_initialization_errors": {},
+  "experiment": "N-01 product-name crop OCR",
+  "metric_normalization": "Unicode NFC; fold Arabic Yeh/Kaf to Persian Yeh/Kaf; collapse whitespace; no punctuation or other character removal",
+  "metrics": {
+    "parisaocr": {
+      "otsu_binarized": {
+        "character_error_count": 2,
+        "character_error_rate": 0.02631578947368421,
+        "empty_outputs_all_crops": 0,
+        "empty_outputs_scored_crops": 0,
+        "exact_name_matches": 4,
+        "exact_name_rate": 0.6666666666666666,
+        "hard_failures_all_crops": 0,
+        "hard_failures_scored_crops": 0,
+        "provisional_reference_crops": 6,
+        "reference_character_count": 76,
+        "total_crops": 25,
+        "unscored_crops": 19
+      },
+      "unprocessed": {
+        "character_error_count": 2,
+        "character_error_rate": 0.02631578947368421,
+        "empty_outputs_all_crops": 0,
+        "empty_outputs_scored_crops": 0,
+        "exact_name_matches": 4,
+        "exact_name_rate": 0.6666666666666666,
+        "hard_failures_all_crops": 0,
+        "hard_failures_scored_crops": 0,
+        "provisional_reference_crops": 6,
+        "reference_character_count": 76,
+        "total_crops": 25,
+        "unscored_crops": 19
+      }
+    },
+    "tesseract_fas": {
+      "otsu_binarized": {
+        "character_error_count": 8,
+        "character_error_rate": 0.10526315789473684,
+        "empty_outputs_all_crops": 3,
+        "empty_outputs_scored_crops": 0,
+        "exact_name_matches": 2,
+        "exact_name_rate": 0.3333333333333333,
+        "hard_failures_all_crops": 0,
+        "hard_failures_scored_crops": 0,
+        "provisional_reference_crops": 6,
+        "reference_character_count": 76,
+        "total_crops": 25,
+        "unscored_crops": 19
+      },
+      "unprocessed": {
+        "character_error_count": 8,
+        "character_error_rate": 0.10526315789473684,
+        "empty_outputs_all_crops": 3,
+        "empty_outputs_scored_crops": 0,
+        "exact_name_matches": 2,
+        "exact_name_rate": 0.3333333333333333,
+        "hard_failures_all_crops": 0,
+        "hard_failures_scored_crops": 0,
+        "provisional_reference_crops": 6,
+        "reference_character_count": 76,
+        "total_crops": 25,
+        "unscored_crops": 19
+      }
+    }
+  },
+  "preprocessing_variants": [
+    "unprocessed: geometric crop only; source mode retained",
+    "otsu_binarized: existing otsu_binarize helper (grayscale, autocontrast, per-crop Otsu); no resizing"
+  ],
+  "raw_outputs": [
+    {
+      "confidence": 91.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "29_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "رسه تم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "رسه تم\n"
+      ]
+    },
+    {
+      "confidence": 91.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "29_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "رسه تم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "رسه تم\n"
+      ]
+    },
+    {
+      "confidence": 80.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "29_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "دود رنگی دستی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "دود رنگی دستی\n"
+      ]
+    },
+    {
+      "confidence": 80.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "29_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "دود رنگی دستی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "دود رنگی دستی\n"
+      ]
+    },
+    {
+      "confidence": 75.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "29_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "چنگال تم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "چنگال تم\n"
+      ]
+    },
+    {
+      "confidence": 75.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "29_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "چنگال تم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "چنگال تم\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        798
+      ],
+      "crop_id": "29_row3",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "چاقوتم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "چاقوتم\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        798
+      ],
+      "crop_id": "29_row3",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "چاقوتم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "چاقوتم\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "31_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "unprocessed",
+      "raw_text": "دستمال سغره تم\n",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سغره تم\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "31_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "دستمال سغره تم\n",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سغره تم\n"
+      ]
+    },
+    {
+      "confidence": 64.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "31_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "unprocessed",
+      "raw_text": "ردپا با فلش قم\n",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "ردپا با فلش قم\n"
+      ]
+    },
+    {
+      "confidence": 64.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "31_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "ردپا با فلش قم\n",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "ردپا با فلش قم\n"
+      ]
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        730
+      ],
+      "crop_id": "31_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "unprocessed",
+      "raw_text": "خلال کوچک\n",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 2,
+      "segments": [
+        "خلال کوچک\n"
+      ]
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        730
+      ],
+      "crop_id": "31_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "خلال کوچک\n",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 2,
+      "segments": [
+        "خلال کوچک\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "32_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "دستمال سغره تم\n",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سغره تم\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "32_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "دستمال سغره تم\n",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سغره تم\n"
+      ]
+    },
+    {
+      "confidence": 89.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "32_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "سطل شن بازی کوچک\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "سطل شن بازی کوچک\n"
+      ]
+    },
+    {
+      "confidence": 89.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "32_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "سطل شن بازی کوچک\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "سطل شن بازی کوچک\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "32_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "برف شادی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "برف شادی\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "32_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "برف شادی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "برف شادی\n"
+      ]
+    },
+    {
+      "confidence": 64.0,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "32_row3",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "ردپا با فلش قم\n",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 3,
+      "segments": [
+        "ردپا با فلش قم\n"
+      ]
+    },
+    {
+      "confidence": 64.0,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "32_row3",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "ردپا با فلش قم\n",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 3,
+      "segments": [
+        "ردپا با فلش قم\n"
+      ]
+    },
+    {
+      "confidence": 54.0,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "32_row4",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "پاد‌کنک\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "پاد‌کنک\n"
+      ]
+    },
+    {
+      "confidence": 54.0,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "32_row4",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "پاد‌کنک\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "پاد‌کنک\n"
+      ]
+    },
+    {
+      "confidence": 76.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "33_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "ساک کادو سایز بزرگ\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "ساک کادو سایز بزرگ\n"
+      ]
+    },
+    {
+      "confidence": 76.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "33_row0",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "ساک کادو سایز بزرگ\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "ساک کادو سایز بزرگ\n"
+      ]
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "33_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "خلال کوچک\n",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "خلال کوچک\n"
+      ]
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "33_row1",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "خلال کوچک\n",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "خلال کوچک\n"
+      ]
+    },
+    {
+      "confidence": 91.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "33_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "حباب ساز تفنگی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "حباب ساز تفنگی\n"
+      ]
+    },
+    {
+      "confidence": 91.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "33_row2",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "حباب ساز تفنگی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "حباب ساز تفنگی\n"
+      ]
+    },
+    {
+      "confidence": 87.0,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "33_row3",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "جعبه کادو قلب\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "جعبه کادو قلب\n"
+      ]
+    },
+    {
+      "confidence": 87.0,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "33_row3",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "جعبه کادو قلب\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "جعبه کادو قلب\n"
+      ]
+    },
+    {
+      "confidence": 69.0,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "33_row4",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "جنگال ۱۰۰ عددی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "جنگال ۱۰۰ عددی\n"
+      ]
+    },
+    {
+      "confidence": 69.0,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "33_row4",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "جنگال ۱۰۰ عددی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "جنگال ۱۰۰ عددی\n"
+      ]
+    },
+    {
+      "confidence": 0.0,
+      "crop_bbox": [
+        297,
+        876,
+        483,
+        933
+      ],
+      "crop_id": "33_row5",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 5,
+      "segments": []
+    },
+    {
+      "confidence": 0.0,
+      "crop_bbox": [
+        297,
+        876,
+        483,
+        933
+      ],
+      "crop_id": "33_row5",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 5,
+      "segments": []
+    },
+    {
+      "confidence": 0.0,
+      "crop_bbox": [
+        297,
+        944,
+        483,
+        1001
+      ],
+      "crop_id": "33_row6",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 6,
+      "segments": []
+    },
+    {
+      "confidence": 0.0,
+      "crop_bbox": [
+        297,
+        944,
+        483,
+        1001
+      ],
+      "crop_id": "33_row6",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 6,
+      "segments": []
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        1012,
+        483,
+        1068
+      ],
+      "crop_id": "33_row7",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "جعبه چرمی قفل دار\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 7,
+      "segments": [
+        "جعبه چرمی قفل دار\n"
+      ]
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        1012,
+        483,
+        1068
+      ],
+      "crop_id": "33_row7",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "جعبه چرمی قفل دار\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 7,
+      "segments": [
+        "جعبه چرمی قفل دار\n"
+      ]
+    },
+    {
+      "confidence": 87.0,
+      "crop_bbox": [
+        297,
+        1079,
+        483,
+        1136
+      ],
+      "crop_id": "33_row8",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "جعبه روسری\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 8,
+      "segments": [
+        "جعبه روسری\n"
+      ]
+    },
+    {
+      "confidence": 87.0,
+      "crop_bbox": [
+        297,
+        1079,
+        483,
+        1136
+      ],
+      "crop_id": "33_row8",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "جعبه روسری\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 8,
+      "segments": [
+        "جعبه روسری\n"
+      ]
+    },
+    {
+      "confidence": 86.0,
+      "crop_bbox": [
+        297,
+        1147,
+        483,
+        1204
+      ],
+      "crop_id": "33_row9",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "تویوپ بادی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 9,
+      "segments": [
+        "تویوپ بادی\n"
+      ]
+    },
+    {
+      "confidence": 86.0,
+      "crop_bbox": [
+        297,
+        1147,
+        483,
+        1204
+      ],
+      "crop_id": "33_row9",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "تویوپ بادی\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 9,
+      "segments": [
+        "تویوپ بادی\n"
+      ]
+    },
+    {
+      "confidence": 0.0,
+      "crop_bbox": [
+        297,
+        1215,
+        483,
+        1272
+      ],
+      "crop_id": "33_row10",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 10,
+      "segments": []
+    },
+    {
+      "confidence": 0.0,
+      "crop_bbox": [
+        297,
+        1215,
+        483,
+        1272
+      ],
+      "crop_id": "33_row10",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 10,
+      "segments": []
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        1283,
+        483,
+        1340
+      ],
+      "crop_id": "33_row11",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "تاج بسته بندی قم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 11,
+      "segments": [
+        "تاج بسته بندی قم\n"
+      ]
+    },
+    {
+      "confidence": 88.0,
+      "crop_bbox": [
+        297,
+        1283,
+        483,
+        1340
+      ],
+      "crop_id": "33_row11",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "تاج بسته بندی قم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 11,
+      "segments": [
+        "تاج بسته بندی قم\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        1351,
+        483,
+        1409
+      ],
+      "crop_id": "33_row12",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "پیش دستی و لیوان تم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 12,
+      "segments": [
+        "پیش دستی و لیوان تم\n"
+      ]
+    },
+    {
+      "confidence": 84.0,
+      "crop_bbox": [
+        297,
+        1351,
+        483,
+        1409
+      ],
+      "crop_id": "33_row12",
+      "engine_key": "tesseract_fas",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "پیش دستی و لیوان تم\n",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 12,
+      "segments": [
+        "پیش دستی و لیوان تم\n"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "29_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "ریسه تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "ریسه تم"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "29_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "ریسه تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "ریسه تم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "29_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "دود رنگی دستی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "دود رنگی دستی"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "29_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "دود رنگی دستی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "دود رنگی دستی"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "29_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "چنگال تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "چنگال تم"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "29_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "چنگال تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "چنگال تم"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        798
+      ],
+      "crop_id": "29_row3",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "unprocessed",
+      "raw_text": "چاقوتم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "چاقوتم"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        798
+      ],
+      "crop_id": "29_row3",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "29",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "چاقوتم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "چاقوتم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "31_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "unprocessed",
+      "raw_text": "دستمال سفره تم",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سفره تم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "31_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "دستمال سفره تم",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سفره تم"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "31_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "unprocessed",
+      "raw_text": "ردپا یا فلش تم",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "ردپا یا فلش تم"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "31_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "ردپا یا فلش تم",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "ردپا یا فلش تم"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        730
+      ],
+      "crop_id": "31_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "unprocessed",
+      "raw_text": "خلال کوچک",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 2,
+      "segments": [
+        "خلال کوچک"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        730
+      ],
+      "crop_id": "31_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "31",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "خلال کوچک",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 2,
+      "segments": [
+        "خلال کوچک"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "32_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "دستمال سفره تم",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سفره تم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "32_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "دستمال سفره تم",
+      "reference_name": "دستمال سفره تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 0,
+      "segments": [
+        "دستمال سفره تم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "32_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "سطل شن بازی کوچک",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "سطل شن بازی کوچک"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "32_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "سطل شن بازی کوچک",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 1,
+      "segments": [
+        "سطل شن بازی کوچک"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "32_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "برف شادی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "برف شادی"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "32_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "برف شادی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "برف شادی"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "32_row3",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "ردپا یا فلش تم",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 3,
+      "segments": [
+        "ردپا یا فلش تم"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "32_row3",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "ردپا یا فلش تم",
+      "reference_name": "رد پا یا فلش تم",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 3,
+      "segments": [
+        "ردپا یا فلش تم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "32_row4",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "unprocessed",
+      "raw_text": "بادکنک",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "بادکنک"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "32_row4",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "32",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "بادکنک",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "بادکنک"
+      ]
+    },
+    {
+      "confidence": 99.7,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "33_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "ساک کادو سایز بزرگ",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "ساک کادو سایز بزرگ"
+      ]
+    },
+    {
+      "confidence": 99.7,
+      "crop_bbox": [
+        297,
+        533,
+        483,
+        593
+      ],
+      "crop_id": "33_row0",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "ساک کادو سایز بزرگ",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 0,
+      "segments": [
+        "ساک کادو سایز بزرگ"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "33_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "خلال کوچک",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "خلال کوچک"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        604,
+        483,
+        661
+      ],
+      "crop_id": "33_row1",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "خلال کوچک",
+      "reference_name": "خلال کوچک",
+      "reference_status": "PROVISIONAL_UNCONFIRMED",
+      "row_index": 1,
+      "segments": [
+        "خلال کوچک"
+      ]
+    },
+    {
+      "confidence": 99.6,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "33_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "حباب ساز تفنگی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "حباب ساز تفنگی"
+      ]
+    },
+    {
+      "confidence": 99.6,
+      "crop_bbox": [
+        297,
+        672,
+        483,
+        729
+      ],
+      "crop_id": "33_row2",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "حباب ساز تفنگی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 2,
+      "segments": [
+        "حباب ساز تفنگی"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "33_row3",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "جعبه کادو قلب",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "جعبه کادو قلب"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        740,
+        483,
+        797
+      ],
+      "crop_id": "33_row3",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "جعبه کادو قلب",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 3,
+      "segments": [
+        "جعبه کادو قلب"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "33_row4",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "چنگال ۱۰۰ عددی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "چنگال ۱۰۰ عددی"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        808,
+        483,
+        865
+      ],
+      "crop_id": "33_row4",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "چنگال ۱۰۰ عددی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 4,
+      "segments": [
+        "چنگال ۱۰۰ عددی"
+      ]
+    },
+    {
+      "confidence": 98.4,
+      "crop_bbox": [
+        297,
+        876,
+        483,
+        933
+      ],
+      "crop_id": "33_row5",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "چسبونک",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 5,
+      "segments": [
+        "چسبونک"
+      ]
+    },
+    {
+      "confidence": 98.4,
+      "crop_bbox": [
+        297,
+        876,
+        483,
+        933
+      ],
+      "crop_id": "33_row5",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "چسبونک",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 5,
+      "segments": [
+        "چسبونک"
+      ]
+    },
+    {
+      "confidence": 99.25,
+      "crop_bbox": [
+        297,
+        944,
+        483,
+        1001
+      ],
+      "crop_id": "33_row6",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "چاقو کیک‌تم وپاپیون\nدار و متالایزی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 6,
+      "segments": [
+        "چاقو کیک‌تم وپاپیون",
+        "دار و متالایزی"
+      ]
+    },
+    {
+      "confidence": 99.25,
+      "crop_bbox": [
+        297,
+        944,
+        483,
+        1001
+      ],
+      "crop_id": "33_row6",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "چاقو کیک‌تم وپاپیون\nدار و متالایزی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 6,
+      "segments": [
+        "چاقو کیک‌تم وپاپیون",
+        "دار و متالایزی"
+      ]
+    },
+    {
+      "confidence": 99.0,
+      "crop_bbox": [
+        297,
+        1012,
+        483,
+        1068
+      ],
+      "crop_id": "33_row7",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "جعبه چرمی قفل دار",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 7,
+      "segments": [
+        "جعبه چرمی قفل دار"
+      ]
+    },
+    {
+      "confidence": 99.0,
+      "crop_bbox": [
+        297,
+        1012,
+        483,
+        1068
+      ],
+      "crop_id": "33_row7",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "جعبه چرمی قفل دار",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 7,
+      "segments": [
+        "جعبه چرمی قفل دار"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        1079,
+        483,
+        1136
+      ],
+      "crop_id": "33_row8",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "جعبه روسری",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 8,
+      "segments": [
+        "جعبه روسری"
+      ]
+    },
+    {
+      "confidence": 99.9,
+      "crop_bbox": [
+        297,
+        1079,
+        483,
+        1136
+      ],
+      "crop_id": "33_row8",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "جعبه روسری",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 8,
+      "segments": [
+        "جعبه روسری"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        1147,
+        483,
+        1204
+      ],
+      "crop_id": "33_row9",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "تویوپ بادی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 9,
+      "segments": [
+        "تویوپ بادی"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        1147,
+        483,
+        1204
+      ],
+      "crop_id": "33_row9",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "تویوپ بادی",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 9,
+      "segments": [
+        "تویوپ بادی"
+      ]
+    },
+    {
+      "confidence": 98.65,
+      "crop_bbox": [
+        297,
+        1215,
+        483,
+        1272
+      ],
+      "crop_id": "33_row10",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "پیش دستی کاغذی\nماتایی تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 10,
+      "segments": [
+        "پیش دستی کاغذی",
+        "ماتایی تم"
+      ]
+    },
+    {
+      "confidence": 98.65,
+      "crop_bbox": [
+        297,
+        1215,
+        483,
+        1272
+      ],
+      "crop_id": "33_row10",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "پیش دستی کاغذی\nماتایی تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 10,
+      "segments": [
+        "پیش دستی کاغذی",
+        "ماتایی تم"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        1283,
+        483,
+        1340
+      ],
+      "crop_id": "33_row11",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "تاج بسته بندی تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 11,
+      "segments": [
+        "تاج بسته بندی تم"
+      ]
+    },
+    {
+      "confidence": 99.8,
+      "crop_bbox": [
+        297,
+        1283,
+        483,
+        1340
+      ],
+      "crop_id": "33_row11",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "تاج بسته بندی تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 11,
+      "segments": [
+        "تاج بسته بندی تم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        1351,
+        483,
+        1409
+      ],
+      "crop_id": "33_row12",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "unprocessed",
+      "raw_text": "پیش دستی و لیوان‌تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 12,
+      "segments": [
+        "پیش دستی و لیوان‌تم"
+      ]
+    },
+    {
+      "confidence": 100.0,
+      "crop_bbox": [
+        297,
+        1351,
+        483,
+        1409
+      ],
+      "crop_id": "33_row12",
+      "engine_key": "parisaocr",
+      "error": null,
+      "invoice_id": "33",
+      "preprocessing": "otsu_binarized",
+      "raw_text": "پیش دستی و لیوان‌تم",
+      "reference_name": null,
+      "reference_status": null,
+      "row_index": 12,
+      "segments": [
+        "پیش دستی و لیوان‌تم"
+      ]
+    }
+  ],
+  "reference_source": "docs/name-cluster-report.md",
+  "reference_status": "Provisional visual mapping; not owner-confirmed",
+  "scored_product_name_crops": 6,
+  "source_fixtures": [
+    "29",
+    "31",
+    "32",
+    "33"
+  ],
+  "source_image_directory": "tests/fixtures/real",
+  "unscored_product_name_crops": 19
+}

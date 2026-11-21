@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "synthetic partial extraction input; test-only, not Canonical Invoice JSON",
+  "missing_fields": [
+    "customer.phone",
+    "line_items[0].line_total",
+    "summary.payable"
+  ],
+  "invoice_fragment": {
+    "schema_version": "0",
+    "mode": "B",
+    "invoice_id": "e06-partial-test-invoice",
+    "line_items": [
+      {
+        "product_name": "Unverified test item",
+        "quantity": 1
+      }
+    ]
+  }
+}

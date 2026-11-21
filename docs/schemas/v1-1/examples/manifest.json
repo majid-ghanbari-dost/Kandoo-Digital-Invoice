@@ -1,0 +1,30 @@
+{
+  "task": "E-40",
+  "schema_id": "https://kandoo.cloud/schemas/v1-1/issued-invoice-v1-1.schema.json",
+  "evidence_class": "SYNTHETIC_ONLY",
+  "examples": [
+    {
+      "path": "issued-invoice-v1-1-full.json",
+      "size_bytes": 279,
+      "sha256": "4eab66e1d6b057dfb9ed3500b14cebcb269c79b0608697d3c8884506a4a7b5c0"
+    },
+    {
+      "path": "issued-invoice-v1-1-minimal.json",
+      "size_bytes": 38,
+      "sha256": "0e36b7d464af9ee869d941a7fdf1f3fb5e2969ab8fa0997c8015bd99c5ec41dd"
+    },
+    {
+      "path": "issued-invoice-v1-1-explicit-nulls.json",
+      "size_bytes": 137,
+      "sha256": "79f6b9625bc3fb458b0bd05651487f1997d28add25ed5cb30ed75054694a2cc1"
+    }
+  ],
+  "public_view_golden": {
+    "status": "DEFERRED",
+    "reason": "The v1.0 base public-view schema is absent from this checkout; no base schema or full public-view golden is invented."
+  },
+  "known_holoo_gaps_not_added": [
+    "cheque payment type",
+    "invoice-level discount"
+  ]
+}

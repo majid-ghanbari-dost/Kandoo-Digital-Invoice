@@ -1,0 +1,16 @@
+{
+  "invoice_schema_version": "1.1",
+  "customer_name": "Synthetic customer 001",
+  "payments": [
+    {
+      "type": "card-reader",
+      "amount": 120000
+    },
+    {
+      "type": "cash",
+      "amount": 700
+    }
+  ],
+  "currency_unit": "toman",
+  "remaining_balance": 321
+}

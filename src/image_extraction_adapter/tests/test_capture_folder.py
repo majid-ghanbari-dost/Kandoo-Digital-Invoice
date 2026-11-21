@@ -1,0 +1,384 @@
+from __future__ import annotations
+
+import contextlib
+import hashlib
+import io
+import os
+import json
+import shutil
+import tempfile
+import unittest
+from pathlib import Path
+
+from image_extraction_adapter.capture_folder import (
+    extract_capture_folder,
+    inspect_capture_folder,
+)
+from image_extraction_adapter.cli import main
+
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+REAL_FIXTURES = REPOSITORY_ROOT / "tests" / "fixtures" / "real"
+ALLOWED_KINDS = {"quantity", "line_total", "payable"}
+
+
+class CaptureFolderAdapterTests(unittest.TestCase):
+    def _write_capture(
+        self,
+        folder: Path,
+        pages: dict[str, str] | None = None,
+        *,
+        spl: bool = True,
+        report: bool = True,
+        report_text: str | None = None,
+    ) -> Path:
+        folder.mkdir(parents=True, exist_ok=True)
+        if spl:
+            (folder / "capture-job.spl").write_bytes(b"SYNTHETIC SPL TEST ARTIFACT\x00\x01")
+        if report:
+            (folder / "Report.txt").write_text(
+                report_text if report_text is not None else "SYNTHETIC KandooPrintProbe Report\nPageCount=1\n",
+                encoding="utf-8",
+            )
+        for output_name, fixture_name in (pages or {"page1.png": "29.png"}).items():
+            shutil.copyfile(REAL_FIXTURES / fixture_name, folder / output_name)
+        return folder
+
+    @staticmethod
+    def _write_structured_report(
+        folder: Path,
+        *,
+        captured_at: str | None = None,
+        page_count: int = 1,
+        job_id: str = "synthetic-job-1",
+        duplicate_job_id: bool = False,
+    ) -> str:
+        spl_sha256 = hashlib.sha256((folder / "capture-job.spl").read_bytes()).hexdigest()
+        lines = [
+            "SYNTHETIC KandooPrintProbe Report",
+            "Printer: Synthetic fixture device",
+            f"Spool job ID: {job_id}",
+        ]
+        if duplicate_job_id:
+            lines.append(f"Spool job ID: {job_id}-duplicate")
+        if captured_at is not None:
+            lines.append(f"Timestamp: {captured_at}")
+        lines.extend((f"Page count: {page_count}", f"SPL SHA-256: {spl_sha256}"))
+        report_text = "\n".join(lines) + "\n"
+        (folder / "Report.txt").write_text(report_text, encoding="utf-8")
+        return spl_sha256
+
+    def test_happy_path_runs_e02_e05_and_fail_closed_e06(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-happy-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "REVIEW")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["e06"]["verdict"], "REVIEW")
+        self.assertEqual(len(result["pages"]), 1)
+        page = result["pages"][0]
+        self.assertEqual(page["file"], "page1.png")
+        self.assertEqual(page["e02"]["layout_status"], "OK")
+        self.assertEqual(page["e05"]["status"], "MATCH")
+        self.assertEqual(page["e05"]["resubstitution_source_fixture"], "29")
+        self.assertFalse(page["e05"]["independent_evidence"])
+        self.assertEqual(set(result["numeric_candidates"]), ALLOWED_KINDS)
+        self.assertEqual(result["accuracy"]["status"], "NOT_SCORED")
+        self.assertEqual(set(result["accuracy"]["fields"]), ALLOWED_KINDS)
+        self.assertEqual(result["captured_at"], None)
+        self.assertEqual(result["e05_bank"]["currency_unit"], None)
+        self.assertEqual(result["e05_bank"]["currency_unit_status"], "UNCONFIRMED")
+        self.assertIn("CURRENCY_UNIT_UNCONFIRMED", result["e06"]["reason_codes"])
+        self.assertTrue(result["numeric_candidates"]["quantity"])
+        self.assertTrue(result["numeric_candidates"]["line_total"])
+        self.assertTrue(result["numeric_candidates"]["payable"])
+        self.assertTrue(
+            all(
+                candidate["kind"] in ALLOWED_KINDS
+                for candidate in page["numeric_candidates"]
+            )
+        )
+        self.assertIn("product-name mapping", " ".join(result["e06"]["details"]))
+
+    def test_missing_spl_is_an_explicit_error_not_a_page_skip(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-no-spl-") as temp:
+            folder = self._write_capture(Path(temp) / "capture", spl=False)
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["errors"][0]["code"], "MISSING_SPL")
+        self.assertEqual(result["pages"], [])
+
+    def test_missing_png_is_an_explicit_error(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-no-png-") as temp:
+            folder = self._write_capture(Path(temp) / "capture", pages={}, report=True)
+            for path in folder.glob("*.png"):
+                path.unlink()
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["errors"][0]["code"], "MISSING_PNG")
+        self.assertEqual(result["pages"], [])
+
+    def test_multiple_pages_are_natural_ordered_and_one_invoice(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-multipage-") as temp:
+            folder = self._write_capture(
+                Path(temp) / "capture",
+                {"page10.png": "31.png", "page2.png": "29.png"},
+            )
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "REVIEW")
+        self.assertEqual([page["file"] for page in result["pages"]], ["page2.png", "page10.png"])
+        self.assertEqual([page["page_index"] for page in result["pages"]], [1, 2])
+        invoice_lines = result["invoice_candidates"]["line_items"]
+        self.assertEqual([line["source_page_index"] for line in invoice_lines], [1, 1, 1, 1, 2, 2, 2])
+        self.assertEqual([line["line_index"] for line in invoice_lines], list(range(7)))
+        self.assertEqual(len(result["invoice_candidates"]["payable_candidates"]), 2)
+        self.assertIn("not silently summed", result["invoice_candidates"]["note"])
+
+    def test_unknown_extra_files_are_tolerated_and_reported(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-extra-") as temp:
+            folder = self._write_capture(
+                Path(temp) / "capture", {"page1.png": "32.png"}
+            )
+            (folder / "operator-note.bin").write_bytes(b"extra")
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "REVIEW")
+        self.assertEqual(result["artifacts"]["extra_files"], ["operator-note.bin"])
+
+    def test_fixture_33_resubstitution_remains_review(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-review-") as temp:
+            folder = self._write_capture(
+                Path(temp) / "capture", {"page1.png": "33.png"}
+            )
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "REVIEW")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["pages"][0]["e02"]["status"], "AUTO_CANDIDATE")
+        self.assertEqual(result["pages"][0]["e05"]["status"], "MATCH")
+        self.assertEqual(result["pages"][0]["e05"]["resubstitution_source_fixture"], "33")
+        self.assertFalse(result["pages"][0]["e05"]["independent_evidence"])
+
+    def test_missing_report_is_explicit_error(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-no-report-") as temp:
+            folder = self._write_capture(Path(temp) / "capture", report=False)
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["errors"][0]["code"], "MISSING_REPORT")
+
+    def test_corrupt_png_is_not_silently_skipped(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-corrupt-png-") as temp:
+            folder = self._write_capture(Path(temp) / "capture", pages={})
+            (folder / "page2.png").write_bytes(b"not a PNG")
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["errors"][0]["code"], "INVALID_PNG")
+        self.assertEqual(result["pages"], [])
+
+    def test_inspector_accepts_case_insensitive_extensions_and_report_name(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-case-") as temp:
+            folder = self._write_capture(Path(temp) / "capture", pages={"PAGE1.PNG": "29.png"})
+            (folder / "capture-job.spl").rename(folder / "capture-job.SPL")
+            (folder / "Report.txt").rename(folder / "REPORT.TXT")
+            capture = inspect_capture_folder(folder)
+
+        self.assertEqual(capture.spl_path.name, "capture-job.SPL")
+        self.assertEqual(capture.report_path.name, "REPORT.TXT")
+        self.assertEqual(capture.pages[0].path.name, "PAGE1.PNG")
+
+    def test_cli_emits_json_and_human_summary(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-cli-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                exit_code = main(["extract", "--capture-folder", str(folder)])
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(exit_code, 10)
+        self.assertEqual(payload["verdict"], "REVIEW")
+        self.assertIn("REVIEW", stderr.getvalue())
+        self.assertIn("E-06", stderr.getvalue())
+
+    def test_cli_relative_capture_folder_records_portable_path_and_binary_output(self):
+        original_cwd = Path.cwd()
+        with tempfile.TemporaryDirectory(prefix="e30-relative-capture-") as temp:
+            os.chdir(temp)
+            try:
+                folder = self._write_capture(Path("capture"))
+                output_path = Path("capture-result.json")
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    exit_code = main([
+                        "extract",
+                        "--capture-folder",
+                        folder.as_posix(),
+                        "--out",
+                        output_path.as_posix(),
+                    ])
+                output_bytes = output_path.read_bytes()
+            finally:
+                os.chdir(original_cwd)
+
+        self.assertEqual(exit_code, 10)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("REVIEW", stderr.getvalue())
+        self.assertNotIn(b"\r", output_bytes)
+        self.assertTrue(output_bytes.endswith(b"\n"))
+        payload = json.loads(output_bytes.decode("utf-8"))
+        self.assertEqual(payload["result_version"], "capture-folder-result-v1")
+        self.assertEqual(payload["capture_folder"], "capture")
+
+    def test_cli_passes_probe_capture_timestamp_through_capture_folder_mode(self):
+        timestamp = "2026-10-26T11:12:13+03:30"
+        with tempfile.TemporaryDirectory(prefix="e12-capture-captured-at-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            self._write_structured_report(folder, captured_at=timestamp)
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                exit_code = main([
+                    "extract",
+                    "--capture-folder",
+                    str(folder),
+                    "--captured-at",
+                    timestamp,
+                ])
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(exit_code, 10)
+        self.assertEqual(payload["captured_at"], timestamp)
+        self.assertEqual(payload["artifacts"]["probe_metadata"]["captured_at"], timestamp)
+        self.assertEqual(payload["artifacts"]["probe_metadata"]["spool_job_id"], "synthetic-job-1")
+        self.assertEqual(payload["status"], "REVIEW")
+
+    def test_report_timestamp_is_used_without_explicit_override(self):
+        timestamp = "2026-10-26T11:12:13+03:30"
+        with tempfile.TemporaryDirectory(prefix="e27-report-captured-at-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            self._write_structured_report(folder, captured_at=timestamp)
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "REVIEW")
+        self.assertEqual(result["captured_at"], timestamp)
+        self.assertEqual(result["artifacts"]["probe_metadata"]["captured_at"], timestamp)
+        self.assertEqual(result["artifacts"]["probe_metadata"]["page_count"], 1)
+
+    def test_report_timestamp_conflicting_override_is_blocked(self):
+        with tempfile.TemporaryDirectory(prefix="e27-captured-at-conflict-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            self._write_structured_report(folder, captured_at="2026-10-26T11:12:13+03:30")
+            result = extract_capture_folder(folder, captured_at="2026-10-26T12:12:13+03:30")
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["errors"][0]["code"], "CAPTURED_AT_MISMATCH")
+
+    def test_report_timestamp_without_offset_is_blocked(self):
+        with tempfile.TemporaryDirectory(prefix="e27-captured-at-no-offset-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            self._write_structured_report(folder, captured_at="2026-10-26T11:12:13")
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["errors"][0]["code"], "INVALID_CAPTURED_AT")
+
+    def test_corrupt_spl_does_not_match_probe_report_hash(self):
+        with tempfile.TemporaryDirectory(prefix="e27-corrupt-spl-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            self._write_structured_report(folder)
+            (folder / "capture-job.spl").write_bytes(b"CORRUPT SPL")
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertEqual(result["errors"][0]["code"], "SPL_HASH_MISMATCH")
+
+    def test_empty_job_is_blocked(self):
+        with tempfile.TemporaryDirectory(prefix="e27-empty-job-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            self._write_structured_report(folder, page_count=0)
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertIn("EMPTY_JOB", [error["code"] for error in result["errors"]])
+
+    def test_duplicate_spool_job_id_is_blocked(self):
+        with tempfile.TemporaryDirectory(prefix="e27-duplicate-job-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            self._write_structured_report(folder, duplicate_job_id=True)
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertIn("DUPLICATE_JOB_ID", [error["code"] for error in result["errors"]])
+
+    def test_two_pngs_conflicting_with_reported_page_count_are_blocked(self):
+        with tempfile.TemporaryDirectory(prefix="e27-two-png-page-count-") as temp:
+            folder = self._write_capture(
+                Path(temp) / "capture",
+                {"page1.png": "29.png", "page2.png": "31.png"},
+            )
+            self._write_structured_report(folder, page_count=1)
+            result = extract_capture_folder(folder)
+
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["verdict"], "REVIEW")
+        self.assertIn("PAGE_COUNT_MISMATCH", [error["code"] for error in result["errors"]])
+
+    def test_cli_rejects_capture_timestamp_without_explicit_offset(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-invalid-timestamp-") as temp:
+            folder = self._write_capture(Path(temp) / "capture")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                exit_code = main([
+                    "extract",
+                    "--capture-folder",
+                    str(folder),
+                    "--captured-at",
+                    "2026-10-26T11:12:13",
+                ])
+
+        self.assertEqual(exit_code, 30)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("--captured-at", stderr.getvalue())
+
+    def test_cli_writes_error_json_to_out_and_keeps_summary_on_stderr(self):
+        with tempfile.TemporaryDirectory(prefix="e12-capture-out-") as temp:
+            folder = self._write_capture(Path(temp) / "capture", spl=False)
+            output_path = Path(temp) / "result.json"
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                exit_code = main([
+                    "extract",
+                    "--capture-folder",
+                    str(folder),
+                    "--out",
+                    str(output_path),
+                ])
+            output = json.loads(output_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(exit_code, 20)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertEqual(output["status"], "BLOCKED")
+        self.assertEqual(output["verdict"], "REVIEW")
+        self.assertEqual(output["errors"][0]["code"], "MISSING_SPL")
+        self.assertIn("BLOCKED / REVIEW", stderr.getvalue())
+
+
+if __name__ == "__main__":
+    unittest.main()

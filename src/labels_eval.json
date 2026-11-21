@@ -1,0 +1,31 @@
+{
+  "label_status": "PROVISIONAL_VISUAL_TRANSCRIPTION — manually read from the source raster; not confirmed by the invoice owner",
+  "source_image": "../deliveries/image-extraction-ocr/13.png",
+  "source_image_sha256": "2ffe4a33b54a513dc8df9a0eac22ac514f9ebf7aae89958ee11d0fa00cc67e80",
+  "split_note": "Build templates use a separate crop of 13-row image rows 3-8. Evaluation runs on the original 13-row image, scores only rows 0-2 and 9-12 plus payable, and leaves rows 3-8 unlabeled for scoring. This is a disjoint-row holdout within one invoice, not independent-invoice validation. Arithmetic Gate still checks all 13 predicted totals against the payable.",
+  "images": [
+    {
+      "path": "../deliveries/image-extraction-ocr/13.png",
+      "source_row_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "payable_bbox": [199, 1431, 147, 28],
+      "payable_bbox_provenance": "invoice.payable FieldAssessment bbox from Adapter spatial geometry on the original 13-row image; format left, top, width, height",
+      "values": {
+        "line.0.quantity": "۴",
+        "line.0.total": "۷,۸۸۰,۰۰۰",
+        "line.1.quantity": "۱۰",
+        "line.1.total": "۴,۸۵۰,۰۰۰",
+        "line.2.quantity": "۵",
+        "line.2.total": "۸,۷۵۰,۰۰۰",
+        "line.9.quantity": "۸",
+        "line.9.total": "۲۲۹,۶۰۰,۰۰۰",
+        "line.10.quantity": "۱۵",
+        "line.10.total": "۱۹,۰۵۰,۰۰۰",
+        "line.11.quantity": "۱",
+        "line.11.total": "۱,۳۸۰,۰۰۰",
+        "line.12.quantity": "۱",
+        "line.12.total": "۱,۵۷۰,۰۰۰",
+        "invoice.payable": "۳۴۷,۹۲۰,۰۰۰"
+      }
+    }
+  ]
+}

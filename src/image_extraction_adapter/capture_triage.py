@@ -149,6 +149,8 @@ def _problem_explanation(error: dict[str, Any]) -> str:
         if "PNG cannot be decoded:" in message:
             return "Data problem: the available PNG decoder rejected the page contents."
         return "PNG validation did not pass; the report cannot classify the cause more specifically."
+    if code == "DUPLICATE_JOB_ID" and str(error.get("path", "")).startswith("Report.txt:"):
+        return "Data problem: Report.txt contains more than one spool-job ID."
 
     explanations = {
         "CAPTURE_FOLDER_NOT_FOUND": "The capture folder could not be found.",

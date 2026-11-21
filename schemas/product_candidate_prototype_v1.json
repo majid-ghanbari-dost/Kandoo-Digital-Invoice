@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "N-02 ProductCandidate Prototype v1",
+  "description": "Deterministic, text-free candidate aggregates from four synthetic Canonical Invoice v0 test fixtures.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_fixture_files",
+    "price_observation_date_source",
+    "candidates"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "n02.product-candidates.v1"
+    },
+    "source_fixture_files": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "tests/fixtures/real/canonical/canonical-29.json",
+          "tests/fixtures/real/canonical/canonical-31.json",
+          "tests/fixtures/real/canonical/canonical-32.json",
+          "tests/fixtures/real/canonical/canonical-33.json"
+        ]
+      }
+    },
+    "price_observation_date_source": {
+      "const": "probe.captured_at"
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/candidate"
+      }
+    }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name_crop_cluster_id",
+        "reference_crop_file",
+        "occurrence_count",
+        "quantity_sum",
+        "source_crop_ids",
+        "price_observations",
+        "invoice_ids"
+      ],
+      "properties": {
+        "name_crop_cluster_id": {
+          "type": "string",
+          "pattern": "^name-dhash-[0-9a-f]{16}$"
+        },
+        "reference_crop_file": {
+          "type": "string",
+          "pattern": "^tests/fixtures/real/n02-reference-crops/[0-9]+_row[0-9]+\\.png$"
+        },
+        "occurrence_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quantity_sum": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_crop_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+_row[0-9]+$"
+          }
+        },
+        "price_observations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/priceObservation"
+          }
+        },
+        "invoice_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^e05-synth-invoice-[0-9]+$"
+          }
+        }
+      }
+    },
+    "priceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_on",
+        "unit_price_rials",
+        "invoice_id",
+        "source_crop_id"
+      ],
+      "properties": {
+        "observed_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "unit_price_rials": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "invoice_id": {
+          "type": "string",
+          "pattern": "^e05-synth-invoice-[0-9]+$"
+        },
+        "source_crop_id": {
+          "type": "string",
+          "pattern": "^[0-9]+_row[0-9]+$"
+        }
+      }
+    }
+  }
+}

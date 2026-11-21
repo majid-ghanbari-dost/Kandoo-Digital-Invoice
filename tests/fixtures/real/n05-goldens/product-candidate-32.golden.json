@@ -1,0 +1,30 @@
+{
+  "candidate": {
+    "invoice_ids": [
+      "e05-synth-invoice-32"
+    ],
+    "name_confirmation": {
+      "confirmation_source_cluster_id": null,
+      "confirmation_status": "UNCONFIRMED",
+      "confirmed_name": "",
+      "near_threshold_cluster_ids": [],
+      "review_reasons": [],
+      "review_required": false
+    },
+    "name_crop_cluster_id": "name-dhash-565612931557eaaa",
+    "name_suggestions": [],
+    "occurrence_count": 1,
+    "price_observations": [],
+    "quantity_sum": 1,
+    "reference_crop_file": "tests/fixtures/real/n02-reference-crops/32_row1.png",
+    "source_crop_ids": [
+      "32_row1"
+    ]
+  },
+  "name_suggestions_enabled": false,
+  "price_observation_date_source": "probe.captured_at",
+  "schema_version": "n05.product-candidate.v1",
+  "source_fixture_file": "tests/fixtures/real/canonical/canonical-32.json",
+  "source_fixture_id": "32",
+  "source_schema_version": "n02.product-candidates.v1"
+}

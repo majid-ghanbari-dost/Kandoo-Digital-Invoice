@@ -458,25 +458,39 @@ class EvidenceStore:
         (records never delivered) | EvidenceReadRefused (no evidence for this id) |
         EvidenceReadVerificationUnavailable (verification could not execute)."""
         try:
-            rows = self._conn.execute(
-                "SELECT * FROM reconstruction_evidence WHERE document_id = ? ORDER BY seq",
-                (document_id,),
-            ).fetchall()
-            if not rows:
-                return EvidenceReadRefused(
-                    document_id, "no evidence records exist for this document_id")
-            ok, failure_seq, reason = self._head_agrees_with_log()
-            if not ok:
-                return EvidenceReadIntegrityFailure(document_id, reason or "head anchor mismatch", failure_seq)
-            max_seq = rows[-1]["seq"]
-            ok, failure_seq, reason, _ = self._verify_chain_prefix(max_seq)
-            if not ok:
-                return EvidenceReadIntegrityFailure(document_id, reason or "chain broken", failure_seq)
-            return EvidenceReadSuccess(
-                document_id=document_id,
-                events=tuple(self._event_from_row(r) for r in rows),
-                verified_up_to_seq=max_seq,
-            )
+            # Keep the document rows, head anchor, and verified chain prefix on one
+            # SQLite read snapshot so a concurrent append cannot look like corruption.
+            self._conn.execute("BEGIN")
+            try:
+                rows = self._conn.execute(
+                    "SELECT * FROM reconstruction_evidence WHERE document_id = ? ORDER BY seq",
+                    (document_id,),
+                ).fetchall()
+                if not rows:
+                    outcome = EvidenceReadRefused(
+                        document_id, "no evidence records exist for this document_id")
+                else:
+                    ok, failure_seq, reason = self._head_agrees_with_log()
+                    if not ok:
+                        outcome = EvidenceReadIntegrityFailure(
+                            document_id, reason or "head anchor mismatch", failure_seq)
+                    else:
+                        max_seq = rows[-1]["seq"]
+                        ok, failure_seq, reason, _ = self._verify_chain_prefix(max_seq)
+                        if not ok:
+                            outcome = EvidenceReadIntegrityFailure(
+                                document_id, reason or "chain broken", failure_seq)
+                        else:
+                            outcome = EvidenceReadSuccess(
+                                document_id=document_id,
+                                events=tuple(self._event_from_row(r) for r in rows),
+                                verified_up_to_seq=max_seq,
+                            )
+                self._conn.execute("COMMIT")
+                return outcome
+            except Exception:
+                self._safe_rollback()
+                raise
         except sqlite3.Error as exc:
             return EvidenceReadVerificationUnavailable(
                 document_id, f"evidence read could not execute: {exc}")

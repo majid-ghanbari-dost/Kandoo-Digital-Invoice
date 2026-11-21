@@ -1,0 +1,4 @@
+E-30 Golden Pack synthetic capture envelope (not authentic Probe output)
+Spool job ID: e30-golden-job-29
+Page count: 1
+SPL SHA-256: f8fb18e3587dcbe80c9187adf9a937d684f2b8eee0106216e8005908086c5b5c

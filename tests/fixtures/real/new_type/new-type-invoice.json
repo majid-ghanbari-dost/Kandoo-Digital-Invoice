@@ -1,0 +1,91 @@
+{
+  "schema_version": "0",
+  "mode": "B",
+  "invoice_id": "e08-synthetic-new-type-invoice",
+  "display_number": "E08-NEW-TYPE-TEST",
+  "operation_id": "e08-synthetic-operation-new-type",
+  "device_id": "e08-synthetic-device-new-type",
+  "public_token": "RTA8SynthInvoiceTypeToken_2026",
+  "store_id": "e05-synth-store",
+  "customer": {
+    "phone": "+15550002222",
+    "phone_status": "claimed"
+  },
+  "state": "EXTRACTED",
+  "state_history": [
+    {
+      "from_state": "DRAFT",
+      "to_state": "EXTRACTED",
+      "operation_id": "e08-synthetic-transition-new-type",
+      "device_id": "e08-synthetic-device-new-type"
+    }
+  ],
+  "line_items": [
+    {
+      "product_name": "Synthetic coffee beans",
+      "quantity": 2,
+      "unit_price": 1200,
+      "line_total": 2400
+    },
+    {
+      "product_name": "Synthetic tea box",
+      "quantity": 3,
+      "unit_price": 800,
+      "line_total": 2400
+    }
+  ],
+  "summary": {
+    "subtotal": 4800,
+    "extra_amounts": {},
+    "payable": 4800
+  },
+  "attention_cells": [],
+  "header": {
+    "captured_at": null,
+    "printed_date": null,
+    "printed_time": null,
+    "invoice_number": null
+  },
+  "provenance": {
+    "image_sha256": null,
+    "template_library_id": null,
+    "engine_version": null,
+    "fields": {
+      "invoice_id": "native",
+      "display_number": "native",
+      "operation_id": "native",
+      "device_id": "native",
+      "public_token": "native",
+      "store_id": "native",
+      "customer": {
+        "phone": "captured",
+        "phone_status": "native"
+      },
+      "line_items": [
+        {
+          "product_name": "captured",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        },
+        {
+          "product_name": "captured",
+          "quantity": "captured",
+          "unit_price": "derived",
+          "line_total": "captured"
+        }
+      ],
+      "summary": {
+        "subtotal": "derived",
+        "extra_amounts": {},
+        "payable": "captured"
+      },
+      "header": {
+        "captured_at": "unavailable",
+        "printed_date": "unavailable",
+        "printed_time": "unavailable",
+        "invoice_number": "unavailable"
+      }
+    }
+  }
+}

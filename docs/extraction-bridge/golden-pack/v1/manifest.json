@@ -1,0 +1,78 @@
+{
+  "contract_id": "e30.extraction-bridge.v1",
+  "expected": {
+    "extract-capture-folder-29.json": {
+      "bytes": 14075,
+      "sha256": "336f33fab4997da2963d72c0a07d3589cf0baeb3d61f418042f596748640219e"
+    },
+    "extract-image-29.drift.json": {
+      "bytes": 1661,
+      "sha256": "a962b83d7c878ba9465d1887ea18190d4b72d95d4ca11fb8436dd81f59342b0a"
+    },
+    "extract-image-29.stdout.json": {
+      "bytes": 2959,
+      "sha256": "c53a77a56b375593a0c865ea0c059e962c7bb7a2bb2ca2b09e410663667bb718"
+    },
+    "onboard-new-type-candidate.json": {
+      "bytes": 2153,
+      "sha256": "03210cd48c8989c6e92e5ccccdabc37d06d76467d38e322a1e31730442b375fd"
+    },
+    "onboard-template-bank.json": {
+      "bytes": 2968,
+      "sha256": "db4eabe8c285fbe033737a2405c887b7acd07669dba2969c24866ec60265a319"
+    },
+    "onboard-verdict.json": {
+      "bytes": 977,
+      "sha256": "5e6b32c8996e2d5a53dc29a2c4bf5dc45e2dca531b7088c31b3500f39d6b28df"
+    }
+  },
+  "fixture_boundaries": {
+    "capture_report_and_spl": "Synthetic test envelope; not authentic KandooPrintProbe output and not real SPL/SHD evidence.",
+    "e20_inputs": "Checked-in E-20 report and E-03 v3 answer key; the onboard route is synthetic mechanics only.",
+    "page1_png": "Byte-identical copy of tests/fixtures/real/29.png; all producer identities/product names in canonical-context-29.json are synthetic."
+  },
+  "fixtures": {
+    "canonical-context-29.json": {
+      "bytes": 636,
+      "sha256": "59f68bc58c3399e1701d55d863a7cdf2ec388759ec88b4b49d42f8e4bd845ada"
+    },
+    "capture-folder/Report.txt": {
+      "bytes": 197,
+      "sha256": "b7ed08d464233205c769f1282441be9e9c5759e48bd500b7f35dde980835a0e6"
+    },
+    "capture-folder/capture-job.spl": {
+      "bytes": 34,
+      "sha256": "f8fb18e3587dcbe80c9187adf9a937d684f2b8eee0106216e8005908086c5b5c"
+    },
+    "capture-folder/page1.png": {
+      "bytes": 24659,
+      "sha256": "61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a"
+    },
+    "e03-kit-v3-expected-values.json": {
+      "bytes": 758,
+      "sha256": "de71500ece2c540a2acb619cebbc66f3d365bd4e79202bce49c7cb001777e6a6"
+    },
+    "e05-layout-bank.json": {
+      "bytes": 2631,
+      "sha256": "42111d3486a3c2fa6704f0d43793bea89635ca3c7c02c67d5b04a0078e29db8d"
+    },
+    "e20-candidate-invoice.json": {
+      "bytes": 2792,
+      "sha256": "f80f6e74bb563567f54a49c15e2adea3f0220d3befdf8bb58f0f6c149c5076c0"
+    },
+    "e20-new-layout-observation.json": {
+      "bytes": 738,
+      "sha256": "760c376cdc31880f1b3429e02cdcd565a67c63a9b407c2dbb6ff20c477c558fa"
+    },
+    "e20-pipeline-observation.json": {
+      "bytes": 726,
+      "sha256": "45eb1514b1c80fc005ce1869f906b30f9dfe593e31a8c374320fbff6da542240"
+    },
+    "e20-second-store.json": {
+      "bytes": 11978,
+      "sha256": "c10993a369c58670d21288d1dd83e7a39a12c148fa8524e08c5f0eec8c2ef028"
+    }
+  },
+  "pack_version": "e30.extraction-bridge.golden.v1",
+  "purpose": "Exact-byte cross-platform CLI fixtures; synthetic mechanics only, not production accuracy evidence."
+}

@@ -1,0 +1,115 @@
+{
+  "attention_cells": [],
+  "customer": {
+    "phone": "+15550000000",
+    "phone_status": "claimed"
+  },
+  "device_id": "e20-synthetic-second-store-device",
+  "display_number": "E20-EXAM",
+  "header": {
+    "captured_at": null,
+    "invoice_number": null,
+    "printed_date": null,
+    "printed_time": null
+  },
+  "invoice_id": "e26-e20-exam-invoice",
+  "line_items": [
+    {
+      "line_total": 122622,
+      "product_name": "Synthetic E20 item 1",
+      "quantity": 3,
+      "unit_price": 40874
+    },
+    {
+      "line_total": 126260,
+      "product_name": "Synthetic E20 item 2",
+      "quantity": 4,
+      "unit_price": 31565
+    },
+    {
+      "line_total": 86415,
+      "product_name": "Synthetic E20 item 3",
+      "quantity": 7,
+      "unit_price": 12345
+    },
+    {
+      "line_total": 50096,
+      "product_name": "Synthetic E20 item 4",
+      "quantity": 8,
+      "unit_price": 6262
+    }
+  ],
+  "mode": "B",
+  "operation_id": "e26-e20-exam-operation",
+  "provenance": {
+    "engine_version": null,
+    "fields": {
+      "customer": {
+        "phone": "captured",
+        "phone_status": "native"
+      },
+      "device_id": "native",
+      "display_number": "native",
+      "header": {
+        "captured_at": "unavailable",
+        "invoice_number": "unavailable",
+        "printed_date": "unavailable",
+        "printed_time": "unavailable"
+      },
+      "invoice_id": "native",
+      "line_items": [
+        {
+          "line_total": "captured",
+          "product_name": "captured",
+          "quantity": "captured",
+          "unit_price": "derived"
+        },
+        {
+          "line_total": "captured",
+          "product_name": "captured",
+          "quantity": "captured",
+          "unit_price": "derived"
+        },
+        {
+          "line_total": "captured",
+          "product_name": "captured",
+          "quantity": "captured",
+          "unit_price": "derived"
+        },
+        {
+          "line_total": "captured",
+          "product_name": "captured",
+          "quantity": "captured",
+          "unit_price": "derived"
+        }
+      ],
+      "operation_id": "native",
+      "public_token": "native",
+      "store_id": "native",
+      "summary": {
+        "extra_amounts": {},
+        "payable": "captured",
+        "subtotal": "derived"
+      }
+    },
+    "image_sha256": null,
+    "template_library_id": null
+  },
+  "public_token": "QWJjZGVmZ2hpamtsbW5vcHFyc3R1dg",
+  "schema_version": "0",
+  "state": "EXTRACTED",
+  "state_history": [
+    {
+      "device_id": "e20-synthetic-second-store-device",
+      "from_state": "DRAFT",
+      "operation_id": "e26-e20-exam-operation",
+      "to_state": "EXTRACTED"
+    }
+  ],
+  "store_id": "synthetic-second-store",
+  "summary": {
+    "extra_amounts": {},
+    "payable": 385393,
+    "subtotal": 385393
+  }
+}

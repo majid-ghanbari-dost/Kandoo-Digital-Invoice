@@ -1,0 +1,71 @@
+fixture.label=Synthetic (en)
+fixture.path=src/image_extraction_adapter/tests/fixtures/synthetic_invoice.png
+source_image.sha256=c06075646afe254528925093d0b8877be1dd7ea0ff382865aa74aef7bead65cd
+ocr.engine=tesseract 5.5.1
+ocr.language=eng
+ocr.word_count=47
+ocr.mean_confidence=95.60920540425528
+ocr.minimum_confidence=87.448105
+ocr.raw_text.begin
+SYNTHETIC INVOICE - OCR TEST ONLY
+
+INVOICE NO: SYNTH-IMG-001
+DATE: 2026-10-14
+
+ITEM | QUANTITY | UNIT PRICE | LINE TOTAL
+
+Synthetic Widget | 2 | 500.00 | 1000.00
+
+NET TOTAL: 1000.00
+TAX: 80.00
+
+AMOUNT DUE: 1080.00
+
+All names, identifiers, quantities, and amounts are synthetic.
+ocr.raw_text.end
+ocr.value_comparison=
+  invoice.number: expected='SYNTH-IMG-001' actual='SYNTH-IMG-001' match=True
+  invoice.date: expected='2026-10-14' actual='2026-10-14' match=True
+  total.net: expected='1000.00' actual='1000.00' match=True
+  tax.amount: expected='80.00' actual='80.00' match=True
+  invoice.payable: expected='1080.00' actual='1080.00' match=True
+  line.0.description: expected='Synthetic Widget' actual='Synthetic Widget' match=True
+  line.0.quantity: expected='2' actual='2' match=True
+  line.0.unit_price: expected='500.00' actual='500.00' match=True
+  line.0.total: expected='1000.00' actual='1000.00' match=True
+issuance.submit.completed=True
+pipeline.result=PipelineCompleted
+pipeline.outcomes=capture:IngestCompleted, capture_read:ReadSuccess, reconstruct:ReconstructCompleted, extract:ExtractionCompleted, bind:BindingCompleted, normalize:NormalizationCompleted, derive:DerivationCompleted, validate:ValidationCompleted, validate:ValidationCompleted, validate:ValidationCompleted, validate:ValidationCompleted, project:DomainStateProjected, gate:CanonicalizationAccepted, gate_read:GateDecisionReadSuccess, assemble:AssemblyCompleted, invoice_read:AssemblyReadSuccess, invoice_trace:AssemblyTraceSuccess
+validation.kandoo-val-total-gross-consistency=VALID (exact-match)
+validation.kandoo-val-total-gross-rounded=VALID (exact-match)
+validation.kandoo-val-total-gross-tolerance=VALID (exact-match)
+validation.kandoo-val-total-net-present=VALID (exact-match)
+validation_domain=VALID/CLEAR valid=4 invalid=0 deferred=0
+canonicalization.decision=ACCEPTED
+canonical_invoice_id=7c968d14024f44e4938f656c48c4d78f
+canonical.field_count=10
+canonical.line_count=1
+canonical.fields=
+  invoice.number=SYNTH-IMG-001 [EXTRACTED]
+  invoice.date=2026-10-14 [EXTRACTED]
+  total.net=1000.00 [EXTRACTED]
+  tax.amount=80.00 [EXTRACTED]
+  invoice.payable=1080.00 [EXTRACTED]
+  line.0.description=Synthetic Widget [EXTRACTED]
+  line.0.quantity=2 [EXTRACTED]
+  line.0.unit_price=500.00 [EXTRACTED]
+  line.0.total=1000.00 [EXTRACTED]
+  total.gross=1080 [DERIVED]
+canonical.line_fields=
+  line.0.LINE_QUANTITY=2
+  line.0.LINE_UNIT_PRICE=500.00
+  line.0.LINE_TOTAL=1000.00
+lifecycle.open_digital_invoice=DRAFT
+lifecycle.mark_extracted=EXTRACTED
+lifecycle.mark_validated=VALIDATED
+lifecycle.issue=ISSUED
+digital_invoice_id=2f9e4a6a48484b0594561a76ad07b67a
+digital_invoice.state=ISSUED
+digital_invoice.verified=True
+digital_invoice.trace=DigitalInvoiceTraceSuccess links=24
+IMAGE OCR E2E eng OK — synthetic fixture only

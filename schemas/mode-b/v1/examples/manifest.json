@@ -1,0 +1,52 @@
+{
+  "examples": [
+    {
+      "artifact_type": "kandoo.mode-b.template-bank",
+      "generated_from": [
+        "e05_template_bank.build_template_bank",
+        "e05_template_bank.TemplateBank.to_dict"
+      ],
+      "path": "template-bank.json",
+      "purpose": "Portable E-05 layout bank; numeric-format and normalized geometry only.",
+      "schema": "../template-bank.schema.json",
+      "sha256": "f9fc23c44d1fd69dfaced4de36a52937e9426faaad09b8b9cb8ef0a44efa67af"
+    },
+    {
+      "artifact_type": "kandoo.mode-b.onboarding-verdict",
+      "generated_from": [
+        "e06_onboarding_verdict.evaluate_verdict",
+        "e06_onboarding_verdict.VerdictResult.to_dict"
+      ],
+      "path": "onboarding-verdict.json",
+      "purpose": "E-06 REVIEW example during the four-invoice warm-up gate.",
+      "schema": "../onboarding-verdict.schema.json",
+      "sha256": "dcdab34051b7394542830fd49065d264f73e1662bfd676625fb23e88ff8de3ee"
+    },
+    {
+      "artifact_type": "kandoo.mode-b.layout-font-fingerprint",
+      "generated_from": [
+        "e08_new_type_flow.TemplateCandidate.propose",
+        "e08_new_type_flow.TemplateCandidate.to_dict",
+        "image_extraction_adapter.pipeline_v0.build_templates_for_fold",
+        "image_extraction_adapter.glyph_classifier.GlyphTemplateSet.to_json_dict"
+      ],
+      "path": "layout-font-fingerprint.json",
+      "purpose": "New-layout geometry and numeric script profile with a fold-local Glyph feature profile.",
+      "schema": "../layout-font-fingerprint.schema.json",
+      "sha256": "57f0c0ec8e66b8eddc48cb7e43f79a0563b0cd0f4acaa7035591962f7b999f94"
+    },
+    {
+      "artifact_type": "kandoo.mode-b.new-type-candidate",
+      "generated_from": [
+        "e08_new_type_flow.detect_invoice_type",
+        "e08_new_type_flow.TemplateCandidate.to_dict"
+      ],
+      "path": "new-type-candidate.json",
+      "purpose": "E-08 PROPOSED candidate emitted for a changed layout; it is not installed in the bank.",
+      "schema": "../new-type-candidate.schema.json",
+      "sha256": "c0fc6877b2c2df13c8c381909ae78d8ed1c844dd290f938a2635f97824e57a97"
+    }
+  ],
+  "generated_by": "scripts/generate_mode_b_artifact_goldens.py",
+  "manifest_version": "1"
+}

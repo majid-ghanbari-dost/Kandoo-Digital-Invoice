@@ -1,0 +1,132 @@
+# KANDOO DIGITAL INVOICE — AGENT COORDINATION
+
+## Current Arena status — ORDER 16
+
+This section supersedes older branch, ownership, and PR instructions in the historical dispatches below.
+
+- Current fixed branch: `arena/d0587e71-kandoo-digital-invoice`; do not switch, create, rename, or push to another branch.
+- Aggregate create-only PR: [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16). Keep it open; do not merge/close the PR or push to `main`.
+- The requested merge of `origin/main` (`180b279b6c692f841cab739577ad4fedeefb77c3`) into the active branch is conflict-resolved; this commit records that merge. Push, remote PR conflict status, and CI are still pending verification.
+- Local ORDER 16 harness passed after merge resolution with pinned dependencies: 2,076 tests; E-72 vectors, O15 verifier, E-70 source smoke, and three synthetic layout gates passed. This is not a claim of remote CI success or real-invoice accuracy.
+- E-70/E-73 owner-data evaluation remains strictly local. Synthetic fixtures/tests only; console, report, CI, and Git must contain no invoice payload, names, phone numbers, or amounts. E-75 remains deferred; E-63 remains deferred/NO GO; E-65 is documentation-only domain draft.
+- Per the current ORDER 16 instruction, create one new `o16-<task>` tag only after that task's own commit is CI-green. Never move, delete, or reuse a tag; never tag `main`. No new ORDER 16 tag exists yet.
+
+## Purpose
+
+Operational coordination between implementation and governance agents. This file and `AGENT_HANDOFF.md` must reflect the verified repository state, not historical transfer-package status.
+
+## Ownership
+
+| Area | Owner | Status |
+|---|---|---|
+| Window 4 (E-30 through E-33) | Current implementation agent | COMPLETE, COMMITTED, TAGGED, AND PUBLISHED on the fixed branch; no active technical task remains in this window |
+| E-30 CLI contract and golden pack | Current implementation agent | COMPLETE; `stable-e-30`; source golden verifier passed 6/6 locally |
+| E-31 all-real-fixture accuracy and timing harness | Current implementation agent | COMPLETE; `stable-e-31`; four-fold leave-one-invoice-out run reports zero EXTRACTED-but-wrong; Windows timing workflow awaits executive verification |
+| E-32 workflow hygiene | Current implementation agent | COMPLETE; `stable-e-32`; Node 24 action majors and explicit runner labels; workflow-only |
+| E-33 handoff/report | Current implementation agent | COMPLETE; `stable-e-33`; closes Window 4 |
+| Product-owner evidence/decisions | Product Owner, coordinated by PM | OPEN ESCALATION: authentic SPL/SHD samples, Holoo price-entry test, hosting, and legal text; not attempted in Arena |
+| Technical/management follow-up | PM | Route unresolved implementation, hosting, and legal decisions here |
+| Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` | Project governance | UNCHANGED in Window 4; remain frozen |
+| Historical WP/N/E tasks | Prior task owners | Completed/historical records remain in `AGENT_HANDOFF.md`; not active Window 4 work |
+
+## Rules
+
+1. One WP = one owner.
+2. Do not edit another agent's active WP/files concurrently.
+3. Reviews do not transfer ownership.
+4. This Arena session is fixed to `arena/d0587e71-kandoo-digital-invoice`; do not switch, create, rename, or push to another branch. Branch references in the older dispatches below are historical.
+5. Frozen files require explicit evidence/authorization before modification.
+6. Update this file and `AGENT_HANDOFF.md` when ownership or project state changes.
+7. Stop at genuine decision, evidence, contract, or architecture blockers.
+8. Never claim source integration or Holoo accuracy without verifiable artifacts and real-source evidence.
+9. PR #16 is the authorized aggregate create-only lane for ORDER 16. Update it from the current fixed branch only; keep it open, and do not merge or close it.
+
+## Current Serial Dispatch — Window 4 closeout (2026-10-30)
+
+- This session remains on `arena/194fd0be-kandoo-digital-invoice`; Window 4 E-30 → E-31 → E-32 → E-33 is complete and published. Full E-30 through E-32 SHAs, tags, metrics, and CI wording are in `AGENT_HANDOFF.md`. E-33 is the handoff-closeout commit tagged `stable-e-33`; its full peeled SHA is reported after publication.
+- E-31 confirmed the complete invoice inventory as `29.png`, `31.png`, `32.png`, `33.png`; 22 nested N-02 crops are excluded as non-invoice inputs. Four-fold leave-one-invoice-out results: invoice outcomes 3 EXTRACTED / 1 REVIEW / 0 BLOCKED; expected numeric-field routes 36 / 18 / 0; zero EXTRACTED-but-wrong. Fixture 33 routes to REVIEW in the held-out evaluation. The checked-in default bank contains these fixtures, so its CLI smoke is resubstitution evidence, not independent accuracy.
+- Local full suite: **1,979 passed, 134 subtests passed**; focused pipeline/adapter/E-31 tests: **164 passed, 67 subtests passed**. E-30 source golden verification passed 6/6. E-31 source harness passed and the unknown-layout regression returns REVIEW without a Canonical candidate.
+- E-32 updates checkout/setup-python/upload-artifact to v7 (Node 24) and pins runners to `ubuntu-24.04` / `windows-2025`. Windows CI is configured to time the frozen executable and upload its report. Do not claim Windows or Ubuntu CI outcomes: all CI rows await executive verification.
+- Frozen `contracts/` and `src/image_extraction_adapter/adapter.py` remain unchanged. No PR, merge, force-push, or main-branch change was made. Stop after E-33 publication/report.
+- **PRODUCT-OWNER ESCALATION (not attempted):** authentic SPL/SHD/Probe samples, the Holoo price-entry test, hosting, and legal text remain open. Route technical and management decisions to the PM; do not fabricate evidence or decisions.
+
+## Historical Serial Dispatch — 2026-10-27 (superseded)
+
+- Work remains on `arena/9dc17500-kandoo-digital-invoice`; PR #11 is open and `main` is unchanged. No merge, force-push, or frozen-contract edit is authorized.
+- N-04 is complete: measurement SHA `3d9d28b00acbf0f1944024d5530a4922f15b16e9` passed Python [40311286610](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40311286610) and Windows [40311286720](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40311286720); docs-only closeout SHA `8308023e208d8a648b6bd410f63f2c821d476ab7` is tagged `stable-n-04` and passed Python [40313438293](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40313438293) and Windows [40313438283](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40313438283). Intermediate run [40308983293](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40308983293) was at `af8dae13b323f71df0b0b535eb6938672fa74930`, job `Windows / Python 3.11 / PyInstaller onedir`; it failed at step “Windows tests - frozen E-11 contract package” (`pytest tests/test_e11_contract_package.py`), exit 1. PyInstaller never ran, and the failing assertion is unidentified because log retrieval returned EOF. The same-SHA PR Windows run passed; green final tagged-commit runs supersede this intermediate red. Calling it a Windows packaging failure was an executive-manager mischaracterization. The owner/verifier audit of the whole-window 17 changed paths found no file under `contracts/` and no `src/image_extraction_adapter/adapter.py`.
+- N-05 is complete: implementation SHA `3f5a26e7add23d188163188ba61cfba6d802b691`; closeout SHA `0cc7f32769b8bbc0a035b6ea27fd6e411e1fa256`, tagged `stable-n-05`. Final Python run [40316077949](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40316077949) and Windows run [40316078058](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40316078058) both passed. Evaluation references stay provisional and owner-unconfirmed; dated price observations are not inferred from the four null-date fixtures.
+- E-24 implementation SHA `b8f4047cef946daaab3f11880669266de932e5bb` passed Python [40322487925](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40322487925) and Windows [40322487999](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40322487999). It adds the explicit profile registry/evaluator, 11 synthetic fail-closed routes (zero EXTRACTED-but-wrong), and four byte-compatible Holo output goldens. Docs-only closeout commit `9305efbf75091f3a5df1c57bb6fe9756af096c9b` is tagged `stable-e-24`; closeout Python run [40323114292](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40323114292) and Windows run [40323114298](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40323114298) both passed.
+- N-06 is complete at `bbf08e1aed31d6f165294ffe4ca0f9cf4db3d2cb`, tagged `stable-n-06`. PM-relayed push Python run #61 / [40391678234](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40391678234) passed (5m 40s); push Windows run #57 passed (1m 19s; global ID was not relayed). PR Windows run [40391682594](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40391682594) passed. PR Python run [40391682589](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/40391682589) first failed in `Ubuntu / Python 3.12` with exit 1; its attempt-2 rerun was green (20:15:24Z–20:18:35Z, conclusion SUCCESS). The identical tree passed push run #61; the first-attempt red is classified TRANSIENT (flake or ubuntu-26 runner migration), with no code change. PR #11 checks are all green after the rerun.
+- E-25 is the current docs-only closeout for this window: correct the N-04 intermediate-failure description in `AGENT_HANDOFF.md` and `docs/n04-name-suggestions.md` in the same commit group, retain the task-window SHA/tag/CI ledger, and create only the new annotated `stable-e-25` tag. PR #11 remains open; `main` is unchanged.
+
+## Historical State — 2026-10-24
+
+### E-03-kit-v1 — archived and obsolete
+
+- The original v1 files `docs/E-03-kit-inventory.md`, `docs/E-03-kit-guide-fa.md`, and `docs/E-03-kit-checklist.md` remain preserved for audit history and now carry the exact warning “Kit v1 is OBSOLETE per Director, do not use.”
+- V1 must not be printed or used: it specified the incorrect print source, phone-scanned capture, an assumed unit-price column, and incomplete digit coverage.
+
+### E-03-kit-v2 — active print-extraction kit
+
+- `docs/E-03-kit-v2/` contains exactly three learning pages and one exam page, a combined 0–9/comma coverage matrix, and expected values restricted to quantities, line totals, and invoice-level payable; no unit-price field is assumed or included.
+- Combined counts from controlled value strings are `۰` 10, `۱` 14, `۲` 23, `۳` 9, `۴` 12, `۵` 11, `۶` 20, `۷` 6, `۸` 8, `۹` 7, and comma 20. Each page also satisfies the existing E-06 minimum of five Persian `۲` and `۶` glyphs.
+- Owner-confirmed safety boundary: Hello test invoices contain fabricated data only; no real customer, sale, or stock movement occurs; nothing needs cancellation, deletion, or rollback; the print job itself is the test artifact and the fake invoice may be discarded.
+- Required capture uses an actual Hello Windows print job: KandooPrintProbe captures its SPL, converts to PNG for downstream OCR/extraction, and writes adjacent `Report.txt` metadata (printer, spool job ID, timestamp, page count). Phone scans and word-processor prints are prohibited. Actual Windows SPL capture/conversion is not available in Arena and remains owner verification; no local verification is claimed.
+- See `docs/E-03-kit-v2/README.md`, `scripts/verify_e03_kit_v2.py`, and `tests/test_e03_kit_v2.py` for the workflow, checker, and tests. Local validation passed: 5 focused tests, all eleven glyph thresholds, `py_compile`, and `git diff --check`; capture mode was not run because no real owner capture is available in Arena.
+
+### E-04.5 + E-05 — Label-derived fixtures and template bank
+
+- Four Canonical v0 fixtures (29/31/32/33) are synthesized from `labels.json`; the manifest/README mark provenance and identify every synthetic context field. Invoice 33 remains `DRAFT`; no fixture is pipeline-emitted or issuable.
+- The Python package `src/e05_template_bank/` validates label/canonical agreement, groups the four layouts into one reusable profile, and exposes weighted advisory matching/JSON serialization. It does not run OCR or alter the E-02 pipeline.
+- Focused E-05 suite: 9 passed. Existing Canonical Invoice v0 tests: 42 passed plus 39 subtests. Self-match scores are 0.998544 (29), 0.995653 (31), 0.997350 (32), and 0.971928 (33); these are training-set resubstitution only, not independent accuracy. Commit `66b4274597471a2837b79f3019f03d13c8ff00e0`, branch push, and `stable-e-05` tag are verified.
+
+### E-06 — Onboarding verdict
+
+- Part A is documented in `docs/E-06-onboarding-verdict.md`; ASM-35 through ASM-40 are in `docs/DECISIONS.md`. The evaluator is fail-closed, uses existing E-05 matching, and requires high confidence, exact raw/canonical numeric agreement, N=4 warm-up, locked bank, D14 signed-agreement evidence, kit-scoped `۲`/`۶` coverage, and audited store-owner field verification before ACCEPT.
+- Part B is implemented under `src/e06_onboarding_verdict/`; bad and partial onboarding fixtures are test-only synthetic data. The bad Canonical-derived fixture has provenance in an adjacent sidecar rather than an out-of-schema Canonical property.
+- Final verification: E-06 tests 18 passed; E-05 tests 9 passed; Canonical Invoice v0 tests 42 passed plus 39 subtests; `py_compile` and `git diff --check` passed. The serialization test confirms compatibility with `TemplateMatch.to_dict()`. E-06 is complete at commit `91f5b04`; the local `stable-e-06` tag is present.
+- Continue only on `arena/9dc17500-kandoo-digital-invoice`. Do not create, close, merge, or otherwise manage a PR; existing PR #11 is open and was not changed.
+
+### Native Checkout
+
+PO choices are recorded in `specs/native-checkout-contract-proposal.md`:
+
+- Q1: Option 1 — additive native-source contract, no fake capture.
+- Q2: Option 2 — non-fiscal pilot with operator-entered amounts, no tax claim.
+- Q3: Option 1 — no post-commit correction in this slice.
+- Q4: Option 1 — stable `sale_id` for idempotency.
+
+This is approved for future architecture, not current MVP priority. No Native Checkout code was added.
+
+### External image OCR
+
+- `src/image_extraction_adapter/` uses Tesseract with both a coordinate-free text parser and a fail-closed spatial fallback. The fallback groups TSV word boxes into right-to-left columns and numbered rows. `PERSIAN_TESSERACT_LANGUAGE` is `fas+eng`; text normalization supports Persian/Arabic digits, separators, letter forms, and bidirectional controls.
+- The clearly labeled Synthetic Persian raster passed the current post-spatial-backend Tesseract → expected-value preflight → existing `IssuanceService` → Digital Invoice smoke. OCR: Tesseract 5.5.1 (`fas+eng`), 47 word scores, minimum 65.31218, mean 91.47784295744681. Declared values matched; the pipeline reached `ISSUED`, verified `true`, with a 24-link trace. The English Synthetic regression also passed.
+- Evidence includes `synthetic-spatial-regression-fa.log`, `synthetic-spatial-regression-en.log`, `synthetic-digital-invoice-evidence.md`, and the earlier `synthetic-persian-ocr-e2e.log` / `synthetic-persian-confidence-review.log`. These Synthetic results do not validate Holoo.
+- At threshold 70, the Persian fixture was held as adapter-local `REVIEW_REQUIRED`; issuance was not called. This is not a persisted Frozen P5.2 ReviewQueue item or a Digital Invoice `REVIEW` state.
+- Persian `fas` and English `eng` traineddata were installed and exercised from `/tmp`; provenance/checksums are recorded in the evidence. No traineddata binaries or optional runtime packages were added to the repository.
+- One user-supplied cleaned image, `deliveries/image-extraction-ocr/holo_row_detection.png`, was run through `submit_image()`. The spatial parser found four ordered rows and the amount/quantity/name/sequence columns, while preserving ambiguous raw values. Per-field output and the image hash are in `deliveries/image-extraction-ocr/real-holoo-spatial-evidence.md`.
+- The image returned `ImageExtractionReviewRequired`; a counting wrapper around the real `IssuanceService` recorded zero `submit` calls. No Digital Invoice was issued. This is an adapter-local hold, not a persisted Frozen P5.2 review record.
+- The single image did not yield reliable line totals, payable, net total, quantities, or unit prices. It demonstrates a partial layout parse only—not general Holoo accuracy.
+- WP-05 added geometry-based crops for numeric cells and descriptions, plus a payable crop. The source raster is not modified. OCR operates on crops; Pillow performs Otsu/adaptive thresholding and directional morphological rule removal. Numeric cells use PSM 7 and whitelist `0123456789۰۱۲۳۴۵۶۷۸۹.,`; description cells receive no numeric whitelist. Cell variants are supplementary and do not replace existing assessment values.
+- For this image, the unprocessed numeric-crop mode scored 1/9 exact matches (88.89% exact-cell error; 67.57% digit CER); Otsu and adaptive both scored 4/9 (55.56% error; 56.76% CER). The full-page baseline scored 0/9 exact with 54.05% CER. Neither preprocessing mode matched any of five monetary cells to the provisional visual transcription. The transcription is manual and unconfirmed by the invoice owner; all variants remain REVIEW. Reproducible details are in `deliveries/image-extraction-ocr/cell-preprocessing-comparison.md` and `cell-preprocessing-benchmark.log`.
+- A separate `submit_image()` guard probe using the real workspace service returned `ImageExtractionReviewRequired`, collected 31 variants, and recorded zero `IssuanceService.submit` calls and no Digital Invoice was created. See `cell-preprocessing-issuance-guard.log`. This is an adapter-local hold, not a persisted Frozen P5.2 review record.
+- Geometry uses `tesserocr.GetTSVText(0)` for level-5 text/confidence/box fields because neither `pytesseract` nor the native Tesseract CLI is present in this runtime. It does not claim to call `pytesseract.image_to_data`.
+- Frozen contracts D-01–D-09 were not changed. The original raster hash is reported by the adapter but is not persisted by the Frozen Capture contract.
+- WP-05 validation: 18 focused preprocessing/adapter tests passed; full repository suite passed (1,712 tests). Synthetic English and Persian smoke checks passed and remain explicitly Synthetic, not Holoo evidence.
+- WP-09 added `detect_dynamic_table_layout()` and made image projections primary in `crop_spatial_cells()`; old OCR geometry is fallback only. Contiguous black horizontal/vertical runs use the 80%-of-longest rule; the longest median-spaced grid excludes the short rounded-payable edges and applies median row-height filtering. No page-specific row coordinates or expected row count are used.
+- The projection benchmark returned 4/4, 5/5, and 13/13 rows, five column rules, and 12/15/39 amount/quantity/description cell crops respectively. Detailed boundaries, medians, and image hashes: `deliveries/image-extraction-ocr/dynamic-layout-projection.log`.
+- Glyph templates were built from all three receipts: all 0–9 plus comma are present in the `row` profile. The 13-row image is split by rows 3–8 for training and rows 0–2 plus 9–12 for labelled holdout; the payable is scored. This is a within-invoice row holdout, not independent-invoice validation. All labels are provisional visual transcriptions, not invoice-owner-confirmed ground truth.
+- 13-row Glyph evaluation: `exact_digit_cells=12/15`; 12 `EXTRACTED`, 15 `REVIEW` (counted across all 27 returned numeric cells), zero `EXTRACTED` values mismatch their visual labels. Arithmetic Gate **failed** on unreadable `line.9.total` (`??۹,۶۰۰,۰۰۰`); the payable also remains `REVIEW`. Full output is `deliveries/image-extraction-ocr/glyph-classifier-evaluate-13row-3invoice-build.log`.
+- WP-09 validation: image-adapter suite 21 passed plus 6 subtests; full repository suite 1,715 passed plus 6 subtests. Temporary Pillow/tesserocr/pytest runtime stayed under `/tmp`; no repository dependency changes. At WP-09 completion, `glyph_classifier.py` had not yet been connected to `adapter.py`; WP-10 subsequently authorized and implemented that integration.
+- WP-10 integrated `GlyphClassifierOCR` as the adapter's primary numeric-cell backend, retaining Tesseract for full-page text/layout context. If any numeric cell is REVIEW, results are missing, or Glyph disagrees with parsed numeric values, the entire page stays `ImageExtractionReviewRequired`; accepted Glyph evidence is carried through Ready and rechecked by `submit_extraction`.
+- Guarded E2E used `deliveries/image-extraction-ocr/13.png`, `src/templates.json`, and required temporary runtime assets. It detected 13 rows/27 numeric cells (12 EXTRACTED, 15 REVIEW); the arithmetic gate failed on malformed `line.9.total` and payable. The adapter returned page-level REVIEW. `NonIssuingSubmitProbe` recorded 0 calls; the actual issuance service was not attached, so no Digital Invoice could be created and none reached ISSUED. This is a control-flow result, not proof of OCR accuracy.
+- WP-10 report and complete output: `deliveries/image-extraction-ocr/wp-holoo-image-extraction-10-report.md` and `wp-holoo-image-extraction-10-e2e.log`. WP-10 focused suite: 25 passed; full repository suite: 1,719 passed plus 6 subtests. Visual labels are provisional, not owner-confirmed; row-level holdout is within one invoice.
+
+### Next executable work
+
+The only remaining E-03-kit-v2 evidence action is for the owner to run the four fabricated pages through Hello on Windows and provide the actual KandooPrintProbe SPL→PNG captures with adjacent `Report.txt` files. Arena cannot run this Windows print-capture verification. Do not substitute scans or word-processor prints, and do not claim capture success until the owner reviews the actual outputs. The technical extraction/review path through WP-10 remains fail-closed and the 13-row E2E is not production-accuracy evidence. Before accuracy/calibration claims, use held-out owner-authorized prints and independent invoices. Keep uncertain fields in REVIEW and do not present label-derived fixtures as Holoo evidence. Native Checkout remains outside current MVP priority; WP-11.2 remains a separate deferred Holoo database-adapter scope. Persian calendar (Jalali) conversion is not implemented.
+
+## Branch / integration boundary
+
+Continue using only `arena/9dc17500-kandoo-digital-invoice`; E-03-kit-v2 started from remote-verified commit `d70fb3778b6f69de23740ec9f16cbb4ac221445b` (`stable-e-08`). Push only this fixed branch and verify its remote SHA before creating the annotated `stable-e-03-kit-v2` tag. Do not force-push or overwrite remote work if a non-fast-forward condition is encountered; report the blocker. Do not merge or operate on PR #11, which remains open and untouched.

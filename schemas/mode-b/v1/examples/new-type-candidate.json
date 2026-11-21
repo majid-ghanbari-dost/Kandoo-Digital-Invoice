@@ -1,0 +1,107 @@
+{
+  "artifact_type": "kandoo.mode-b.new-type-candidate",
+  "artifact_version": "1",
+  "candidate": {
+    "candidate_id": "e08-candidate-32fdcb2526ae94a831ec",
+    "decided_at": null,
+    "decision_by": null,
+    "decision_reason": null,
+    "field_positions": {
+      "column_0": [
+        0.0,
+        0.138889
+      ],
+      "column_1": [
+        0.138889,
+        0.3125
+      ],
+      "column_2": [
+        0.3125,
+        0.486111
+      ],
+      "column_3": [
+        0.486111,
+        0.659722
+      ],
+      "payable_bbox_over_width": [
+        0.371528,
+        1.423611,
+        0.201389,
+        0.048611
+      ]
+    },
+    "layout_signature": {
+      "normalized_column_boundaries": [
+        0.0,
+        0.138889,
+        0.3125,
+        0.486111,
+        0.659722
+      ],
+      "page_aspect_ratio": [
+        0.444444
+      ],
+      "payable_bbox_over_width": [
+        0.371528,
+        1.423611,
+        0.201389,
+        0.048611
+      ],
+      "payable_gap_over_width": [
+        0.032986
+      ],
+      "row_heights_over_width": [
+        0.123264,
+        0.118056,
+        0.118056,
+        0.119792
+      ],
+      "row_pitches_over_width": [
+        0.12066,
+        0.118056,
+        0.118924
+      ],
+      "table_top_over_width": [
+        0.911458
+      ]
+    },
+    "numeric_digit_alphabet": [
+      "۰",
+      "۱",
+      "۴",
+      "۵",
+      "۶",
+      "۷",
+      "۸"
+    ],
+    "numeric_group_sizes": [
+      3
+    ],
+    "numeric_separators": [
+      ","
+    ],
+    "observed_numeric_fields": [
+      "invoice.payable",
+      "line.0.quantity",
+      "line.0.total",
+      "line.1.quantity",
+      "line.1.total",
+      "line.2.quantity",
+      "line.2.total",
+      "line.3.quantity",
+      "line.3.total"
+    ],
+    "proposed_at": "2026-10-24T00:00:00Z",
+    "review_reason": null,
+    "reviewed_at": null,
+    "reviewer_id": null,
+    "source_invoice_ids": [
+      "e05-synth-invoice-29"
+    ],
+    "state": "PROPOSED",
+    "store_id": "e05-synth-store"
+  },
+  "exported_at": "2026-10-24T00:00:00Z",
+  "mode": "B",
+  "store_id": "e05-synth-store"
+}

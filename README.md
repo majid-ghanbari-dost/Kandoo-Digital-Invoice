@@ -1,24 +1,23 @@
-# Kandoo Digital Invoice — Project Repository
+# فاکتور دیجیتال کندو — مخزن Python
 
-تاریخ Bootstrap: 2026-10-01 | وضعیت: Execution Management (پس از تأیید PO)
-
-## ساختار
+## ساختار مخزن
 
 ```text
-kandoo/
-├── README.md                       ← همین فایل — پروتکل حاکم
-├── baseline/                       ← اسناد Frozen Baseline ( pending commit — see note)
-├── specs/                          ← مشخصه‌های سطح WP (مثل Capture Record Contract)
-└── registers/
-    ├── decision-register.md           ← Single Source of Truth معماری
-    ├── deferred-decision-register.md  ← مرز ممنوعیت پیاده‌سازی
-    ├── work-package-register.md       ← Roadmap → Work Packages
-    ├── task-register.md               ← WP → Agent Tasks (حافظه رسمی پروژه)
-    ├── acceptance-register.md         ← AC → Evidence → Acceptance
-    └── risk-register.md               ← ریسک‌های واقعی و فعال
+.github/workflows/  CI تست Python و بسته‌بندی Windows
+contracts/          قراردادها و نمونه‌های قراردادیِ versioned
+deliveries/         گزارش‌ها و شواهد اجرای کارها
+docs/               راهنمای فنی، مرزهای سامانه و گزارش‌ها
+registers/          ثبت تصمیم، ریسک، وظیفه و پذیرش
+schemas/            JSON Schema و نمونه‌های versioned
+scripts/            harnessها، verifierها و ابزارهای محلی
+specs/              قراردادها و طرح‌های Work Package
+src/                بسته‌های Python برای پردازش/سرویس‌های پروژه
+tests/              تست‌ها و fixtureهای بسته‌شده
 ```
 
-**Note — Baseline Docs:** سه سند Baseline (Frozen Canonical Invoice v1، Master Architecture، Master Roadmap) به‌علاوه Management Readiness Review باید در `kandoo/baseline/` commit شوند. تا آن زمان، Decision Register بازنماییِ متنیِ معتبر و self-contained تصمیمات Frozen است. پس از commit، ستون Source Document در Registerها باید به مسیر فایل‌ها به‌روزرسانی شود. (غیربازدارنده — Maintenance Note: MNT-1)
+> ساختار جریان داده، نقش بسته‌های اصلی و دستورهای harness دقت در
+> [راهنمای فنی Python](docs/E-39-python-technical-map.md) آمده است. این راهنما
+> مسیر image-extraction را از pipeline پایدار capture-to-canonical جدا می‌کند.
 
 ## پروتکل حاکم برای همه Agentها
 

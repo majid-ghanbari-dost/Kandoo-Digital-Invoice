@@ -1,0 +1,67 @@
+{
+  "schema_version": "e28.glyph-drift-report.v1",
+  "status": "CLEAR",
+  "reason": null,
+  "baseline_id": "e28-5b3684f43b60a9936f2c",
+  "template_library_id": "b42688770113faaba9e4024e3af66fa4eed2cb039d184daff6429e0cef047931",
+  "mean_distance_by_symbol": {
+    ",": {
+      "mean_distance": 8.33e-06,
+      "glyph_count": 8,
+      "baseline_mean": 7.86e-06,
+      "bound": 0.00643404,
+      "absolute_delta": 4.7e-07
+    },
+    "۰": {
+      "mean_distance": 6.67e-06,
+      "glyph_count": 20,
+      "baseline_mean": 5.94e-06,
+      "bound": 1.55e-06,
+      "absolute_delta": 7.3e-07
+    },
+    "۱": {
+      "mean_distance": 9.52e-06,
+      "glyph_count": 5,
+      "baseline_mean": 9.42e-06,
+      "bound": 2.48e-06,
+      "absolute_delta": 1e-07
+    },
+    "۴": {
+      "mean_distance": 4.048e-05,
+      "glyph_count": 3,
+      "baseline_mean": 4.258e-05,
+      "bound": 0.00588463,
+      "absolute_delta": 2.1e-06
+    },
+    "۵": {
+      "mean_distance": 2.857e-05,
+      "glyph_count": 3,
+      "baseline_mean": 4.928e-05,
+      "bound": 0.00861828,
+      "absolute_delta": 2.071e-05
+    },
+    "۶": {
+      "mean_distance": 0.0001,
+      "glyph_count": 1,
+      "baseline_mean": 7.262e-05,
+      "bound": 2.738e-05,
+      "absolute_delta": 2.738e-05
+    },
+    "۷": {
+      "mean_distance": 4.107e-05,
+      "glyph_count": 4,
+      "baseline_mean": 4.001e-05,
+      "bound": 0.0037213,
+      "absolute_delta": 1.06e-06
+    },
+    "۸": {
+      "mean_distance": 2.857e-05,
+      "glyph_count": 1,
+      "baseline_mean": 3.218e-05,
+      "bound": 0.00357155,
+      "absolute_delta": 3.61e-06
+    }
+  },
+  "triggered_symbols": [],
+  "diagnostics": []
+}

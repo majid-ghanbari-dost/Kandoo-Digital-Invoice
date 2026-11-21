@@ -1,0 +1,8 @@
+image=deliveries/image-extraction-ocr/holo_row_detection.png
+image.sha256=61d6d16594ca35d622099ad5c453292d0279127ee65744ce784952b3a781586a
+run=ImageExtractionAdapter.submit_image with CountingService wrapper around actual workspace IssuanceService
+outcome=ImageExtractionReviewRequired
+cell_ocr_variant_count=31
+IssuanceService.submit_calls=0
+digital_invoice=NONE
+review_fields=invoice.date,invoice.payable,total.net,line.0.description,line.0.quantity,line.0.total,line.0.unit_price,line.1.description,line.1.quantity,line.1.total,line.1.unit_price,line.2.quantity,line.2.total,line.2.unit_price,line.3.description,line.3.quantity,line.3.total,line.3.unit_price

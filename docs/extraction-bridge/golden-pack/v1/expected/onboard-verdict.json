@@ -1,0 +1,35 @@
+{
+  "artifact_type": "kandoo.mode-b.onboarding-verdict",
+  "artifact_version": "1",
+  "evaluated_at": "2026-10-30T00:00:00Z",
+  "evaluation_context": {
+    "d14_agreement_signed": false,
+    "extraction_confidence": 0.0,
+    "missing_fields": [
+      "invoice.payable",
+      "line.0.quantity",
+      "line.0.total",
+      "line.1.total"
+    ],
+    "processed_invoice_count": 0,
+    "require_kit_digit_coverage": false,
+    "template_bank_locked": false
+  },
+  "invoice_id": "e26-e20-exam-pipeline",
+  "mode": "B",
+  "result": {
+    "audit_record": null,
+    "confidence_score": null,
+    "details": [
+      "Missing fields: invoice.payable, line.0.quantity, line.0.total, line.1.total"
+    ],
+    "owner_acceptance_eligible": false,
+    "reason_codes": [
+      "PARTIAL_MATCH"
+    ],
+    "template_match": null,
+    "verdict": "REVIEW"
+  },
+  "store_id": "synthetic-second-store",
+  "template_bank_sha256": "db4eabe8c285fbe033737a2405c887b7acd07669dba2969c24866ec60265a319"
+}

@@ -1,0 +1,13 @@
+{
+  "fixture_id": "e06-bad-invoice-payable-plus-one",
+  "canonical_fixture": "bad-invoice.json",
+  "synthetic": true,
+  "test_only": true,
+  "production_data": false,
+  "derived_from": "../canonical/canonical-29.json",
+  "construction": "Copied the label-derived Canonical Invoice v0 test fixture and increased summary.payable by exactly 1 rial. The object remains structurally valid but intentionally fails numeric reconciliation.",
+  "expected_verdict": "REJECT",
+  "expected_reason_codes": [
+    "NUMS_INCONSISTENT"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "column_boundaries": [
+    116.5,
+    244.5,
+    293.5,
+    487.5,
+    527.5
+  ],
+  "field_values": {
+    "invoice.payable": "?۸۵,?۹?",
+    "line.0.quantity": "?",
+    "line.0.total": "۱??,۶??",
+    "line.1.quantity": "۴",
+    "line.1.total": "۱?۶,?۶۰",
+    "line.2.quantity": "۷",
+    "line.2.total": "۸۶,۴۱۵",
+    "line.3.quantity": "۸",
+    "line.3.total": "۵۰,۰۹۶"
+  },
+  "image_height": 872,
+  "image_width": 576,
+  "payable_bbox": [
+    160.0,
+    768.0,
+    89.0,
+    17.0
+  ],
+  "row_bands": [
+    [
+      468.0,
+      536.0
+    ],
+    [
+      536.0,
+      604.0
+    ],
+    [
+      604.0,
+      672.0
+    ],
+    [
+      672.0,
+      740.0
+    ]
+  ],
+  "source_id": "exam-pipeline-readings"
+}
