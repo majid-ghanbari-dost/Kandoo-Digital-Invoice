@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:canonical-invoice:v1.2-draft:addendum",
+  "title": "Canonical Invoice v1.2 Draft Addendum — proposal only",
+  "description": "Additive proposal bound to an existing Canonical Invoice v0 invoice_id. It does not modify or replace a frozen contract, define calculations, or confer approval.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "invoice_id",
+    "currency_unit",
+    "payments",
+    "invoice_discount",
+    "walk_in_customer"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.2-draft" },
+    "invoice_id": { "type": "string", "minLength": 1 },
+    "currency_unit": { "enum": ["rial", "toman", null] },
+    "payments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/recorded_payment" }
+    },
+    "invoice_discount": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/recorded_invoice_discount" }
+      ]
+    },
+    "walk_in_customer": { "type": ["boolean", "null"] }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "recorded_payment": {
+      "type": "object",
+      "required": ["type", "amount"],
+      "properties": {
+        "type": {
+          "enum": ["card-reader", "card-to-card", "cash", "credit", "cheque"]
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Recorded integer amount in currency_unit; no balance, settlement, or reconciliation is computed."
+        }
+      },
+      "additionalProperties": false
+    },
+    "recorded_invoice_discount": {
+      "type": "object",
+      "required": ["amount", "provenance"],
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Recorded invoice-level discount amount in currency_unit; no allocation or payable computation is defined."
+        },
+        "provenance": {
+          "enum": ["native", "captured", "untrusted", "unavailable"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
