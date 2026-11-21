@@ -12,5 +12,5 @@
 - **Retry artifact:** تنها retry دیگر برای دانلود artifact ساختگی harness در run `44885771939` دوباره با `EOF` تمام شد؛ payload تأیید نشد و وضعیت `BLOCKED-UNKNOWN` است.
 - **Annotationها:** در هر کار یک warning زیرساختی دربارهٔ منسوخ‌شدن Node.js 20 در actionهای موجود بود؛ هیچ annotation خطای کد گزارش نشد.
 - **Tag:** **BLOCKED** — `docs/orders/ORDER-16.md:8,42` برای هر کار tag تازه می‌خواهد؛ `docs/OPERATING-RULES-v2.md:21` ساخت tag توسط عامل را منع می‌کند؛ tag ساخته نشد.
-- **PR:** [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16) تجمیعی و create-only؛ وضعیت GitHub `CONFLICTING` (22 جلو، 118 عقب) است؛ ادغام انجام نشد.
+- **PR:** [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16) تجمیعی و create-only؛ وضعیت فعلی GitHub `CONFLICTING` است؛ ادغام/rebase انجام نشد.
 - **وابستگی E-73:** موفقیت فنی harness، blocker تأیید ساختار نمونهٔ واقعی را رفع نمی‌کند.
