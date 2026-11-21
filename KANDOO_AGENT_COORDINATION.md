@@ -51,6 +51,7 @@
 - E-73: منطق fail-closed و ابزار batch افزوده شد؛ آزمون‌های ساختگی `6 passed`. تطبیق با ساختار یک نمونهٔ واقعیِ مجاز **BLOCKED** است؛ نمونه در checkout نبود و دادهٔ واقعی وارد مخزن/CI نمی‌شود.
 - E-74: `scripts/run_order16_harness.py` یک فرمان کامل است؛ suite محلی `1717 passed`، O15 verifier و E-70 source smoke گذشتند و numeric gate برای هر سه layout `5/5` با `EXTRACTED-but-wrong=0` شد. اجرای راه‌دور [44885771939](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44885771939) برای ثبت `74375ff090b09649414ce4a7eb1fdfc4d15284ca` در هر دو کار Ubuntu و Windows موفق شد؛ Windows bundle و summary artifact بارگذاری شدند.
 - بررسی API: هر دو job/step موفق؛ فقط یک warning از منسوخ‌شدن Node.js 20 در actionها برای هر کار و هیچ annotation خطا. artifact summary 722 بایت و bundle 14,055,998 بایت، هر دو موجود و منقضی‌نشده بودند. دانلود محتوای artifact به EOF رسید و فقط metadata بررسی شد.
+- گزارش‌های فارسی با ثبت `b727ca07b851387a59a5972202ef50ae97711817` پوش شدند. اجرای پس از آن [44886126550](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44886126550) نیز در دو کار موفق شد؛ API وضعیت jobها، annotationهای warning و دو artifact منقضی‌نشده را تأیید کرد. محتوای artifact به‌علت EOF دریافت نشد.
 - E-75: **DEFERRED / BLOCKED** تا تأیید همهٔ MUSTها؛ blocker نمونهٔ واقعی E-73 مانع اندازه‌گیری before/after اندازه و startup است.
 - E-65: فقط پیش‌نویس مستنداتیِ غیرمصوب در `docs/e65-holoo-v1-2-proposal.md` ساخته شد؛ پیاده‌سازی `NOT STARTED` است.
 - Tag: سفارش tag می‌خواهد، اما Rules v2 ساخت tag توسط عامل را منع می‌کند؛ تعارض **BLOCKED** و هیچ tag ساخته نشد.
@@ -60,4 +61,4 @@
 
 ## کار اجرایی بعدی
 
-گزارش‌های فارسی E-70 تا E-75 در `docs/reports/` افزوده شده‌اند؛ گام بعدی commit و push این گزارش‌ها فقط به شاخهٔ جاری و سپس بررسی API اجرای تازه است. E-75 تا تأیید واقعی E-73 و سبزشدن همهٔ MUSTها آغاز نمی‌شود؛ `main` تغییر نمی‌کند، tag ساخته نمی‌شود و PR ادغام نمی‌شود.
+گزارش‌های فارسی E-70 تا E-75 روی شاخهٔ جاری پوش شده‌اند و اجرای تازهٔ CI از API بررسی شده است. گام بعدی انتظار برای نمونهٔ واقعیِ مجاز E-73 یا تصمیم تازهٔ مدیر است؛ تا آن زمان E-75 آغاز نمی‌شود. `main` تغییر نمی‌کند، tag ساخته نمی‌شود و PR ادغام نمی‌شود.
