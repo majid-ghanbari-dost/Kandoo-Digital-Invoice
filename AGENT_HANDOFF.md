@@ -280,4 +280,5 @@ WP-11.2: تا حل تصمیم‌ها و قراردادهای لازم نباید
 - Retry یگانهٔ دیگر برای artifact ساختگی harness در run `44885771939` دوباره EOF داد؛ payload تأیید نشد: `BLOCKED-UNKNOWN`. Retry دیگری انجام نشود.
 - تعارض tag: `docs/orders/ORDER-16.md:8,42` در برابر `docs/OPERATING-RULES-v2.md:21`؛ **BLOCKED**، هیچ tag ساخته نشود.
 - PR تجمیعی [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16) از شاخهٔ فعال به `main` create-only باز است. هنگام ایجاد، GitHub آن را `CONFLICTING` نشان داد (compare: 22 جلو، 118 عقب)؛ merge/rebase انجام نشود و `main` تغییر نکند.
-- E-75 همچنان `BLOCKED / DEFERRED` است؛ هیچ سنجش before/after انجام نشد. پس از هر push، run، annotationها و artifactها از API بررسی شوند؛ سقف ۱۵ push برای هر task حفظ شود.
+- E-75 همچنان `BLOCKED / DEFERRED` است؛ هیچ سنجش before/after انجام نشد. سقف ۱۵ push برای هر task حفظ شود.
+- بررسی API پس از push ثبت `badd68664d41f5ad3a263dd6f7423896c3157e96`: run [44888618455](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44888618455) موفق شد؛ jobهای Ubuntu و Windows PASS. annotationهای هر دو job فقط هشدار زیرساختیِ منسوخ‌شدن Node.js 20 داشتند و خطای کد نداشتند. دو artifact، metadata موجود/منقضی‌نشده داشتند (harness 722 بایت، Windows bundle 14,055,526 بایت)؛ محتوای تازه دانلود نشد.

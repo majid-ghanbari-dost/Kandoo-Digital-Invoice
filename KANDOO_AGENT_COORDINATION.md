@@ -61,4 +61,4 @@
 
 ## کار اجرایی بعدی
 
-در پیگیری Round 2، harness کامل با synthetic fixtures `1717 passed` و آزمون‌های هدفمند E-70 تا E-73 `15 passed` شدند؛ نمونهٔ واقعی استفاده نشد. گزارش‌ها و handoff به‌روز شده‌اند؛ پس از push، run و annotationها و artifactهای CI باید با API بررسی شوند. گام بعدی انتظار برای نمونهٔ واقعیِ مجاز E-73 می‌ماند؛ E-63 تا `GO` صریح مدیر آغاز نمی‌شود و E-75 همچنان `BLOCKED / DEFERRED` است. PR #16 فقط create-only است و فعلاً `CONFLICTING`; `main` تغییر نمی‌کند، tag ساخته نمی‌شود و PR ادغام نمی‌شود.
+در پیگیری Round 2، harness کامل با synthetic fixtures `1717 passed` و آزمون‌های هدفمند E-70 تا E-73 `15 passed` شدند؛ نمونهٔ واقعی استفاده نشد. پس از push، run [44888618455](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44888618455) از API بررسی شد: Ubuntu و Windows PASS، فقط هشدار Node.js 20 و بدون annotation خطای کد؛ metadata دو artifact موجود بود و محتوا دریافت نشد. گام بعدی انتظار برای نمونهٔ واقعیِ مجاز E-73 می‌ماند؛ E-63 تا `GO` صریح مدیر آغاز نمی‌شود و E-75 همچنان `BLOCKED / DEFERRED` است. PR #16 create-only و `CONFLICTING` است؛ `main` تغییر نمی‌کند، tag ساخته نمی‌شود و PR ادغام نمی‌شود.
