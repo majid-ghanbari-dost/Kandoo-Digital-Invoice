@@ -1,9 +1,9 @@
 """E-05/E-06/E-08 command wrappers with E-16 v1 artifact boundaries.
 
-The ordinary build path only trains from E-05's provenance-checked,
-operator-confirmed labels/canonical pairs. The explicitly named E-20 option is
-reserved for synthetic mechanics checks and never marks those values as
-operator-confirmed.
+The ordinary build path trains from provenance-checked operator labels. E-70
+adds an explicit local-only path from first invoices: only confirmed labels are
+used, unknown labels stay REVIEW, and no E-03 test kit is required. The
+explicitly named E-20 option remains reserved for synthetic mechanics checks.
 """
 from __future__ import annotations
 
@@ -34,6 +34,7 @@ from e06_onboarding_verdict import (
 from e08_new_type_flow import CandidateRegistry, detect_invoice_type
 
 from .bundle_paths import resource_root
+from .operator_training import build_operator_training_report
 
 
 EXIT_READY = 0
@@ -99,6 +100,39 @@ def add_onboard_subcommands(subparsers: Any) -> None:
     )
     build.add_argument("--created-at", help="optional ISO 8601 timestamp with an explicit UTC offset")
     build.add_argument("--output", type=Path, required=True, metavar="PATH")
+
+    learn = commands.add_parser(
+        "learn",
+        help="build a local E-02/E-05 baseline from operator-confirmed invoice evidence",
+        description=(
+            "Explicit, offline E-70 training from one or more local capture/evidence/label triplets. "
+            "No test kit is required; unconfirmed labels are never learned and incomplete pages remain REVIEW."
+        ),
+    )
+    learn.add_argument(
+        "--sample",
+        action="append",
+        nargs=3,
+        required=True,
+        metavar=("CAPTURE_FOLDER", "EVIDENCE_DIR", "LABELS_JSON"),
+        help="one local capture folder, its E-61 evidence directory, and completed E-62 labels; repeat per invoice",
+    )
+    learn.add_argument("--store-id", required=True, help="opaque store ID; never inferred")
+    learn.add_argument(
+        "--currency-unit",
+        required=True,
+        choices=("rial", "toman"),
+        help="explicit operator-confirmed unit; no inference or conversion is performed",
+    )
+    learn.add_argument(
+        "--confidence-threshold",
+        type=float,
+        default=0.85,
+        help="E-05 layout-match threshold (default: 0.85)",
+    )
+    learn.add_argument("--base-templates", type=Path, metavar="PATH", help="optional local Glyph bank to extend")
+    learn.add_argument("--created-at", help="optional ISO 8601 timestamp with an explicit UTC offset")
+    learn.add_argument("--output-dir", type=Path, required=True, metavar="LOCAL_DIR")
 
     verdict = commands.add_parser(
         "verdict",
@@ -574,6 +608,111 @@ def _run_build(args: argparse.Namespace) -> int:
     return EXIT_READY
 
 
+def _run_learn(args: argparse.Namespace) -> int:
+    store_id = _opaque_id(args.store_id, "--store-id")
+    if not math.isfinite(args.confidence_threshold) or not 0 < args.confidence_threshold <= 1:
+        raise OnboardingCLIError("--confidence-threshold must be finite and in (0, 1]")
+    created_at = _timestamp(args.created_at, "--created-at")
+    samples = tuple(tuple(Path(value) for value in triple) for triple in args.sample)
+    source_paths = tuple(path.expanduser().resolve(strict=False) for triple in samples for path in triple)
+    if args.base_templates is not None:
+        source_paths = (*source_paths, args.base_templates.expanduser().resolve(strict=False))
+
+    target = args.output_dir.expanduser().resolve(strict=False)
+    app_root = resource_root().resolve()
+    try:
+        target.relative_to(app_root)
+    except ValueError:
+        pass
+    else:
+        raise OnboardingCLIError("--output-dir must remain outside the repository/bundle")
+    if getattr(sys, "frozen", False):
+        bundle_root = Path(sys.executable).resolve().parent
+        try:
+            target.relative_to(bundle_root)
+        except ValueError:
+            pass
+        else:
+            raise OnboardingCLIError("--output-dir must remain outside the repository/bundle")
+    for source in source_paths:
+        if source == target or target in source.parents or source in target.parents:
+            raise OnboardingCLIError("--output-dir must not overlap any training input")
+    if target.exists():
+        raise OnboardingCLIError("--output-dir already exists; choose a new local directory")
+
+    try:
+        report = build_operator_training_report(
+            samples,
+            currency_unit=args.currency_unit,
+            confidence_threshold=args.confidence_threshold,
+            base_templates_path=args.base_templates,
+        )
+    except Exception as exc:
+        raise OnboardingCLIError(f"operator-confirmed baseline training failed: {type(exc).__name__}: {exc}") from exc
+
+    bank_artifact = {
+        "artifact_type": "kandoo.mode-b.template-bank",
+        "artifact_version": "1",
+        "mode": "B",
+        "store_id": store_id,
+        "created_at": created_at,
+        "template_bank": report.layout_bank.to_dict(),
+    }
+    summary = {
+        "schema_version": "e70.operator-onboarding-summary.v1",
+        "sample_count": report.sample_count,
+        "confirmed_label_count": report.confirmed_label_count,
+        "uncertain_label_count": report.uncertain_label_count,
+        "skipped_label_count": report.skipped_label_count,
+        "layout_observation_count": report.layout_observation_count,
+        "layout_review_page_count": report.layout_review_page_count,
+        "online_learning": False,
+    }
+    _validate_artifact(bank_artifact, "template-bank.schema.json")
+
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        staging = Path(tempfile.mkdtemp(prefix=f".{target.name}.staging-", dir=target.parent))
+        try:
+            glyph_payload = (
+                json.dumps(
+                    report.glyph_templates.to_json_dict(),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                    indent=2,
+                    sort_keys=True,
+                ) + "\n"
+            ).encode("utf-8")
+            (staging / "glyph-templates.local.json").write_bytes(glyph_payload)
+            _write_artifact(bank_artifact, "template-bank.schema.json", staging / "e05-template-bank.local.json")
+            summary_payload = (
+                json.dumps(summary, ensure_ascii=False, allow_nan=False, indent=2, sort_keys=True) + "\n"
+            ).encode("utf-8")
+            (staging / "e70-onboarding-summary.local.json").write_bytes(summary_payload)
+            target.mkdir(exist_ok=False)
+            for artifact_path in staging.iterdir():
+                artifact_path.replace(target / artifact_path.name)
+        except Exception:
+            import shutil
+            shutil.rmtree(target, ignore_errors=True)
+            raise
+        finally:
+            import shutil
+            shutil.rmtree(staging, ignore_errors=True)
+    except (OSError, TypeError, ValueError) as exc:
+        raise OnboardingCLIError(f"could not write local E-70 baseline: {type(exc).__name__}: {exc}") from exc
+
+    print(
+        "WROTE local E-70 baseline "
+        f"(confirmed={report.confirmed_label_count}; uncertain={report.uncertain_label_count}; "
+        f"skipped={report.skipped_label_count}; layout_review={report.layout_review_page_count})",
+        file=sys.stderr,
+    )
+    if report.uncertain_label_count or report.skipped_label_count or report.layout_review_page_count:
+        return EXIT_REVIEW
+    return EXIT_READY
+
+
 def _load_bank_artifact(path: Path, explicit_store_id: str) -> tuple[dict[str, Any], TemplateBank, bytes]:
     raw = path.expanduser().read_bytes()
     try:
@@ -779,6 +918,8 @@ def run_onboard(args: argparse.Namespace) -> int:
     try:
         if args.onboard_command == "build":
             return _run_build(args)
+        if args.onboard_command == "learn":
+            return _run_learn(args)
         if args.onboard_command == "verdict":
             return _run_verdict(args)
         if args.onboard_command == "register-type":

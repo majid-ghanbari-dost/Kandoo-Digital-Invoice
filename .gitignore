@@ -21,3 +21,9 @@ __pycache__/
 **/review-evidence/
 **/review-evidence-v1.json
 **/review-queue.html
+
+# E-70 local onboarding baselines may be derived from real invoice evidence.
+/e70-baseline.local/
+**/glyph-templates.local.json
+**/e05-template-bank.local.json
+**/e70-onboarding-summary.local.json
