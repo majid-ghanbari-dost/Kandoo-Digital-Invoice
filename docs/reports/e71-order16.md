@@ -9,4 +9,4 @@
 - **آزمون بازگشت:** آزمون‌های E-71 در مجموعهٔ کامل Python اجرا شدند؛ نتیجهٔ کل harness `1717 passed` بود.
 - **Artifact API:** گزارش ساختگی harness در `order16-python-harness-74375ff090b09649414ce4a7eb1fdfc4d15284ca` ثبت شد. metadata از API بررسی شد؛ محتوای artifact به‌علت EOF در endpoint دانلود دریافت نشد.
 - **Tag:** **BLOCKED** — تعارض ORDER 16 با Rules v2؛ tag ساخته نشد.
-- **PR:** **BLOCKED** — محدودیت شاخهٔ Arena امکان PR جداگانه برای این کار را نمی‌دهد؛ هیچ PR ادغام نشد.
+- **PR:** [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16) تجمیعی و create-only از شاخهٔ فعال؛ ادغام انجام نشد.

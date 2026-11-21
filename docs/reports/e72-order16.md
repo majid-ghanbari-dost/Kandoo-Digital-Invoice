@@ -10,4 +10,4 @@
 - **Artifactهای API:** `order16-python-harness-74375ff090b09649414ce4a7eb1fdfc4d15284ca` و `kandoo-extract-windows-74375ff090b09649414ce4a7eb1fdfc4d15284ca` ثبت شدند. metadata در API موجود بود؛ دانلود محتوا به‌علت EOF تکمیل نشد.
 - **وضعیت پیش‌نویس:** غیرمصوب و فقط برای بازبینی؛ تا تصویب، هیچ مصرف اجرایی یا تغییر قرارداد منجمد مجاز نیست.
 - **Tag:** **BLOCKED** — tag ساخته نشد، چون Rules v2 ساخت آن را برای عامل منع می‌کند.
-- **PR:** **BLOCKED** — شاخهٔ جاری Arena به PR جداگانه برای هر کار قابل تفکیک نیست؛ هیچ PR ادغام نشد.
+- **PR:** [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16) تجمیعی و create-only از شاخهٔ فعال؛ ادغام انجام نشد.

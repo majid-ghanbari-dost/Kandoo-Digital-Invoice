@@ -7,4 +7,4 @@
 - **علت blocker:** تأیید ساختار نمونهٔ واقعیِ محلی برای E-73 هنوز انجام نشده است؛ در نتیجه همهٔ MUSTها تأیید نشده‌اند.
 - **اندازه/زمان:** هیچ اندازه‌گیری before/after برای Windows bundle یا زمان startup انجام نشد؛ baseline یا نتیجه‌ای برای E-75 ادعا نمی‌شود.
 - **Tag:** **BLOCKED** — tag ساخته نشد تا تعارض قواعد حل شود.
-- **PR:** **BLOCKED** — محدودیت شاخهٔ Arena؛ هیچ PR ادغام نشد.
+- **PR:** [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16) تجمیعی و create-only؛ E-75 همچنان شروع‌نشده و ادغام انجام نشد.
