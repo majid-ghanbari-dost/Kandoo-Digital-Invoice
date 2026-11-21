@@ -36,11 +36,16 @@ jobs:
       - name: Install pinned extractor and test dependencies
         run: python -m pip install -r requirements-extractor-dev.txt
 
-      - name: Run O15 extractor tests
-        run: python -m pytest -q tests/test_o15_e60.py tests/test_o15_e61.py tests/test_o15_e62.py
+      - name: Run ORDER 16 full Python harness and E-74 accuracy gate
+        run: python scripts/run_order16_harness.py --summary-path "$RUNNER_TEMP/order16-harness-summary.json"
 
-      - name: Verify Ubuntu JSON, E-61 evidence, and E-62 labels
-        run: python scripts/verify_o15_e60.py
+      - name: Upload synthetic ORDER 16 harness summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: order16-python-harness-${{ github.sha }}
+          path: ${{ runner.temp }}/order16-harness-summary.json
+          if-no-files-found: error
+          retention-days: 14
 
   windows-onefolder:
     name: Windows one-folder executable / Python 3.11
@@ -89,6 +94,14 @@ jobs:
       - name: Verify Windows executable, E-61 evidence, and E-62 labels
         shell: pwsh
         run: python scripts/verify_o15_e60.py --exe dist/kandoo-extract/kandoo-extract.exe
+
+      - name: Verify E-70 frozen onboarding with synthetic operator labels
+        shell: pwsh
+        run: python scripts/verify_e70_onboard.py --exe dist/kandoo-extract/kandoo-extract.exe
+
+      - name: Verify E-72 additive draft vector
+        shell: pwsh
+        run: python scripts/verify_e72_vectors.py
 
       - name: Upload Windows one-folder bundle (synthetic smoke only)
         uses: actions/upload-artifact@v4
