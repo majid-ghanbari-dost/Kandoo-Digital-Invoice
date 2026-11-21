@@ -6,8 +6,10 @@ This section supersedes older branch, ownership, and PR instructions in the hist
 
 - Current fixed branch: `arena/d0587e71-kandoo-digital-invoice`; do not switch, create, rename, or push to another branch.
 - Aggregate create-only PR: [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16). Keep it open; do not merge/close the PR or push to `main`.
-- The requested merge of `origin/main` (`180b279b6c692f841cab739577ad4fedeefb77c3`) into the active branch is conflict-resolved; this commit records that merge. Push, remote PR conflict status, and CI are still pending verification.
-- Local ORDER 16 harness passed after merge resolution with pinned dependencies: 2,076 tests; E-72 vectors, O15 verifier, E-70 source smoke, and three synthetic layout gates passed. This is not a claim of remote CI success or real-invoice accuracy.
+- The requested merge of `origin/main` (`180b279b6c692f841cab739577ad4fedeefb77c3`) is recorded by merge commit `08ac0c1be6d9351c92401a8ec377a2c62e83aa29` and pushed only to the active branch. `main` was not changed.
+- Local ORDER 16 harness passed with pinned Pillow 13.0.0: 2,076 tests; E-72 vectors, O15 verifier, E-70 source smoke, and three synthetic layout gates passed.
+- Remote CI on the merge SHA is green: Python [44923848427](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44923848427), ORDER 16 / Windows one-folder [44923848473](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44923848473), and Windows build [44923848428](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44923848428). PR-event runs were also green; optional N-01/N-04 jobs were skipped. Artifact metadata is present/unexpired; no invoice payload was downloaded.
+- PR #16 remains OPEN / CLEAN / MERGEABLE and create-only. Do not merge or close it.
 - E-70/E-73 owner-data evaluation remains strictly local. Synthetic fixtures/tests only; console, report, CI, and Git must contain no invoice payload, names, phone numbers, or amounts. E-75 remains deferred; E-63 remains deferred/NO GO; E-65 is documentation-only domain draft.
 - Per the current ORDER 16 instruction, create one new `o16-<task>` tag only after that task's own commit is CI-green. Never move, delete, or reuse a tag; never tag `main`. No new ORDER 16 tag exists yet.
 
