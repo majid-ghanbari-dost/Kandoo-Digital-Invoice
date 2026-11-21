@@ -118,8 +118,12 @@ def _problem_stage(code: str) -> str:
         "INVALID_SPL_SHA256",
         "SPL_HASH_MISMATCH",
         "CAPTURED_AT_MISMATCH",
+        "MISSING_JOB_ID",
+        "EMPTY_CAPTURE_BATCH",
     }:
         return "Report.txt checks"
+    if code == "JOB_IN_WRONG_FOLDER":
+        return "Capture-folder placement"
     return "Capture intake"
 
 
@@ -159,7 +163,10 @@ def _problem_explanation(error: dict[str, Any]) -> str:
         "AMBIGUOUS_REPORT": "Data problem: more than one Report.txt file is present; exactly one is required.",
         "INVALID_REPORT": "Data problem: Report.txt could not be read as UTF-8 text.",
         "EMPTY_REPORT": "Data problem: Report.txt contains no text.",
-        "DUPLICATE_JOB_ID": "Data problem: Report.txt contains more than one spool-job ID.",
+        "DUPLICATE_JOB_ID": "Data problem: a spool-job ID is repeated in report metadata or claimed by multiple folders; affected jobs are held for review.",
+        "MISSING_JOB_ID": "Data problem: a batch job has no spool-job ID, so duplicate detection cannot be completed safely.",
+        "EMPTY_CAPTURE_BATCH": "Data problem: no capture job folders were found in the batch root.",
+        "JOB_IN_WRONG_FOLDER": "Data problem: capture files are nested or stored at the batch root instead of directly inside one job folder.",
         "DUPLICATE_REPORT_FIELD": "Data problem: Report.txt repeats a recognized metadata field.",
         "INVALID_JOB_ID": "Data problem: the spool-job ID in Report.txt is empty or invalid.",
         "INVALID_CAPTURED_AT": "Data problem: the timestamp in Report.txt is not valid ISO 8601 with an explicit offset.",

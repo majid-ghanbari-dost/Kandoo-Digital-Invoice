@@ -117,6 +117,19 @@ class CaptureFolder:
         }
 
 
+@dataclass(frozen=True)
+class CaptureBatchItem:
+    """One safely inspected job directory in a local capture batch."""
+
+    ordinal: int
+    capture: CaptureFolder | None
+    problems: tuple[CaptureProblem, ...] = ()
+
+    @property
+    def status(self) -> str:
+        return "READY" if self.capture is not None and not self.problems else "REVIEW"
+
+
 class CaptureFolderValidationError(ValueError):
     def __init__(self, folder: Path, problems: tuple[CaptureProblem, ...]):
         super().__init__("capture folder failed artifact validation")
@@ -352,6 +365,33 @@ def inspect_capture_folder(folder: str | Path) -> CaptureFolder:
     elif len(report_files) > 1:
         problems.append(CaptureProblem("AMBIGUOUS_REPORT", "expected exactly one Report.txt", str(root)))
 
+    # Capture artifacts belong directly to one job folder. If an operator
+    # supplies the parent or files were nested during handoff, fail closed and
+    # identify the placement error rather than silently treating the job as empty.
+    nested_artifact_found = False
+    for child_dir in children:
+        if child_dir.is_symlink() or not child_dir.is_dir():
+            continue
+        try:
+            nested_children = tuple(child_dir.iterdir())
+        except OSError:
+            continue
+        if any(
+            (entry.is_file() or entry.is_symlink())
+            and (
+                entry.suffix.casefold() in {".spl", ".png"}
+                or entry.name.casefold() == "report.txt"
+            )
+            for entry in nested_children
+        ):
+            nested_artifact_found = True
+            break
+    if nested_artifact_found:
+        problems.append(CaptureProblem(
+            "JOB_IN_WRONG_FOLDER",
+            "Capture artifacts are nested under a child folder; one job's files must be direct children of its capture folder",
+        ))
+
     if problems:
         raise CaptureFolderValidationError(root, tuple(problems))
 
@@ -418,6 +458,98 @@ def inspect_capture_folder(folder: str | Path) -> CaptureFolder:
         report_captured_at=probe_metadata["captured_at"],
         report_page_count=probe_metadata["page_count"] if isinstance(probe_metadata["page_count"], int) else None,
     )
+
+
+def inspect_capture_batch(root: str | Path) -> tuple[CaptureBatchItem, ...]:
+    """Inspect a queue of immediate job folders and hold duplicate IDs for review.
+
+    A batch root contains one directory per capture job. Jobs without a
+    recognized spool-job ID cannot be deduplicated safely and remain REVIEW.
+    Every folder claiming a repeated ID is withheld; this function never
+    silently chooses a winner or deletes a job.
+    """
+    requested = Path(root).expanduser()
+    try:
+        batch_root = requested.resolve(strict=True)
+    except OSError as exc:
+        raise ValueError(f"capture batch root is unavailable: {type(exc).__name__}") from exc
+    if not batch_root.is_dir():
+        raise ValueError("capture batch root must be a directory")
+    try:
+        children = tuple(batch_root.iterdir())
+    except OSError as exc:
+        raise ValueError(f"capture batch root cannot be listed: {type(exc).__name__}") from exc
+
+    direct_artifacts = tuple(
+        entry for entry in children
+        if (entry.is_file() or entry.is_symlink())
+        and (
+            entry.suffix.casefold() in {".spl", ".png"}
+            or entry.name.casefold() == "report.txt"
+        )
+    )
+    job_directories = tuple(sorted(
+        (entry for entry in children if entry.is_dir() and not entry.is_symlink()),
+        key=_natural_sort_key,
+    ))
+    items: list[CaptureBatchItem] = []
+    if direct_artifacts:
+        items.append(CaptureBatchItem(
+            ordinal=0,
+            capture=None,
+            problems=(CaptureProblem(
+                "JOB_IN_WRONG_FOLDER",
+                "Batch-root artifacts must be placed inside one immediate child folder per job",
+            ),),
+        ))
+    if not job_directories:
+        if not items:
+            items.append(CaptureBatchItem(
+                ordinal=1,
+                capture=None,
+                problems=(CaptureProblem("EMPTY_CAPTURE_BATCH", "No capture job directories were found"),),
+            ))
+        return tuple(items)
+
+    for ordinal, folder in enumerate(job_directories, start=1):
+        try:
+            capture = inspect_capture_folder(folder)
+        except CaptureFolderValidationError as exc:
+            items.append(CaptureBatchItem(ordinal, None, exc.problems))
+        else:
+            items.append(CaptureBatchItem(ordinal, capture, ()))
+
+    id_to_indexes: dict[str, list[int]] = {}
+    for index, item in enumerate(items):
+        if item.capture is None:
+            continue
+        job_id = item.capture.probe_job_id
+        if job_id is None:
+            items[index] = CaptureBatchItem(
+                item.ordinal,
+                None,
+                (CaptureProblem(
+                    "MISSING_JOB_ID",
+                    "Spool job ID is required for safe batch duplicate detection; held for review",
+                ),),
+            )
+            continue
+        id_to_indexes.setdefault(job_id, []).append(index)
+
+    for indexes in id_to_indexes.values():
+        if len(indexes) < 2:
+            continue
+        for index in indexes:
+            item = items[index]
+            items[index] = CaptureBatchItem(
+                item.ordinal,
+                None,
+                (CaptureProblem(
+                    "DUPLICATE_JOB_ID",
+                    "Multiple capture folders claim the same spool-job ID; all matching jobs are held for review",
+                ),),
+            )
+    return tuple(items)
 
 
 @lru_cache(maxsize=1)
