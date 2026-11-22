@@ -2,11 +2,17 @@
 
 | task | branch | full SHA | CI run URL | result | artifact names |
 |---|---|---|---|---|---|
-| E-70 | `arena/d0587e71-kandoo-digital-invoice` | در انتظار commit | در انتظار push | **ACTIVE**؛ پیاده‌سازی آموزش آفلاینِ تأییدشدهٔ اپراتور موجود است و ابزار ارزیابی محلیِ aggregate-only در این task افزوده می‌شود. این محیط هیچ فاکتور واقعی نخوانده است. | پس از اجرای CI ثبت می‌شود |
+| E-70 | `arena/d0587e71-kandoo-digital-invoice` | implementation/tag commit `3bdc6481f71d6234c78260bca045105069a57859` (`o16-E-70`؛ tag تغییر/جابجا نشده) | push: [Python 44992804113](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44992804113), [O15 + full ORDER 16 harness 44992804023](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44992804023), [Windows build 44992804013](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44992804013); PR checks روی همان SHA: [44992808380](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44992808380), [44992808219](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44992808219), [44992808257](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44992808257) | پیاده‌سازی محلیِ آموزش تأییدشده و evaluator aggregate-only سبز؛ harness، smoke منبع و Windows سبز. **اجرای مالک روی فاکتور واقعی انجام‌نشده**؛ این گزارش ادعای دقت واقعی یا تأیید baseline نمی‌کند. | `order16-python-harness-3bdc6481f71d6234c78260bca045105069a57859`, `kandoo-extract-windows-3bdc6481f71d6234c78260bca045105069a57859`, `windows-onefolder-44992804013` (API تأیید کرد موجود و unexpired) |
 
-## اجرای مالک روی رایانهٔ خودش
+## آموزش و ارزیابیِ جدا از هم
 
-هر job باید پوشهٔ مستقیم و جداگانه داشته باشد؛ داده و sidecar واقعی فقط روی رایانهٔ مالک بمانند:
+جریان آموزش `onboard learn` فقط با تصمیم صریح اپراتور از شواهد محلی و برچسب‌های عددیِ `read_correctly: true` یا اصلاح‌شدهٔ دستی استفاده می‌کند؛ نامطمئن‌ها `REVIEW` می‌مانند. این جریان آفلاین و مستقل از evaluator است و بانک پیش‌فرض را تغییر نمی‌دهد. راهنمای مراحل، دستورها و شرط‌های fail-closed در [`docs/e70-real-invoice-onboarding.md`](../e70-real-invoice-onboarding.md) است. عامل هیچ نمونهٔ واقعی دریافت نکرده است.
+
+Evaluator جدید، خودِ آموزش را اجرا نمی‌کند؛ مالک از آن برای سنجش محلیِ خروجی extractor در برابر برچسب numeric تأییدشده استفاده می‌کند. فایل summary فقط aggregate counts و شمارهای سطح فیلد است. همهٔ fixtureها و تست‌های agent synthetic هستند.
+
+## اجرای evaluator در رایانهٔ مالک
+
+ساختار پیشنهادیِ بیرون از checkout؛ هر job پوشهٔ مستقیم خودش را دارد:
 
 ```text
 C:\Kandoo-Owner-Eval\captures\
@@ -22,7 +28,7 @@ C:\Kandoo-Owner-Eval\captures\
     expected-fields.local.json
 ```
 
-در هر `expected-fields.local.json` فقط مقدارهای عددیِ هر صفحه را که اپراتور دستی تأیید کرده است بگذارید؛ نام مشتری، تلفن، شناسهٔ فاکتور و شرح کالا در این فایل وارد نشود. قالب، با جایگزین‌کردن placeholderها:
+در هر `expected-fields.local.json` فقط مقدارهای عددی هر صفحه را که اپراتور دستی تأیید کرده است وارد کنید؛ نام مشتری، تلفن، شناسهٔ فاکتور و شرح کالا در sidecar قرار نگیرد. قالب با placeholderها:
 
 ```json
 {
@@ -40,7 +46,7 @@ C:\Kandoo-Owner-Eval\captures\
 }
 ```
 
-فرمان‌های زیر را در PowerShell از ریشهٔ checkout کپی/اجرا کنید؛ فقط مسیر `$captures` را به پوشهٔ محلی خود تغییر دهید:
+PowerShell را در ریشهٔ checkout اجرا کنید؛ فقط `$captures` را به مسیر محلی خود تغییر دهید:
 
 ```powershell
 Set-Location C:\Kandoo\Kandoo-Digital-Invoice
@@ -50,11 +56,20 @@ $captures = 'C:\Kandoo-Owner-Eval\captures'
 .\.venv\Scripts\python.exe tools\local_onboarding_eval.py --capture-root $captures
 ```
 
-خروجی تجمیعی در `.owner-local\local-onboarding-eval-summary.local.json` ساخته می‌شود؛ این فایل و sidecarهای `expected-fields.local.json` در `.gitignore` هستند. ابزار ورودی واقع‌شده داخل مخزن را رد می‌کند. از خروجی `extract` خام برای گزارش یا اشتراک‌گذاری استفاده نکنید.
+summary در `.owner-local\local-onboarding-eval-summary.local.json` ساخته می‌شود. این مسیر و sidecarهای `expected-fields.local.json` در `.gitignore` هستند؛ ورودی واقع‌شده در checkout رد می‌شود. داده، sidecar و تصویر باید فقط روی رایانهٔ مالک بمانند. خروجی خام extractor را گزارش یا share نکنید.
 
-## معنی شمارش‌ها و مرز ایمنی
+## معنی outcome و شمارش‌ها
 
-- `pass`: خروجی EXTRACTED دقیقاً با برچسب عددیِ دستی‌تأییدشده برابر است؛ `fail`: خروجی EXTRACTED با آن برابر نیست؛ `review`: خروجی موجود است اما extractor آن را تأیید نکرده یا چندنامزد است؛ `missing`: برای فیلدِ برچسب‌خورده نامزدی وجود ندارد.
-- گروه‌های فیلد فقط `quantity`، `line_total` و `payable` هستند؛ خروجی به تفکیک job یا صفحه، مسیر، نام فایل، ID، timestamp، هش، مقدار OCR، نام، تلفن یا مبلغ چاپ نمی‌کند. `Capture issue codes` فقط شمار خطاهای ساختاری E-73 است.
-- نتیجه فقط مقایسهٔ محلی با برچسب‌های اپراتور است؛ به‌خودی‌خود ادعای دقت واقعی، مجوز پذیرش خودکار یا تأیید baseline نیست. ابزار ارزیابی بانک پیش‌فرض را تغییر نمی‌دهد و یادگیری برخط انجام نمی‌دهد. فرمان موجود `onboard learn` جداگانه و فقط با تصمیم صریح اپراتور از برچسب‌های تأییدشده استفاده می‌کند.
-- تمام fixtureها و آزمون‌های agent synthetic هستند. مطابق PM-06، هیچ نمونهٔ واقعی‌ای به agent داده نشده و این گزارش نمونهٔ واقعی را ادعا نمی‌کند؛ اجرای محلی مالک هنوز انجام‌نشده است.
+- `PASS` / exit `0`: تمام labelهای عددی معتبر با یک نامزد `EXTRACTED` برابرند و مورد ساختاری/برچسبی unresolved باقی نمانده است.
+- `FAIL` / exit `10`: دست‌کم یک مقدار `EXTRACTED` با label اپراتور متفاوت است؛ مقدار یا نمونه در خروجی چاپ نمی‌شود.
+- `REVIEW` / exit `10`: نامزد نامطمئن/چندگانه، مورد ساختاری، label مفقود یا برچسب نامعتبر نیازمند بررسی محلی است.
+- `NOT_SCORED` / exit `10`: هیچ label عددیِ معتبر برای امتیازدهی وجود ندارد؛ به‌معنی PASS نیست.
+- `30`: ورودی/آرگومان/sidecar ناامن یا نامعتبر بود؛ ابزار پیام عمومی می‌دهد.
+- فیلدها فقط `quantity`, `line_total`, `payable` هستند و به شکل `expected / pass / fail / review / missing` چاپ می‌شوند. کدهای E-73 فقط به‌صورت شمارش می‌آیند. کنسول و summary هیچ payload، مقدار OCR، نام، تلفن، مبلغ، تصویر، مسیر، نام فایل، ID، timestamp یا hash ندارند.
+
+## اعتبارسنجی synthetic و مرز ادعا
+
+- آزمون‌های محلیِ هدفمند در commit E-70: `15 passed in 0.81s`; `py_compile` موفق.
+- run `44992804023` گام‌های `Run ORDER 16 full Python harness and E-74 accuracy gate`, `Verify E-70 frozen onboarding with synthetic operator labels`, build و upload artifact را سبز کرد؛ runهای Python و Windows نیز موفق بودند. PR #16 روی آن SHA نیز سبز بود. N-01/N-04 اختیاری skipped شدند.
+- `o16-E-70` تگ یکتا روی commit `3bdc6481f71d6234c78260bca045105069a57859` است. PR #16 همچنان تجمیعی، باز و create-only است؛ merge انجام نشده.
+- اجرای محلی مالک روی نمونهٔ واقعی هنوز انجام نشده؛ گزارش، CI و artifactها فقط synthetic هستند. نتیجهٔ synthetic، ادعای دقت واقعی، مجوز پذیرش خودکار یا تأیید baseline نیست.
