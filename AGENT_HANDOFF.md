@@ -10,13 +10,13 @@
 
 ### وضعیت جاری ORDER-16 (این بخش بر یادداشت‌های تاریخی پایین‌تر اولویت دارد)
 
-- شاخهٔ ثابت: `arena/d0587e71-kandoo-digital-invoice`; آخرین SHA کاملِ API-verified برای task tree برابر `0aac39d6d56d0456bf39942984b327ec6f22c4a5` است. گزارش‌های E-71/E-72/E-74 و این handoff بعدتر فقط مستندات را تازه می‌کنند.
+- شاخهٔ ثابت: `arena/d0587e71-kandoo-digital-invoice`; آخرین SHA با CI/API کامل و green در زمان این ویرایش `735e9274e0f281a025298c37eb7b1659566d5f40` است؛ فقط این فایل handoff بعد از آن اصلاح می‌شود.
 - PR تجمیعی #16 باز، `CLEAN / MERGEABLE` و create-only است؛ merge/rebase یا push به `main` انجام نشود.
 - E-70 پیاده‌سازی و evaluator محلیِ aggregate-only دارد؛ `o16-E-70` روی commit سبز `3bdc6481...` است. آموزش/ارزیابی روی دادهٔ واقعی هنوز توسط مالک اجرا نشده است.
 - E-71 و E-72 تکمیل و دارای tagهای یکتای `o16-E-71` و `o16-E-72` روی SHA سبز `f99ab20f...` هستند؛ E-72 همچنان draft غیرمصوب است.
 - E-73 فعال و **PARTIAL/BLOCKED** فقط بابت تطبیق محلی با ساختار نمونهٔ واقعی است؛ نمونهٔ واقعی به agent داده نشده و نمی‌شود. آزمون‌ها synthetic و aggregate-only هستند؛ تا تأیید مجاز/محلی task تمام و tag-ready نیست.
 - E-74 harness و hard gate تکمیل و دارای `o16-E-74` روی SHA سبز `f99ab20f...` است. E-75 آغاز نشده و تا عبور همهٔ MUSTها deferred می‌ماند؛ E-63 همچنان `NO GO` است؛ E-65 فقط پیش‌نویس مستنداتیِ غیرمصوب دارد و پیاده‌سازی `NOT STARTED` است.
-- آخرین گزارش-sync commit `0aac39d6...`؛ push CI: Python [44995620893](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44995620893)، Windows [44995620898](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44995620898)، O15/full harness [44995620891](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44995620891) — همگی موفق؛ artifactهای لازم موجود/unexpired و smokeهای Ubuntu/Windows سبز؛ N-01/N-04 اختیاری skipped.
+- آخرین commit پیش از این handoff-only update برابر `735e9274e0f281a025298c37eb7b1659566d5f40` است؛ push CI: Python [44996016651](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996016651)، Windows [44996016633](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996016633)، O15/full harness [44996016674](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996016674) — همگی success. Artifactهای `order16-python-harness-735e9274e0f281a025298c37eb7b1659566d5f40`, `kandoo-extract-windows-735e9274e0f281a025298c37eb7b1659566d5f40`, `windows-onefolder-44996016633` موجود/unexpired؛ Ubuntu/Windows smoke سبز؛ N-01/N-04 اختیاری skipped. Annotationها فقط هشدار Node.js 20 برای actionهای قدیمی و Windows evidence `status=PASS` بودند. PR #16 روی همین SHA `OPEN / CLEAN / MERGEABLE` است.
 - منبع Governance در repo هماهنگی C# فقط read-only خوانده شد؛ فایل‌های hub نه کپی شدند و نه به این مخزن ادغام شدند.
 
 ### پیشینهٔ کوتاه پروژه
