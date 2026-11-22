@@ -9,8 +9,10 @@ from PIL import Image
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "src"))
 
+import local_onboarding_eval as local_evaluation
 from image_extraction_adapter.capture_folder import (
     CaptureFolderValidationError,
     inspect_capture_batch,
@@ -90,6 +92,41 @@ def test_batch_root_with_job_files_directly_is_a_wrong_folder(tmp_path):
     assert len(items) == 1
     assert items[0].status == "REVIEW"
     assert {problem.code for problem in items[0].problems} == {"JOB_IN_WRONG_FOLDER"}
+
+
+def test_owner_local_evaluation_aggregates_capture_issues_without_identifiers(tmp_path, capsys):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    batch = tmp_path / "private-e73-batch-path"
+    private_job_id = "PRIVATE-E73-SPOOL-ID-SENTINEL"
+    _job(batch / "PRIVATE-E73-JOB-A-SENTINEL", private_job_id)
+    _job(batch / "PRIVATE-E73-JOB-B-SENTINEL", private_job_id)
+    empty = _job(batch / "PRIVATE-E73-EMPTY-JOB-SENTINEL", "synthetic-empty-job")
+    (empty / "capture.spl").write_bytes(b"")
+
+    exit_code = local_evaluation.main(
+        ["--capture-root", str(batch)],
+        repository_root=repo,
+        extractor=lambda _folder: {},
+    )
+    captured = capsys.readouterr()
+    summary_path = repo / ".owner-local" / local_evaluation.SUMMARY_NAME
+    summary_text = summary_path.read_text(encoding="utf-8")
+
+    assert exit_code == 10
+    assert captured.err == ""
+    assert "Outcome: NOT_SCORED" in captured.out
+    assert "Capture folders: seen=3 ready=0 review=3" in captured.out
+    assert "Capture issue codes: DUPLICATE_JOB_ID=2, EMPTY_SPL=1" in captured.out
+    for private_value in (
+        private_job_id,
+        "PRIVATE-E73-JOB-A-SENTINEL",
+        "PRIVATE-E73-JOB-B-SENTINEL",
+        "PRIVATE-E73-EMPTY-JOB-SENTINEL",
+        str(batch),
+    ):
+        assert private_value not in captured.out
+        assert private_value not in summary_text
 
 
 def test_batch_summary_script_does_not_print_ids_or_paths(tmp_path):
