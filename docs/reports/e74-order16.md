@@ -1,16 +1,25 @@
-# گزارش E-74 — ORDER 16
+# گزارش E-74 — harness و دروازهٔ دقت — ORDER 16
 
-- **وضعیت:** فرمان یکپارچهٔ `scripts/run_order16_harness.py` افزوده شد؛ آزمون کامل Python، verifierهای O15 و E-72، smoke آموزش E-70 و سنجه‌های E-71 را اجرا می‌کند.
-- **شاخه:** `arena/d0587e71-kandoo-digital-invoice`
-- **ثبت کامل:** `74375ff090b09649414ce4a7eb1fdfc4d15284ca`
-- **اجرای CI:** [44885771939](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44885771939)؛ هر دو کار Ubuntu و Windows با موفقیت پایان یافتند. Windows شامل ساخت one-folder، verifier O15، smoke ساختگیِ E-70 روی executable، verifier E-72 و بارگذاری bundle بود.
-- **نتیجهٔ محلی harness:** `1717 passed`; O15 verifier PASS؛ E-70 source smoke PASS؛ E-72 یک vector PASS؛ هر سه layout روی holdout numeric `5/5` و layout-match `1/1` داشتند.
-- **بازآزمایی synthetic Round 2 (2026-10-12):** harness کامل `1717 passed in 179.54s`؛ آزمون‌های هدفمند E-70 تا E-73 `15 passed in 1.36s`؛ verifierهای E-72 و O15، smoke ساختگی E-70 و gate سه layout همگی PASS بودند. هیچ نمونهٔ واقعی استفاده نشد.
-- **حکم PM:** Round 2 پذیرفته شد؛ E-70 تا E-74 فقط در محدودهٔ synthetic ادامه می‌یابند. درخواست دسترسی نمونهٔ مجاز E-70/E-73 در جریان است و تا صدور مجوز، دادهٔ جایگزینِ غیرمجاز استفاده نمی‌شود.
-- **دروازهٔ سخت:** `EXTRACTED-but-wrong=0`؛ شمارهای هر layout جدا گزارش شدند. نتیجهٔ accuracy فقط synthetic است.
-- **Artifactهای API:** `order16-python-harness-74375ff090b09649414ce4a7eb1fdfc4d15284ca` با metadata برابر 722 بایت و `kandoo-extract-windows-74375ff090b09649414ce4a7eb1fdfc4d15284ca` با metadata برابر 14,055,998 بایت، هر دو موجود و منقضی‌نشده‌اند. API metadata را تأیید کرد؛ این metadata اندازه‌گیری E-75 پیش/پس نیست.
-- **Retry artifact:** تنها retry دیگر برای دانلود artifact ساختگی harness در run `44885771939` دوباره با `EOF` تمام شد؛ payload تأیید نشد و وضعیت `BLOCKED-UNKNOWN` است.
-- **Annotationها:** در هر کار یک warning زیرساختی دربارهٔ منسوخ‌شدن Node.js 20 در actionهای موجود بود؛ هیچ annotation خطای کد گزارش نشد.
-- **Tag:** **BLOCKED** — `docs/orders/ORDER-16.md:8,42` برای هر کار tag تازه می‌خواهد؛ `docs/OPERATING-RULES-v2.md:21` ساخت tag توسط عامل را منع می‌کند؛ tag ساخته نشد.
-- **PR:** [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16) تجمیعی و create-only؛ وضعیت فعلی GitHub `CONFLICTING` است؛ ادغام/rebase انجام نشد.
-- **وابستگی E-73:** موفقیت فنی harness، blocker تأیید ساختار نمونهٔ واقعی را رفع نمی‌کند.
+| task | branch | full SHA | CI run URL | result | artifact names |
+|---|---|---|---|---|---|
+| E-74 | `arena/d0587e71-kandoo-digital-invoice` | verification/tag commit `f99ab20f0d39b5e4a293d1c3bce9413d9b77d791` (`o16-E-74`)؛ پیاده‌سازی harness در `74375ff090b09649414ce4a7eb1fdfc4d15284ca` | push: [Python 44994331602](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44994331602), [harness + smoke 44994331598](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44994331598), [Windows build 44994331615](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44994331615); PR: [44994335316](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44994335316), [44994335259](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44994335259), [44994335282](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44994335282) | **COMPLETE.** یک فرمان، آزمون کامل Python، verifierهای O15 و E-72، smoke آموزش E-70 و سنجه‌های جداگانهٔ E-71 را اجرا می‌کند؛ دروازهٔ سخت و smokeهای required سبز شدند. | `order16-python-harness-f99ab20f0d39b5e4a293d1c3bce9413d9b77d791`, `kandoo-extract-windows-f99ab20f0d39b5e4a293d1c3bce9413d9b77d791`, `windows-onefolder-44994331615` (API: unexpired; payload دانلود نشد) |
+
+## فرمان و دروازه
+
+از ریشهٔ مخزن در محیط Python توسعهٔ نصب‌شده اجرا کنید:
+
+```bash
+.venv/bin/python scripts/run_order16_harness.py
+```
+
+در Windows CI همان harness روی source اجرا شد و مسیرهای O15/E-70 به‌طور جداگانه با executable one-folder smoke شدند. فرمان کامل این موارد را اجرا می‌کند: کل pytest suite؛ verifier بایت‌به‌بایت بردارهای synthetic E-72؛ verifier O15؛ smoke محلی E-70؛ ساخت train/holdout مستقل برای سه layout؛ سنجه‌های layout match و numeric exact به تفکیک layout.
+
+دروازه فقط وقتی موفق است که شمارها سازگار باشند، `EXTRACTED-but-wrong=0` و سنجهٔ هر layout جداگانه گزارش شود. `REVIEW/missing` به‌اشتباه correct شمرده نمی‌شود.
+
+## نتیجه و شواهد
+
+- اجرای محلی کامل ثبت‌شده روی SHA `9ddfae31fa42559a76c5fe2afc9257bb979b2f61`: `2076 passed in 341.23s`; O15 verifier، E-70 source smoke، E-72 vector و E-74 hard gate PASS.
+- در همان synthetic holdout: هر layout `layout-match=1/1`, `numeric exact=5/5`, `EXTRACTED-but-wrong=0`, `REVIEW/missing=0`. این اعداد فقط برای fixtureهای کاملاً ساختگی‌اند.
+- روی verification SHA جدول، CI گام `Run ORDER 16 full Python harness and E-74 accuracy gate` موفق شد و summary synthetic upload شد. Windows executable build, E-70 frozen smoke, E-72 vector verification و artifact upload نیز موفق شدند؛ تمام required push و PR checks سبز بودند. N-01/N-04 اختیاری skipped شدند. Artifact API فقط metadata/unexpired را تأیید کرد؛ payload دانلود/بازبینی نشده است.
+- تگ یکتای `o16-E-74` روی SHA جدول ایجاد شد، پس از CI سبز و ثبت artifact. E-75 آغاز نشده است؛ blocker E-73 برای تطبیق محلی ساختار واقعی همچنان جداگانه باز است.
+- PR #16 تجمیعی، باز و create-only است؛ merge انجام نشده است.
