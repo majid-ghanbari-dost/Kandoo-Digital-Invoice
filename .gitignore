@@ -27,3 +27,7 @@ __pycache__/
 **/glyph-templates.local.json
 **/e05-template-bank.local.json
 **/e70-onboarding-summary.local.json
+
+# Owner-side E-70/E-73 evaluation inputs and aggregate output stay local.
+**/expected-fields.local.json
+/.owner-local/local-onboarding-eval-summary.local.json
