@@ -28,4 +28,4 @@
 PR #16 CI green + verification report comment on PR #16 + status line updated in this file.
 
 ---
-**Status:** OPEN (assigned to Python lane, awaiting PM trigger)
+**Status:** DONE — closed by exec-manager 2026-11-24: CI green on head `1e620cc` (18 SUCCESS + 4 SKIPPED), PR OPEN/CLEAN/MERGEABLE, verification report: https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7100112086 — remaining owner-side local gates (E-70 owner run, E-73 local structure check) are re-scoped into TASKS/PY-T2.md.
