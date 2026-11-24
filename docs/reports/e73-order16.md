@@ -38,3 +38,15 @@ $captures = 'C:\Kandoo-Owner-Eval\captures'
 ```
 
 اجرای هدفمند نهایی محلی پس از push: `16 passed in 0.74s`؛ آزمون‌های CI نیز همان harness کامل را اجرا کردند. اجرای محلی مالک روی نمونهٔ واقعی هنوز انجام نشده است؛ نتیجهٔ ساختگی جانشین آن نیست.
+
+## افزودهٔ PY-T2 / ORDER 17 — بازبینی ساختاری و تصحیح خوانش (2026-10-12)
+
+رستر ESC/POS پاکت DiagnosticResults پیش‌تر بایت‌به‌بایت با تصویر اصلیِ PO-certified تطبیق داده شد؛ بازخوانی دوبارهٔ برش مبلغ از تصویر اصلی، `49,547,706` را تأیید کرد. بنابراین خوانش رستر هم به `49,547,706` اصلاح می‌شود و رونویسی `49,547,790`، ۸۴ ریال بیش‌خوانی بوده است. ground truth چهار ردیف است؛ جمع آن‌ها `50,051,429` و اختلاف با payable اصلاح‌شده `503,723` ریال است. هیچ مدرک تخفیف سطح فاکتور یا آشتی این اختلاف را ثابت نمی‌کند؛ اختلاف حل‌نشده می‌ماند و تعدیل فرض نمی‌شود. جدول دقیق ردیف‌ها در `docs/reports/py-t2-order17-fa.md` آمده است.
+
+بازبینی aggregate-only پاکت محلیِ Git-ignored:
+- `folders_seen=3`, `ready=0`, `review=3` (exit `10`, REVIEW مورد انتظار).
+- کدها: `AMBIGUOUS_SPL=1`, `EMPTY_SPL=1`, `JOB_IN_WRONG_FOLDER=1`, `MISSING_PNG=2`, `MISSING_REPORT=1`, `MISSING_SPL=2`.
+- یک SPL صفر‌بایتی و دو SPL غیرخالی/دو PNG در جفت‌های تکراری بایت‌به‌بایت یکسان مشاهده شدند؛ پوشهٔ `Unassigned` برای پردازش نگه داشته شد.
+- هیچ OCR، استخراج مقداری، CI یا upload روی دادهٔ خام اجرا نشد؛ payload فقط owner-local و Git-ignored ماند.
+
+رگرسیون جدید ساختار **۱۱ فایل/سه پوشه** را با بایت‌های کاملاً synthetic بازسازی می‌کند: duplicate SPL/PNG، SPL صفر‌بایتی، و SHD نابه‌جا در `Unassigned`; هر سه پوشه در REVIEW هستند و شمار کدها با triage aggregate بالا برابر است. آزمون هدفمند E-73/onboarding/capture-folder: **41 passed in 4.91s**؛ full local ORDER 16 synthetic harness: **2088 passed in 229.65s**. E-72 verifier، O15، E-70 smoke و `EXTRACTED-but-wrong=0` برای سه layout ساختگی PASS شدند. این نتایج دقت فاکتور واقعی نیستند و جایگزین label-based scoring نمی‌شوند.

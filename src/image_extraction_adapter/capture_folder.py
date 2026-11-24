@@ -365,6 +365,29 @@ def inspect_capture_folder(folder: str | Path) -> CaptureFolder:
     elif len(report_files) > 1:
         problems.append(CaptureProblem("AMBIGUOUS_REPORT", "expected exactly one Report.txt", str(root)))
 
+    # Inspect every SPL candidate before the fail-closed return. In an
+    # ambiguous folder this preserves independent structural findings such as
+    # a zero-byte SPL instead of hiding them behind AMBIGUOUS_SPL.
+    for spl_candidate in spl_files:
+        if not _is_safe_regular_file(spl_candidate, root):
+            problems.append(CaptureProblem(
+                "INVALID_SPL",
+                "SPL must be a regular file directly inside the capture folder",
+                spl_candidate.name,
+            ))
+            continue
+        try:
+            is_empty_spl = spl_candidate.stat().st_size <= 0
+        except OSError:
+            problems.append(CaptureProblem(
+                "INVALID_SPL",
+                "SPL could not be inspected",
+                spl_candidate.name,
+            ))
+            continue
+        if is_empty_spl:
+            problems.append(CaptureProblem("EMPTY_SPL", "SPL file is empty", spl_candidate.name))
+
     # Capture artifacts belong directly to one job folder. If an operator
     # supplies the parent or files were nested during handoff, fail closed and
     # identify the placement error rather than silently treating the job as empty.
@@ -512,12 +535,23 @@ def inspect_capture_batch(root: str | Path) -> tuple[CaptureBatchItem, ...]:
         return tuple(items)
 
     for ordinal, folder in enumerate(job_directories, start=1):
+        is_unassigned = folder.name.casefold() == "unassigned"
+        wrong_folder_problem = CaptureProblem(
+            "JOB_IN_WRONG_FOLDER",
+            "Capture artifacts under Unassigned require assignment before processing",
+        )
         try:
             capture = inspect_capture_folder(folder)
         except CaptureFolderValidationError as exc:
-            items.append(CaptureBatchItem(ordinal, None, exc.problems))
+            problems = exc.problems
+            if is_unassigned:
+                problems = (*problems, wrong_folder_problem)
+            items.append(CaptureBatchItem(ordinal, None, problems))
         else:
-            items.append(CaptureBatchItem(ordinal, capture, ()))
+            if is_unassigned:
+                items.append(CaptureBatchItem(ordinal, None, (wrong_folder_problem,)))
+            else:
+                items.append(CaptureBatchItem(ordinal, capture, ()))
 
     id_to_indexes: dict[str, list[int]] = {}
     for index, item in enumerate(items):
