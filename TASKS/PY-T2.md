@@ -8,7 +8,8 @@
 - Samples with **real layout and fictional content** may be used and stored in git:
   - folder `samples/real-layout-fictional/`,
   - capture folder `agent-github-test/DiagnosticResults/` (Job_2, Job_3, Unassigned).
-- Ground truth for the samples: invoice no. 34, date 1405.08.16, five lines, payable 49,547,706.
+- Ground truth for the samples (CORRECTED 2026-11-24 per PO ruling, see R-009 in `Kandoo/docs/messages/MANAGER-TO-PM.md` on `arena/order-15-status`): invoice no. 34, date 1405.08.16, exactly **FOUR lines** — the earlier five-line entry is superseded.
+- All invoice-34 figures remain raster-read (limited resolution) and MUST be confirmed by this lane against the ORIGINAL invoice-34 image before E-72/E-74 treat them as ground truth: payable 49,547,790 (raster read; the earlier 49,547,706 entry is superseded). Line-sum 50,051,429 vs payable leaves a 503,639 difference — resolve it inside this task (invoice-level discount vs read error) and report the outcome.
 - Each sample folder carries a short `README.md`: "layout real, content fictional, certified by the PO on <date>" + the source listed.
 - If a sample is later found to contain a real person's name, phone number or a real sale: STOP, remove it from git history if committed, and report to the PM.
 - Real sales data from real customers remains FORBIDDEN in git, CI and reports (PM-06 unchanged).
@@ -32,4 +33,4 @@
 DONE-green / PARTIAL / BLOCKED per item, with branch names, tags, CI run URLs and the verbatim error line for anything red.
 
 ---
-## Status: OPEN — samples rule first, then E-70/E-73 on samples + the two un-deferred checks
+## Status: OPEN — samples rule first, then E-70/E-73 on samples + the two un-deferred checks; ground truth corrected to FOUR lines per PO ruling (R-009)
