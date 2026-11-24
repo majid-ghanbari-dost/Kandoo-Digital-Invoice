@@ -4,9 +4,9 @@
   "synthetic_only": true,
   "vectors": [
     {
-      "bytes": 1518,
+      "bytes": 1205,
       "file": "canonical-invoice-v1-2-draft-vector.json",
-      "sha256": "4a9f8555fdb29e53ed1d42ba2d5ce50fba8ea181c7cb46bba4596e781ccadf95"
+      "sha256": "36939192b6d7e5de57c732309272edc5fe6594d79e15b419754eda6afaff14fd"
     }
   ]
 }

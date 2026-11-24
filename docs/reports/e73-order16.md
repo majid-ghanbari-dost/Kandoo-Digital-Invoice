@@ -41,7 +41,7 @@ $captures = 'C:\Kandoo-Owner-Eval\captures'
 
 ## افزودهٔ PY-T2 / ORDER 17 — بازبینی ساختاری و تصحیح خوانش (2026-10-12)
 
-گزارش قبلی ثبت می‌کند که raster ESC/POS پاکت DiagnosticResults با تصویر اصلیِ PO-certified بایت‌به‌بایت یکسان بوده است؛ raw raster در checkout فعلی حاضر نیست و این نوبت تطبیق را مستقل تکرار نکردم. تصویر PO-certified موجود `samples/real-layout-fictional/invoice-34.png` در ناحیهٔ payable بصری `49,547,706` را نشان می‌دهد، در برابر مقدار مبنای ابلاغ‌شدهٔ `49,547,790`. جمع چهار ردیفِ ثبت‌شده `50,051,429` بدون تغییر است؛ بنابراین تفاضل‌های حسابی متناظر `503,723` (از PNG) و `503,639` (از payable ابلاغ‌شده) هستند، و فاصلهٔ ۸۴ ریال منشأاش اختلاف payable است، نه ردیف‌ها. تا PO مقدار مرجع را تأیید کند، هیچ‌یک از دو عدد را با دیگری جایگزین نمی‌کنیم و تخفیف/اصلاح استنتاج نمی‌شود. جدول ردیف‌ها در `docs/reports/py-t2-order17-fa.md` آمده است.
+طبق حکم R-009 در `main` commit `eed35610ea05d034a40222a0404ef331e4cc261c`، invoice 34 دقیقاً چهار ردیف دارد: row total `50,051,429`, controlling payable `49,547,790`, difference `503,639`. مقدار `49,547,706` از گزارش قدیمی منسوخ است و دیگر baseline رقیب محسوب نمی‌شود. چون original image/raw raster در checkout نیست، وضعیت **BLOCKED-on-evidence** باقی می‌ماند؛ فقط دو hypothesis ثبت می‌شوند: invoice-level discount یا raster-read error. هیچ تخفیفی بدون evidence استنتاج نمی‌شود. تصویر اصلی از طریق [کامنت درخواست PR #16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7138881898) درخواست شده؛ هر دادهٔ واقعی باید محلی و Git-ignored بماند، نه در Git/CI/artifact. جزئیات جاری در `TASKS/PY-T2.md` و `docs/reports/py-t2-order17-fa.md` آمده است.
 
 بازبینی aggregate-only پاکت محلیِ Git-ignored:
 - `folders_seen=3`, `ready=0`, `review=3` (exit `10`, REVIEW مورد انتظار).

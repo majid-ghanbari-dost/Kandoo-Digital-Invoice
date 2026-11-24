@@ -2,13 +2,13 @@
 
 **تاریخ:** 2026-10-12
 **شاخه:** `arena/d0587e71-kandoo-digital-invoice`
-**وضعیت:** آزمون محلی و CI راه‌دور سبز؛ `o17-E-72` و `o17-PY-T2` ساخته شدند. E-73 همچنان **PARTIAL** است و gate بازبینی ساختار capture توسط مالک باز می‌ماند؛ tag فقط پوشش synthetic دارد. PR #16 باز و `CONFLICTING / DIRTY` با base=`180b279b6c692f841cab739577ad4fedeefb77c3` است؛ طبق دستور هیچ rebase/merge/close انجام نشده و تصمیم PM/PO در [کامنت PR](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7132327892) درخواست شده است.
+**وضعیت:** E-72 وکتور در دور دوم طبق رأی C# به ریشهٔ flat اصلاح شد؛ تگ تازهٔ `o17-E-72-r2` پس از سبزشدن CI روی گروه‌کامیت ساخته می‌شود و بازبینی سوم C# پس از تگ درخواست خواهد شد. PY-T2 طبق R-009 روی `main` در `eed35610ea05d034a40222a0404ef331e4cc261c` **BLOCKED-on-evidence** است؛ E-73 همچنان **PARTIAL** با gate بررسی محلیِ ساختار capture توسط مالک است. PR #16 باز و create-only است؛ بررسی API **پیش از گروه‌کامیت این دور** `mergeable=false`, `mergeable_state=dirty`, base=`180b279b6c692f841cab739577ad4fedeefb77c3`, head=`b4387c43f013897670e6886d9dd47774355643ad` را نشان داد؛ هیچ rebase/merge/close انجام نشده. تصمیم PM/PO دربارهٔ تعارض از طریق [کامنت PR](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7132327892) و درخواست تصویر اصلی از طریق [کامنت evidence request](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7138881898) ثبت شده‌اند.
 
 ## E-72 — بردار پیش‌نویس
 
-- بردار synthetic به شکل مصرف‌کنندهٔ C# اصلاح شد: `quantity` با `quantity_millis` جایگزین شد (۱ واحد = `1000` هزارم) و مقدار provenance هم همان نام را دارد؛ در DRAFT، `display_number=null` و provenance برابر `unavailable` است.
-- بازبینی مجدد نشان داد `image_sha256` و `template_library_id` از ابتدا فقط داخل `base_invoice.provenance` بوده‌اند، نه در ریشهٔ `base_invoice`. مصرف‌کننده و قرارداد E-11 این فیلدهای provenance را لازم می‌دانند؛ بنابراین حفظ شدند و `RootAllowed` دست‌نخورده ماند. ادعای قبلی دربارهٔ فیلدهای اضافی در ریشه نیازمند اصلاح است.
-- verifier از قرارداد منجمد بین‌مخزنی `contracts/canonical_invoice_v0.schema.json` (E-11/C#) استفاده می‌کند؛ شِمای E-01 در `schemas/canonical_invoice_v0.json` و خودِ قراردادهای منجمد تغییر نکردند. verifier: **PASS**؛ بردار `1518` بایت، SHA-256 برابر `4a9f8555fdb29e53ed1d42ba2d5ce50fba8ea181c7cb46bba4596e781ccadf95`؛ آزمون E-72: **4 passed**.
+- رأی اصلاح‌شدهٔ C# `6039821259`، vector دور اول را با خطای `SchemaValidationFailed | Unexpected field: base_invoice.` ناسازگار اعلام کرد؛ گزارش مقایسهٔ اصلاح‌شده حکم می‌کند که consumer ریشهٔ flat می‌خواهد. برداشت دور اول دربارهٔ wrapper اکنون superseded است.
+- اصلاح دور دوم `base_invoice` را flatten و چهار کلید envelope را حذف کرد؛ root دقیقاً ۱۶ فیلد required E-11 دارد. اصلاحات قبلی `quantity_millis`, DRAFT `display_number=null`, provenance `unavailable` حفظ شدند؛ `image_sha256` و `template_library_id` فقط در root `provenance` ماندند.
+- verifier با قرارداد منجمد `contracts/canonical_invoice_v0.schema.json` اجرا می‌شود؛ شِمای E-01 و قراردادهای frozen دست‌نخورده‌اند. نسخهٔ flat: `1205` بایت، SHA-256 `36939192b6d7e5de57c732309272edc5fe6594d79e15b419754eda6afaff14fd`; آزمون E-72 دور دوم **4 passed in 0.33s** و verifier **PASS**. جزئیات/MD5/byte evidence در `docs/reports/e72-order17-flat-root-r2.md` ثبت است؛ پذیرش مستقل C# نسخهٔ تازه هنوز در انتظار بازبینی است.
 
 ## PY-T2 — ground truth فاکتور 34
 
@@ -20,9 +20,11 @@
 | 4 | کلاه‌زم برجسته | 9 | 12,440,096 |
 | **جمع** |  |  | **50,051,429** |
 
-چهار مبلغ ردیف و جمع `50,051,429` در این بازبینی تغییر نکرده‌اند. بازخوانی بصریِ ناحیهٔ payable در تصویر PO-certified `samples/real-layout-fictional/invoice-34.png` (۴۹٬۸۸۲ بایت؛ SHA-256=`f02033ee8ac274fd54546d4aa63516a99872517684c6904f27f894557c6c8cfb`) رقم `49,547,706` را نشان می‌دهد؛ **نه** `49,547,790`. رقم `49,547,790` که در پیام اخیر به‌عنوان مبنای ثبت‌شده آمده، از جمع کم شود `503,639` می‌دهد؛ اما از رقم قابل‌مشاهدهٔ تصویر (`49,547,706`) مقدار `503,723` به‌دست می‌آید. پس منشأ اختلاف ۸۴ ریالی، **رقم payable** است (`…790` در مبنای ابلاغ‌شده در برابر `…706` در PNG)، نه تغییر در یکی از چهار مبلغ ردیف.
+## PY-T2 — اعمال حکم R-009 و وضعیت evidence
 
-گزارش قبلی ثبت می‌کند که رستر ESC/POS با تصویر بایت‌به‌بایت یکسان بوده است؛ خودِ رستر خام در checkout فعلی موجود نیست، بنابراین این نوبت امکان تطبیق مستقل/دوبارهٔ بایت‌ها را نداشتم. بر پایهٔ همان تطبیقِ ثبت‌شده، رستر باید همان `49,547,706` را نشان دهد؛ `49,547,790` را نمی‌توان از PNG موجود تأیید کرد. تا تأیید PO دربارهٔ مبلغ payable مرجع، هر دو تفاضل را جدا نگه می‌داریم و هیچ تخفیف/اصلاحی استنتاج نمی‌شود.
+طبق R-009 ثبت‌شده در `main` همین مخزن در commit `eed35610ea05d034a40222a0404ef331e4cc261c`، فاکتور ۳۴ دقیقاً چهار ردیف دارد؛ payable مرجع `49,547,790` ریال است و خوانش پیشین `49,547,706` **منسوخ** شده است. جمع ردیف‌ها `50,051,429` و اختلاف ملاک `503,639` ریال است.
+
+وضعیت **BLOCKED-on-evidence** می‌ماند چون raster خام برای بازخوانی/تطبیق در دسترس نیست. فقط دو فرضیهٔ باقیمانده‌اند: (۱) تخفیف سطح فاکتور؛ (۲) خطای خوانش رستر. هیچ‌کدام انتخاب یا اثبات نشده و تخفیفی بدون سند استنتاج نمی‌شود. درخواست تصویر اصلی از مسیر [کامنت PR #16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7138881898) ثبت شده است؛ هر دادهٔ واقعی باید فقط محلی و Git-ignored بماند و وارد Git/CI/artifact نشود.
 
 ## E-73 — پایداری capture
 
@@ -33,7 +35,7 @@
 
 ## تحویل
 
-دو commit این کار: E-72 `1e029bd` و PY-T2/E-73 `e6339a4`. Tagهای یکتا: `o17-E-72` روی commit اول و `o17-PY-T2` روی commit دوم.
+سابقهٔ پایه: E-72 دور اول `1e029bd` با tag `o17-E-72`؛ PY-T2/E-73 synthetic `e6339a4` با tag `o17-PY-T2`. اصلاح E-72 دور دوم و به‌روزرسانی R-009 در یک گروه‌کامیت انجام می‌شوند؛ tag تازهٔ `o17-E-72-r2` فقط پس از سبزشدن CI روی همان گروه‌کامیت قرار می‌گیرد و tagهای قبلی دست‌نخورده می‌مانند.
 
 CI push در SHA `e6339a4c97eff6e328a2ba0ece7925c4e1cd9dbd`:
 - [Python tests — 45391144844](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144844) — success.
@@ -42,4 +44,4 @@ CI push در SHA `e6339a4c97eff6e328a2ba0ece7925c4e1cd9dbd`:
 
 Required checks سبز شدند؛ N-01/N-04 اختیاری `SKIPPED` بودند. فقط هشدار deprecation مربوط به Node.js 20 و notice موفقیت Windows ثبت شد؛ annotation خطا وجود نداشت. Artifactهای runها در API موجود و منقضی‌نشده‌اند؛ payloadها دانلود نشدند.
 
-درخواست بازبینی C# در [کامنت PR #16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7131272676) ثبت شد؛ پذیرش C# تا پاسخ مستقل ادعا نمی‌شود. PR #16 باز و create-only باقی می‌ماند؛ وضعیت فعلی GitHub `CONFLICTING` است و merge/rebase انجام نمی‌شود. `main` دست‌نخورده ماند.
+بازبینی اصلاح‌شدهٔ C# با شناسهٔ `6039821259` بردار قبلی را به‌دلیل `Unexpected field: base_invoice` رد کرد؛ نسخهٔ اصلاحی پس از push و tag در همان PR برای بازبینی دوباره فرستاده می‌شود. PR #16 باز و create-only باقی می‌ماند؛ بررسی API در همین دور `mergeable=false / dirty` با base=`180b279b6c692f841cab739577ad4fedeefb77c3` و head=`b4387c43f013897670e6886d9dd47774355643ad` بود؛ merge/rebase انجام نمی‌شود. `main` دست‌نخورده ماند.

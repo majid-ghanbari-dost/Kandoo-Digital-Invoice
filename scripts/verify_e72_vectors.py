@@ -1,4 +1,4 @@
-"""Verify additive E-72 draft schemas and the byte-for-byte synthetic vector."""
+"""Verify the flat E-72 synthetic DRAFT vector against frozen C# E-11."""
 from __future__ import annotations
 
 import argparse
@@ -11,22 +11,25 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 VECTOR_DIR = ROOT / "tests" / "golden" / "e72"
 E11_BASE_SCHEMA = Path("contracts") / "canonical_invoice_v0.schema.json"
+FORBIDDEN_ENVELOPE_KEYS = frozenset(
+    {"base_invoice", "synthetic_only", "v1_2_draft_addendum", "vector_id"}
+)
 
 
-def _validate_e72_draft_semantics(base_invoice: dict[str, Any]) -> None:
+def _validate_e72_draft_semantics(invoice: dict[str, Any]) -> None:
     """Check C# E-11 lifecycle/number-token rules not fully expressed by JSON Schema."""
-    if base_invoice.get("state") != "DRAFT":
-        raise ValueError("E-72 base invoice must remain a DRAFT vector")
-    provenance = base_invoice.get("provenance")
+    if invoice.get("state") != "DRAFT":
+        raise ValueError("E-72 Canonical Invoice must remain a DRAFT vector")
+    provenance = invoice.get("provenance")
     fields = provenance.get("fields") if isinstance(provenance, dict) else None
     if (
-        base_invoice.get("display_number") is not None
+        invoice.get("display_number") is not None
         or not isinstance(fields, dict)
         or fields.get("display_number") != "unavailable"
     ):
         raise ValueError("E-72 DRAFT display_number must be null with unavailable provenance")
 
-    items = base_invoice.get("line_items")
+    items = invoice.get("line_items")
     field_items = fields.get("line_items")
     if (
         not isinstance(items, list)
@@ -52,8 +55,8 @@ def _validate_e72_draft_semantics(base_invoice: dict[str, Any]) -> None:
                 f"E-72 provenance.fields.line_items[{index}] must use quantity_millis only"
             )
 
-    if "image_sha256" in base_invoice or "template_library_id" in base_invoice:
-        raise ValueError("E-72 provenance metadata must not be placed at the base_invoice root")
+    if "image_sha256" in invoice or "template_library_id" in invoice:
+        raise ValueError("E-72 provenance metadata must remain nested under provenance")
 
 
 def _read_json_bytes(payload: bytes, description: str) -> dict[str, Any]:
@@ -80,7 +83,10 @@ def canonical_vector_bytes(document: dict[str, Any]) -> bytes:
 def verify_vectors(root: Path = ROOT) -> dict[str, Any]:
     vector_dir = root / "tests" / "golden" / "e72"
     manifest = _read_json_bytes((vector_dir / "manifest.json").read_bytes(), "E-72 manifest")
-    if manifest.get("schema_version") != "e72.golden-manifest.v1" or manifest.get("synthetic_only") is not True:
+    if (
+        manifest.get("schema_version") != "e72.golden-manifest.v1"
+        or manifest.get("synthetic_only") is not True
+    ):
         raise ValueError("E-72 manifest version or synthetic-only marker is invalid")
     entries = manifest.get("vectors")
     if not isinstance(entries, list) or not entries:
@@ -91,15 +97,11 @@ def verify_vectors(root: Path = ROOT) -> dict[str, Any]:
     except ImportError as exc:  # pragma: no cover - installation guidance
         raise RuntimeError("jsonschema is required to verify the E-72 vector") from exc
 
-    extension_schema_path = root / "schemas" / "canonical_invoice_v1_2_draft_addendum.schema.json"
     base_schema_path = root / E11_BASE_SCHEMA
-    extension_schema = _read_json_bytes(extension_schema_path.read_bytes(), "E-72 draft schema")
     base_schema = _read_json_bytes(
         base_schema_path.read_bytes(), "Canonical Invoice v0 E-11 consumer schema"
     )
-    Draft202012Validator.check_schema(extension_schema)
     Draft202012Validator.check_schema(base_schema)
-    extension_validator = Draft202012Validator(extension_schema)
     base_validator = Draft202012Validator(base_schema)
 
     vector_records: list[dict[str, Any]] = []
@@ -116,19 +118,17 @@ def verify_vectors(root: Path = ROOT) -> dict[str, Any]:
         if raw.startswith(b"\xef\xbb\xbf") or b"\r" in raw or raw.endswith(b"\n"):
             raise ValueError(f"E-72 vector encoding is not the declared no-BOM/no-newline profile: {filename}")
         document = _read_json_bytes(raw, f"E-72 vector {filename}")
-        if document.get("synthetic_only") is not True:
-            raise ValueError(f"E-72 vector is not marked synthetic-only: {filename}")
+        envelope = FORBIDDEN_ENVELOPE_KEYS.intersection(document)
+        if envelope:
+            raise ValueError(
+                "E-72 C# E-11 vector must be a flat root; forbidden envelope keys: "
+                + ", ".join(sorted(envelope))
+            )
         if canonical_vector_bytes(document) != raw:
             raise ValueError(f"E-72 vector bytes do not match compact sorted-key canonical JSON: {filename}")
 
-        base_invoice = document.get("base_invoice")
-        addendum = document.get("v1_2_draft_addendum")
         base_errors = sorted(
-            base_validator.iter_errors(base_invoice),
-            key=lambda error: (tuple(str(part) for part in error.absolute_path), error.message),
-        )
-        extension_errors = sorted(
-            extension_validator.iter_errors(addendum),
+            base_validator.iter_errors(document),
             key=lambda error: (tuple(str(part) for part in error.absolute_path), error.message),
         )
         if base_errors:
@@ -136,17 +136,7 @@ def verify_vectors(root: Path = ROOT) -> dict[str, Any]:
                 "Canonical Invoice v0 E-11 consumer vector is invalid: "
                 f"{base_errors[0].message}"
             )
-        if extension_errors:
-            raise ValueError(f"v1.2 draft addendum is invalid: {extension_errors[0].message}")
-        _validate_e72_draft_semantics(base_invoice)
-        if base_invoice.get("invoice_id") != addendum.get("invoice_id"):
-            raise ValueError("v1.2 draft addendum invoice_id does not bind to the v0 base")
-        if not any(payment.get("type") == "cheque" for payment in addendum.get("payments", [])):
-            raise ValueError("E-72 vector does not exercise the cheque payment type")
-        if addendum.get("invoice_discount") is None:
-            raise ValueError("E-72 vector does not exercise invoice-level discount")
-        if addendum.get("walk_in_customer") is not True:
-            raise ValueError("E-72 vector does not exercise the walk-in flag")
+        _validate_e72_draft_semantics(document)
         vector_records.append({"file": filename, "sha256": digest, "bytes": len(raw)})
 
     return {"vector_count": len(vector_records), "vectors": vector_records}

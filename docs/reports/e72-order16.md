@@ -22,3 +22,7 @@
 - manifest جدید: `1518` بایت، SHA-256 برابر `4a9f8555fdb29e53ed1d42ba2d5ce50fba8ea181c7cb46bba4596e781ccadf95`. verifier PASS، آزمون هدفمند E-72 `4 passed` و full ORDER 16 synthetic harness `2088 passed in 229.65s`.
 - commit گروهی E-72: `1e029bd`؛ tag یکتا `o17-E-72`. CI سه‌گانه روی descendant نهایی `e6339a4` سبز شد: Python [45391144844](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144844)، Windows [45391144767](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144767)، O15/full harness [45391144776](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144776).
 - C# review trigger برای وکتور اصلاح‌شده در [کامنت PR #16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7131272676) ارسال شد؛ پاسخ مستقل هنوز در انتظار است و پذیرش C# ادعا نمی‌شود.
+
+## تصحیح نهایی — رأی اصلاح‌شدهٔ C# و ریشهٔ flat
+
+بخش پیگیری ORDER 17 بالا **superseded** است: رأی اصلاح‌شدهٔ C# [6039821259](https://github.com/majid-ghanbari-dost/Kandoo/pull/16#pullrequestreview-6039821259) vector دور اول را `INCOMPATIBLE` و با خطای `SchemaValidationFailed | Unexpected field: base_invoice.` اعلام کرد. برداشت قبلی مبنی بر اینکه wrapper پذیرفته می‌شود یا فقط metadataها محل اختلاف‌اند، کنترل‌کننده نیست. consumer frozen ریشهٔ flat با ۱۶ required field می‌خواهد؛ گزارش اصلاح و byte evidence در [`e72-order17-flat-root-r2.md`](e72-order17-flat-root-r2.md) آمده است.
