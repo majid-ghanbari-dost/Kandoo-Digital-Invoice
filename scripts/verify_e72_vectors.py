@@ -10,6 +10,50 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 VECTOR_DIR = ROOT / "tests" / "golden" / "e72"
+E11_BASE_SCHEMA = Path("contracts") / "canonical_invoice_v0.schema.json"
+
+
+def _validate_e72_draft_semantics(base_invoice: dict[str, Any]) -> None:
+    """Check C# E-11 lifecycle/number-token rules not fully expressed by JSON Schema."""
+    if base_invoice.get("state") != "DRAFT":
+        raise ValueError("E-72 base invoice must remain a DRAFT vector")
+    provenance = base_invoice.get("provenance")
+    fields = provenance.get("fields") if isinstance(provenance, dict) else None
+    if (
+        base_invoice.get("display_number") is not None
+        or not isinstance(fields, dict)
+        or fields.get("display_number") != "unavailable"
+    ):
+        raise ValueError("E-72 DRAFT display_number must be null with unavailable provenance")
+
+    items = base_invoice.get("line_items")
+    field_items = fields.get("line_items")
+    if (
+        not isinstance(items, list)
+        or not isinstance(field_items, list)
+        or len(items) != len(field_items)
+    ):
+        raise ValueError("E-72 line-item values and provenance must have matching arrays")
+    for index, (item, labels) in enumerate(zip(items, field_items)):
+        if (
+            not isinstance(item, dict)
+            or "quantity" in item
+            or type(item.get("quantity_millis")) is not int
+        ):
+            raise ValueError(
+                f"E-72 line_items[{index}] must use an integer quantity_millis only"
+            )
+        if (
+            not isinstance(labels, dict)
+            or "quantity" in labels
+            or "quantity_millis" not in labels
+        ):
+            raise ValueError(
+                f"E-72 provenance.fields.line_items[{index}] must use quantity_millis only"
+            )
+
+    if "image_sha256" in base_invoice or "template_library_id" in base_invoice:
+        raise ValueError("E-72 provenance metadata must not be placed at the base_invoice root")
 
 
 def _read_json_bytes(payload: bytes, description: str) -> dict[str, Any]:
@@ -48,9 +92,11 @@ def verify_vectors(root: Path = ROOT) -> dict[str, Any]:
         raise RuntimeError("jsonschema is required to verify the E-72 vector") from exc
 
     extension_schema_path = root / "schemas" / "canonical_invoice_v1_2_draft_addendum.schema.json"
-    base_schema_path = root / "schemas" / "canonical_invoice_v0.json"
+    base_schema_path = root / E11_BASE_SCHEMA
     extension_schema = _read_json_bytes(extension_schema_path.read_bytes(), "E-72 draft schema")
-    base_schema = _read_json_bytes(base_schema_path.read_bytes(), "Canonical Invoice v0 schema")
+    base_schema = _read_json_bytes(
+        base_schema_path.read_bytes(), "Canonical Invoice v0 E-11 consumer schema"
+    )
     Draft202012Validator.check_schema(extension_schema)
     Draft202012Validator.check_schema(base_schema)
     extension_validator = Draft202012Validator(extension_schema)
@@ -86,9 +132,13 @@ def verify_vectors(root: Path = ROOT) -> dict[str, Any]:
             key=lambda error: (tuple(str(part) for part in error.absolute_path), error.message),
         )
         if base_errors:
-            raise ValueError(f"Canonical Invoice v0 vector is invalid: {base_errors[0].message}")
+            raise ValueError(
+                "Canonical Invoice v0 E-11 consumer vector is invalid: "
+                f"{base_errors[0].message}"
+            )
         if extension_errors:
             raise ValueError(f"v1.2 draft addendum is invalid: {extension_errors[0].message}")
+        _validate_e72_draft_semantics(base_invoice)
         if base_invoice.get("invoice_id") != addendum.get("invoice_id"):
             raise ValueError("v1.2 draft addendum invoice_id does not bind to the v0 base")
         if not any(payment.get("type") == "cheque" for payment in addendum.get("payments", [])):

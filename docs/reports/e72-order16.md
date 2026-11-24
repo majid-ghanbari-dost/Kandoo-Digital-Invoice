@@ -13,3 +13,11 @@
 ## محدودیت و وضعیت
 
 فایل‌های Canonical v1.2 فقط افزایشی‌اند؛ پیش‌نویس غیرمصوب است و قرارداد frozen، مصرف اجرایی یا migration نیست. بردار کاملاً synthetic است و حاوی نمونهٔ واقعی نیست. تگ یکتای `o16-E-72` پس از سبزشدن CI روی SHA جدول ساخته شد. PR #16 تجمیعی، open و create-only باقی است؛ merge انجام نشده.
+
+## پیگیری ORDER 17 — اصلاح بردار برای بررسی C# (2026-10-12)
+
+- بازبینی فایل `CanonicalInvoiceConsumer.cs` در commit `26d8806` نشان می‌دهد دو فیلد `image_sha256` و `template_library_id` در ریشهٔ `base_invoice` نبودند؛ فقط زیر `provenance` قرار دارند و خودِ `ValidateProvenance` آن‌ها را مجاز و الزامی می‌داند. بنابراین آن‌ها در provenance حفظ شدند؛ ادعای گزارش C# دربارهٔ unexpected root fields با ساختار وکتور تطبیق نداشت. هیچ تغییری در `RootAllowed` داده نشد.
+- دو ناسازگاری تأییدشده اصلاح شدند: `quantity` به `quantity_millis` در داده و provenance تغییر کرد (مقدار `1000` یعنی 1.000 واحد)؛ مقدار DRAFT به `display_number=null` و provenance به `unavailable` تغییر یافت.
+- verifier از قرارداد منجمد E-11 بین‌مخزنی در `contracts/canonical_invoice_v0.schema.json` استفاده می‌کند. شِمای E-01 در `schemas/canonical_invoice_v0.json` و هر دو قرارداد منجمد دست‌نخورده‌اند.
+- manifest جدید: `1518` بایت، SHA-256 برابر `4a9f8555fdb29e53ed1d42ba2d5ce50fba8ea181c7cb46bba4596e781ccadf95`. verifier PASS، آزمون هدفمند E-72 `4 passed` و full ORDER 16 synthetic harness `2088 passed in 229.65s`.
+- بازبینی مجدد C# برای وکتور اصلاح‌شده از PR #16 درخواست می‌شود؛ نتیجهٔ پذیرش C# تا پاسخ مستقلِ مصرف‌کننده ادعا نمی‌شود.
