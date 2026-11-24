@@ -2,7 +2,7 @@
 
 **تاریخ:** 2026-10-12
 **شاخه:** `arena/d0587e71-kandoo-digital-invoice`
-**وضعیت:** پیاده‌سازی و آزمون محلی سبز؛ CI راه‌دور و بازبینی نهایی C# پس از push ثبت می‌شود.
+**وضعیت:** آزمون محلی و CI راه‌دور سبز؛ `o17-E-72` و `o17-PY-T2` ساخته شدند. C# review trigger ارسال شد و پاسخ مستقل در انتظار است؛ PR #16 باز و `CONFLICTING` است و طبق دستور دست‌نخورده می‌ماند.
 
 ## E-72 — بردار پیش‌نویس
 
@@ -31,4 +31,13 @@
 
 ## تحویل
 
-PR #16 همچنان باز و create-only است؛ merge/rebase یا push به `main` انجام نمی‌شود. CI راه‌دور، tag یکتا و درخواست بازبینی دوبارهٔ C# پس از انتشار commit ثبت خواهند شد.
+دو commit این کار: E-72 `1e029bd` و PY-T2/E-73 `e6339a4`. Tagهای یکتا: `o17-E-72` روی commit اول و `o17-PY-T2` روی commit دوم.
+
+CI push در SHA `e6339a4c97eff6e328a2ba0ece7925c4e1cd9dbd`:
+- [Python tests — 45391144844](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144844) — success.
+- [Windows one-folder build — 45391144767](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144767) — success.
+- [O15 extractor bundle/full harness — 45391144776](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144776) — success.
+
+Required checks سبز شدند؛ N-01/N-04 اختیاری `SKIPPED` بودند. فقط هشدار deprecation مربوط به Node.js 20 و notice موفقیت Windows ثبت شد؛ annotation خطا وجود نداشت. Artifactهای runها در API موجود و منقضی‌نشده‌اند؛ payloadها دانلود نشدند.
+
+درخواست بازبینی C# در [کامنت PR #16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7131272676) ثبت شد؛ پذیرش C# تا پاسخ مستقل ادعا نمی‌شود. PR #16 باز و create-only باقی می‌ماند؛ وضعیت فعلی GitHub `CONFLICTING` است و merge/rebase انجام نمی‌شود. `main` دست‌نخورده ماند.

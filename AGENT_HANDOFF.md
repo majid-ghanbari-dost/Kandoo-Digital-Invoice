@@ -8,16 +8,17 @@
 
 **آخرین به‌روزرسانی:** 2026-10-12
 
-### وضعیت جاری ORDER-16 (این بخش بر یادداشت‌های تاریخی پایین‌تر اولویت دارد)
+### وضعیت جاری ORDER 17 / PY-T2 (این بخش بر یادداشت‌های تاریخی پایین‌تر اولویت دارد)
 
-- شاخهٔ ثابت: `arena/d0587e71-kandoo-digital-invoice`; آخرین SHA با CI/API کامل پیش از این handoff-only update برابر `5e4bdbf67ccdc91678a9f79c7f4b81dce41c1fc7` است. تغییر بعدی فقط همین فایل handoff است.
-- PR تجمیعی #16 باز، `CLEAN / MERGEABLE` و create-only است؛ merge/rebase یا push به `main` انجام نشود.
-- E-70 پیاده‌سازی و evaluator محلیِ aggregate-only دارد؛ `o16-E-70` روی commit سبز `3bdc6481...` است. آموزش/ارزیابی روی دادهٔ واقعی هنوز توسط مالک اجرا نشده است.
-- E-71 و E-72 تکمیل و دارای tagهای یکتای `o16-E-71` و `o16-E-72` روی SHA سبز `f99ab20f...` هستند؛ E-72 همچنان draft غیرمصوب است.
-- E-73 فعال و **PARTIAL/BLOCKED** فقط بابت تطبیق محلی با ساختار نمونهٔ واقعی است؛ نمونهٔ واقعی به agent داده نشده و نمی‌شود. آزمون‌ها synthetic و aggregate-only هستند؛ تا تأیید مجاز/محلی task تمام و tag-ready نیست.
-- E-74 harness و hard gate تکمیل و دارای `o16-E-74` روی SHA سبز `f99ab20f...` است. E-75 آغاز نشده و تا عبور همهٔ MUSTها deferred می‌ماند؛ E-63 همچنان `NO GO` است؛ E-65 فقط پیش‌نویس مستنداتیِ غیرمصوب دارد و پیاده‌سازی `NOT STARTED` است.
-- آخرین commit پیش از این handoff-only update برابر `5e4bdbf67ccdc91678a9f79c7f4b81dce41c1fc7` است؛ push CI: Python [44996719653](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996719653), Windows [44996719666](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996719666), O15/full harness [44996719657](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996719657) — هر سه workflow conclusion=`success`; required jobs، smoke و artifact upload موفق‌اند. Artifactهای `order16-python-harness-5e4bdbf67ccdc91678a9f79c7f4b81dce41c1fc7`, `kandoo-extract-windows-5e4bdbf67ccdc91678a9f79c7f4b81dce41c1fc7`, `windows-onefolder-44996719666` موجود/unexpired. N-01/N-04 اختیاری skipped؛ هشدار Node.js 20 نیز بود. **یک failure-level annotation** در check `Ubuntu / Python 3.12` با وجود conclusion/تمام stepها success ثبت شد: `unable to access 'https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/': Failed to connect to github.com port 443 after 135031 ms: Couldn't connect to server`. PR-event runs [44996724017](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996724017), [44996724020](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996724020), [44996724042](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44996724042) all passed without that failure annotation. PR #16 روی SHA بالا `OPEN / CLEAN / MERGEABLE` است.
-- منبع Governance در repo هماهنگی C# فقط read-only خوانده شد؛ فایل‌های hub نه کپی شدند و نه به این مخزن ادغام شدند.
+- شاخهٔ ثابت: `arena/d0587e71-kandoo-digital-invoice`. کد این پیگیری در `e6339a4c97eff6e328a2ba0ece7925c4e1cd9dbd` است؛ commit گروهی E-72 برابر `1e029bd` است. تغییرات بعدی فقط روی همین شاخه انجام شوند.
+- PR #16 باز و create-only است؛ وضعیت فعلی GitHub `CONFLICTING / dirty` است. طبق دستور merge/rebase انجام نشود و به `main` push نشود.
+- **E-72:** بردار DRAFT با `quantity_millis` و `display_number=null/unavailable` هم‌تراز شد؛ `contracts/canonical_invoice_v0.schema.json` E-11 برای verifier استفاده شد و schemaهای frozen تغییر نکردند. دو metadata مورد بحث فقط در `provenance` بودند و آنجا نگه داشته شدند؛ `RootAllowed` در C# تغییر نکرد. Tag یکتا `o17-E-72` روی `1e029bd` است. C# review trigger در [PR #16 comment](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16#issuecomment-7131272676) ارسال شد؛ پاسخ مستقل در انتظار است و پذیرش C# ادعا نمی‌شود.
+- **PY-T2:** ground truth invoice 34 دقیقاً چهار ردیف است؛ بازخوانی تصویر اصلی و رستر بایت‌به‌بایت یکسان، payable را `49,547,706` تأیید کرد. `49,547,790` رونویسی +84 ریالیِ نادرست بود و اصلاح شد. جمع `50,051,429` و اختلاف payable `503,723` ریال است؛ تخفیف/آشتی مستند نشده و اختلاف حل‌نشده می‌ماند. جدول ردیف‌ها در `docs/reports/py-t2-order17-fa.md` و `TASKS/PY-T2.md` است.
+- **E-73:** regression ساختگی ۱۱ فایل/سه پوشه، duplicate SPL/PNG، SPL صفر‌بایتی و SHD زیر `Unassigned` را پوشش می‌دهد. آزمون‌ها از payload واقعی استفاده نمی‌کنند؛ payload خام در checkout جاری نیست و نباید وارد Git/CI/artifact شود؛ هر capture آینده باید owner-local و Git-ignored بماند. نتیجهٔ triage پیشین aggregate-only: ۳ پوشه، ۰ ready، ۳ review؛ کدهای ساختاری در گزارش E-73 ثبت شده‌اند. Tag `o17-PY-T2` روی `e6339a4` است.
+- آزمون محلی: E-72 `4 passed`; هدفمند E-73/onboarding/capture-folder `41 passed in 4.91s`; full synthetic ORDER 16 harness `2088 passed in 229.65s`; verifier E-72، O15، E-70 smoke و hard gate سه layout PASS.
+- CI روی `e6339a4`: Python [45391144844](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144844), Windows [45391144767](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144767), O15/full harness [45391144776](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144776) — هر سه required workflow موفق شدند. Artifactها در API موجود/unexpired بودند؛ payload دانلود نشد. N-01/N-04 اختیاری skipped، annotationها فقط Node.js 20 deprecation و Windows PASS notice بودند؛ annotation خطا دیده نشد.
+- **موارد باز:** E-70 scoring روی برچسب مالک، E-71 layoutهای ۲/۳ و E-74 sample gate همچنان مسدود؛ E-63 با برآورد ۶–۸ ساعت `NO GO / DEFERRED` است؛ E-75 تا عبور MUSTها آغاز نشود. E-65 فقط پیش‌نویس غیرمصوب دارد.
+- Governance مخزن C# فقط read-only بررسی شد؛ هیچ فایل C# یا hub در این مخزن کپی/ادغام نشد.
 
 ### پیشینهٔ کوتاه پروژه
 
@@ -28,8 +29,8 @@
 - **انجام‌شده:** سازوکار تحویل پایدار چندعاملی در این مخزن فعال شد. این فایل مرجع ماندگار برای ازسرگیری کار است؛ عامل تازه باید ابتدا آن را کامل بخواند.
 - **مرجع هماهنگی:** ابلاغ «PROJECT HANDOFF BRIEF — MULTI-AGENT COLLABORATION»، نسخهٔ 1.0، ارائه‌شده در پیام Owner. این ابلاغ مرجع قواعد همکاری است و خلاصهٔ اجرایی آن در همین فایل نگهداری می‌شود.
 - **وضعیت سازوکار:** طبق تأیید مدیر، تحویل پایدار در هر سه مخزن C#، PHP و Python فعال است.
-- **تصمیم ثبت‌شده:** تحویل شواهد E-63 با محدودیت پذیرفته شد؛ نتیجه `REVIEW`، دقت `NOT_SCORED` و موارد مبدأ Holoo، بستهٔ ساخت و تنوع `NOT-VERIFIED` باقی می‌مانند و امتیازدهی مجدد یا ارتقای وضعیت مجاز نیست. برای ORDER 16، E-65 فقط پیش‌نویس مستنداتیِ غیرمصوب دارد و پیاده‌سازی `NOT STARTED` است. tagهای `o16-E-70`, `o16-E-71`, `o16-E-72`, `o16-E-74` بعد از CI سبز ساخته شده‌اند؛ E-73 تا رفع blocker محلی tag ندارد؛ `main` تغییر نکرده است.
-- **گام بعدی:** منتظر اجرای محلیِ مالک برای E-70/E-73 بمانید؛ فقط aggregate output را دریافت/تفسیر کنید و هرگز دادهٔ واقعی را درخواست یا commit نکنید. E-75 تا سبزشدن همهٔ MUSTها آغاز نمی‌شود؛ PR #16 create-only می‌ماند.
+- **تصمیم ثبت‌شده:** تحویل محدود E-63 همچنان `REVIEW / NOT_SCORED / NO GO` است؛ E-65 فقط پیش‌نویس غیرمصوب دارد. Tagهای ORDER 16 موجود باقی‌اند؛ ORDER 17 پس از CI سبز، `o17-E-72` و `o17-PY-T2` دریافت کرد. هیچ tag جابه‌جا یا روی `main` ساخته نشده است.
+- **گام بعدی:** منتظر پاسخ C# به review trigger بمانید؛ PR #16 باز و `CONFLICTING` است و merge/rebase انجام نمی‌شود. اجرای E-70 scoring محلی با برچسب مالک هنوز مستقل است؛ E-71 layouts 2/3 و E-74 sample gate باز می‌مانند. فقط aggregate output دریافت شود و دادهٔ واقعی درخواست/commit نشود. E-75 تا عبور همهٔ MUSTها deferred می‌ماند.
 
 ### تصمیم‌ها و دلیل‌ها
 

@@ -50,3 +50,7 @@ $captures = 'C:\Kandoo-Owner-Eval\captures'
 - هیچ OCR، استخراج مقداری، CI یا upload روی دادهٔ خام اجرا نشد؛ payload فقط owner-local و Git-ignored ماند.
 
 رگرسیون جدید ساختار **۱۱ فایل/سه پوشه** را با بایت‌های کاملاً synthetic بازسازی می‌کند: duplicate SPL/PNG، SPL صفر‌بایتی، و SHD نابه‌جا در `Unassigned`; هر سه پوشه در REVIEW هستند و شمار کدها با triage aggregate بالا برابر است. آزمون هدفمند E-73/onboarding/capture-folder: **41 passed in 4.91s**؛ full local ORDER 16 synthetic harness: **2088 passed in 229.65s**. E-72 verifier، O15، E-70 smoke و `EXTRACTED-but-wrong=0` برای سه layout ساختگی PASS شدند. این نتایج دقت فاکتور واقعی نیستند و جایگزین label-based scoring نمی‌شوند.
+
+## CI و برچسب ORDER 17
+
+کد و رگرسیون E-73 همراه پیگیری PY-T2 در commit `e6339a4` ثبت و با tag یکتای `o17-PY-T2` نشان‌گذاری شد. CI روی همین SHA: Python [45391144844](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144844)، Windows [45391144767](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144767)، O15/full harness [45391144776](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45391144776) همگی success شدند. Required checks سبز؛ annotationها فقط هشدار deprecation و notice موفقیت بودند؛ artifact metadata موجود و unexpired است و هیچ payload capture دانلود نشد. PR #16 open و `CONFLICTING` باقی می‌ماند؛ merge/rebase انجام نمی‌شود.
