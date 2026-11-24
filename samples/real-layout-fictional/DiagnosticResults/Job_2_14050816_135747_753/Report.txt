@@ -1,0 +1,10 @@
+﻿Kandoo Print Probe - Diagnostic Report
+======================================
+زمان شناسایی: 1405-08-16 13:57:47.772
+Job ID: 2
+Printer: GA-E200 Series, 2
+Document: D:\TNC Software\Holoo\Client\Report\FishPrint6Cm.fr3
+Owner: Gilbyte
+Pages: 1
+
+تمام فایل‌هایی که هنگام این Job در Spooler مشاهده شوند، در همین پوشه ذخیره خواهند شد.
