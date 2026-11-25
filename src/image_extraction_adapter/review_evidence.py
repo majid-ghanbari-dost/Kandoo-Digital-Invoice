@@ -126,7 +126,11 @@ def _render_html(items: Sequence[dict[str, Any]], crop_bytes: Sequence[bytes]) -
         "<h1>O15 local review queue</h1>\n"
         "<p class=\"notice\">Local-only evidence. “What I read” is the extractor's reading, "
         "not confirmed truth. No online learning or automatic correction is performed.</p>\n"
-        + "\n".join(cards)
+        + (
+            "\n".join(cards)
+            if cards
+            else "<p class=\"muted\">No readable page image was available. No numeric extraction was run.</p>"
+        )
         + "\n</body>\n</html>\n"
     )
 

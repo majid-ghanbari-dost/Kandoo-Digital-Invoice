@@ -76,7 +76,10 @@ def _build_parser() -> _ArgumentParser:
         "--review-evidence-dir",
         type=Path,
         metavar="PATH",
-        help="write local field crops and an offline HTML review queue into a new directory outside the repository",
+        help=(
+            "write local field crops and an offline HTML review queue outside the repository; "
+            "if intake blocks, safely readable PNGs appear as BLOCKED without numeric extraction"
+        ),
     )
     extract.add_argument(
         "--e05-bank",

@@ -7,14 +7,17 @@ import sys
 
 from PIL import Image
 import pytest
+from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "src"))
 
 import local_onboarding_eval as local_evaluation
+from image_extraction_adapter import capture_folder as capture_folder_adapter
 from image_extraction_adapter.capture_folder import (
     CaptureFolderValidationError,
+    extract_capture_folder,
     inspect_capture_batch,
     inspect_capture_folder,
 )
@@ -50,6 +53,55 @@ def test_zero_byte_spl_png_and_report_fail_closed(tmp_path):
     empty_report = _job(tmp_path / "empty-report")
     (empty_report / "Report.txt").write_bytes(b"")
     assert "EMPTY_REPORT" in _codes(empty_report)
+
+
+def test_blocked_capture_still_creates_picture_only_review_items_without_extraction(tmp_path, monkeypatch):
+    folder = _job(tmp_path / "Job_2", "PRIVATE-E73-SPOOL-SENTINEL")
+    first_spl = (folder / "capture.spl").read_bytes()
+    first_png = (folder / "page1.png").read_bytes()
+    (folder / "second.SPL").write_bytes(first_spl)
+    (folder / "empty.SPL").write_bytes(b"")
+    (folder / "page2.PNG").write_bytes(first_png)
+    (folder / "Report.txt").write_text(
+        "Spool job ID: PRIVATE-E73-SPOOL-SENTINEL\nPage count: 2\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    original_files = {path.name: path.read_bytes() for path in folder.iterdir()}
+    output = tmp_path / "blocked-review"
+    extraction_calls = []
+
+    def must_not_extract(*_args, **_kwargs):
+        extraction_calls.append(True)
+        raise AssertionError("blocked capture reached numeric extraction")
+
+    monkeypatch.setattr(capture_folder_adapter, "extract_pipeline_v0", must_not_extract)
+    result = extract_capture_folder(folder, review_evidence_dir=output)
+
+    assert result["status"] == "BLOCKED"
+    assert {error["code"] for error in result["errors"]} >= {"AMBIGUOUS_SPL", "EMPTY_SPL"}
+    assert result["pages"] == []
+    assert result["accuracy"]["status"] == "NOT_SCORED"
+    assert extraction_calls == []
+    assert {path.name: path.read_bytes() for path in folder.iterdir()} == original_files
+
+    document = json.loads((output / "review-evidence-v1.json").read_text(encoding="utf-8"))
+    schema = json.loads((ROOT / "schemas/o15/review-evidence-v1.schema.json").read_text(encoding="utf-8"))
+    Draft202012Validator(schema).validate(document)
+    assert document["accuracy"]["status"] == "NOT_SCORED"
+    assert document["accuracy"]["extracted_but_wrong"] is None
+    assert [item["page_index"] for item in document["items"]] == [1, 2]
+    assert [item["status"] for item in document["items"]] == ["BLOCKED", "BLOCKED"]
+    assert [item["value"] for item in document["items"]] == ["", ""]
+    assert all("numeric extraction was not run" in item["reason"] for item in document["items"])
+
+    queue = (output / "review-queue.html").read_text(encoding="utf-8")
+    assert queue.count("What I read:") == 2
+    assert queue.count("No numeric value read.") == 2
+    assert queue.count("data:image/png;base64,") == 2
+    serialized_evidence = (output / "review-evidence-v1.json").read_text(encoding="utf-8") + queue
+    assert "PRIVATE-E73-SPOOL-SENTINEL" not in serialized_evidence
+    assert str(folder) not in serialized_evidence
 
 
 def test_duplicate_jobs_are_all_held_for_review_without_selecting_a_winner(tmp_path):

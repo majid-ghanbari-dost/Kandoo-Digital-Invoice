@@ -744,6 +744,57 @@ def _error_result(
     }
 
 
+def _reviewable_png_paths(folder: str | Path) -> tuple[Path, ...]:
+    """Return only safe, directly-contained PNGs usable as blocked evidence."""
+    try:
+        root = Path(folder).expanduser().resolve(strict=True)
+    except (OSError, RuntimeError):
+        return ()
+    if not root.is_dir():
+        return ()
+    try:
+        candidates = tuple(sorted(
+            (path for path in root.iterdir() if path.suffix.casefold() == ".png"),
+            key=_natural_sort_key,
+        ))
+    except OSError:
+        return ()
+
+    reviewable: list[Path] = []
+    for path in candidates:
+        try:
+            _inspect_png(path, root)
+        except (OSError, ValueError):
+            continue
+        reviewable.append(path)
+    return tuple(reviewable)
+
+
+def _write_blocked_review_evidence(
+    output_dir: str | Path,
+    source_folder: str | Path,
+    image_paths: tuple[Path, ...],
+) -> None:
+    """Create a local-only review queue without extracting from blocked input."""
+    target = Path(output_dir).expanduser().resolve(strict=False)
+    source_root = Path(source_folder).expanduser().resolve(strict=False)
+    if _path_is_within(target, source_root):
+        raise ValueError("review evidence directory must be separate from the source capture folder")
+    reason = "Capture-folder validation failed; numeric extraction was not run."
+    pages = tuple(
+        ReviewPageSource(
+            page_index=index,
+            image_path=image_path,
+            pipeline_status="BLOCKED",
+            layout_status="BLOCKED",
+            layout_reason=reason,
+            pipeline_reason=reason,
+        )
+        for index, image_path in enumerate(image_paths, start=1)
+    )
+    write_review_evidence(output_dir, pages)
+
+
 def extract_capture_folder(
     folder: str | Path,
     *,
@@ -763,7 +814,9 @@ def extract_capture_folder(
     one recognized ``Timestamp:`` field, that value is used automatically; a
     conflicting explicit override blocks the folder. Optional E-61 field crops
     and an offline review queue are written only when ``review_evidence_dir``
-    names a new directory outside the repository.
+    names a new directory outside the repository. When intake validation blocks
+    extraction, safe directly-contained PNGs can still be shown as BLOCKED
+    picture-only items; no numeric extraction is run on the invalid folder.
     """
     if review_evidence_dir is not None:
         evidence_target = Path(review_evidence_dir).expanduser().resolve(strict=False)
@@ -786,6 +839,12 @@ def extract_capture_folder(
     try:
         capture = inspect_capture_folder(folder)
     except CaptureFolderValidationError as exc:
+        if review_evidence_dir is not None:
+            _write_blocked_review_evidence(
+                review_evidence_dir,
+                exc.folder,
+                _reviewable_png_paths(exc.folder),
+            )
         return _error_result(exc.folder, exc.problems, captured_at=captured_at)
     if review_evidence_dir is not None:
         evidence_target = Path(review_evidence_dir).resolve(strict=False)
@@ -802,6 +861,12 @@ def extract_capture_folder(
             captured_at is not None
             and not _same_timestamp_instant(capture.report_captured_at, captured_at)
         ):
+            if review_evidence_dir is not None:
+                _write_blocked_review_evidence(
+                    review_evidence_dir,
+                    capture.path,
+                    tuple(page.path for page in capture.pages),
+                )
             return _error_result(
                 capture.path,
                 (CaptureProblem(
