@@ -19,8 +19,18 @@ E-70 onboarding from the first invoices with operator confirmation.
 ## Stage 4 (pre-approved)
 E-72 vectors for C#/PHP review (round 3; the C# round-2 verdict stands INCOMPATIBLE — fix the wrapper / missing required root fields / unknown root fields first), then E-71 second and third layouts.
 
+## MANAGER RULING (2026-11-25) — E-74 scoring source (answers the agent's blocking question)
+
+**CHOSEN: Option 1 — "Confirm existing fictional raster".** No new uploads, no real customer data; PM-06/PM-17 untouched. Options 2 and 3 rejected (option 2 adds a needless upload delay; option 3 blocks on evidence the manager already holds).
+
+1. **Scoring source = the certified fictional raster already in `samples/real-layout-fictional/`** (the invoice-34.png duplicate inside the approved capture samples). Nothing else is authorized as the scoring source.
+2. **The Stage 2 labels ARE the operator-verified labels for that raster** — manager raster verification 2026-11-25: invoice no. 34, date 1405.08.16, FOUR lines, payable 49,547,790. This supersedes the older R-008 reading (five lines / 49,547,706). Use them as-is; E-74 does NOT wait for any new upload.
+3. **Order of work (honest-verification protocol):** (a) independently re-read the raster FIRST and print your raw readings; (b) if they match the labels, score immediately — the EXTRACTED-but-wrong = 0 gate is unchanged; (c) if ANY reading differs (line count, date, payable), do NOT score that field — report the mismatch with crop citations as PARTIAL and score the uncontested fields anyway; NOT-RUN ≠ zero, per rules.
+4. **The 503,639 line-sum vs payable gap: resolve FROM THE RASTER itself.** If an invoice-level discount row/field is visible in the raster, report "invoice-level discount" and cite the row; if nothing visible explains the gap, report "unexplained by the raster" with the crops. Do not guess and do not silently pick one.
+5. Decision recorded in `docs/decisions-made.md` on the C# repo (`D-E74-scoring-source`).
+
 ## Constraints (unchanged)
 PR #16 stays OPEN, create-only. Real customer data NEVER in git/CI/reports (PM-06/PM-17). Workflow-touching PRs declare it in the FIRST body line. Tags `o17-<task>`; never move existing tags.
 
 ---
-**Status:** DISPATCHED (T0 2026-11-25) — start stage 1 (E-73) immediately.
+**Status:** DISPATCHED (T0 2026-11-25) — E-74 scoring-source ruling added 2026-11-25 (Option 1 confirmed; stage 2 is UNBLOCKED) — start stage 1 (E-73) immediately.
