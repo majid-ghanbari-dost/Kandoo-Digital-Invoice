@@ -21,6 +21,7 @@ from verify_e72_vectors import (  # noqa: E402
 
 
 VECTOR_PATH = ROOT / "tests/golden/e72/canonical-invoice-v1-2-draft-vector.json"
+R3_VECTOR_PATH = ROOT / "tests/golden/e72/canonical-invoice-v1-2-draft-vector-r3.json"
 MANIFEST_PATH = ROOT / "tests/golden/e72/manifest.json"
 BASE_SCHEMA_PATH = ROOT / "contracts/canonical_invoice_v0.schema.json"
 FORBIDDEN_ENVELOPE_KEYS = {
@@ -90,8 +91,27 @@ def test_e72_vector_is_flat_and_pinned_to_frozen_e11_with_first_round_fixes():
     assert invoice["provenance"]["fields"]["display_number"] == "unavailable"
 
     report = verify_vectors(ROOT)
-    assert report["vector_count"] == 1
-    assert report["vectors"][0]["file"] == VECTOR_PATH.name
+    assert report["vector_count"] == 2
+    assert {vector["file"] for vector in report["vectors"]} == {
+        VECTOR_PATH.name,
+        R3_VECTOR_PATH.name,
+    }
+
+
+def test_e72_r3_vector_is_flat_and_keeps_draft_addendum_out_of_frozen_v0():
+    raw = R3_VECTOR_PATH.read_bytes()
+    invoice = json.loads(raw.decode("utf-8"))
+    schema = json.loads(BASE_SCHEMA_PATH.read_text(encoding="utf-8"))
+
+    assert raw == canonical_vector_bytes(invoice)
+    assert set(invoice) == set(schema["required"])
+    assert not (FORBIDDEN_ENVELOPE_KEYS & set(invoice))
+    assert invoice["invoice_id"] == "synthetic-e72-r3-invoice-001"
+    assert invoice["state"] == "DRAFT"
+    assert invoice["line_items"][0]["quantity_millis"] == 2000
+    assert invoice["summary"]["subtotal"] == invoice["summary"]["payable"] == 1400
+    _base_validator().validate(invoice)
+    _validate_e72_draft_semantics(invoice)
 
 
 def test_e72_semantics_reject_root_metadata_aliases_quantity_alias_and_issued_display():
