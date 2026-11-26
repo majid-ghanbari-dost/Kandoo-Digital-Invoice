@@ -29,8 +29,22 @@ E-72 vectors for C#/PHP review (round 3; the C# round-2 verdict stands INCOMPATI
 4. **The 503,639 line-sum vs payable gap: resolve FROM THE RASTER itself.** If an invoice-level discount row/field is visible in the raster, report "invoice-level discount" and cite the row; if nothing visible explains the gap, report "unexplained by the raster" with the crops. Do not guess and do not silently pick one.
 5. Decision recorded in `docs/decisions-made.md` on the C# repo (`D-E74-scoring-source`).
 
+## MANAGER RULING 2 (2026-11-26) — E-74 training sample (answers the agent's follow-up; Decision 28)
+
+**ANSWER: Option 2 — "I'll provide an independent sample" — APPROVED as the target state**, with the conditions below. The lane's diagnosis is correct: training on invoice 34 itself would invalidate the holdout score, and the 4-of-8 quantity/line-total misreads need a second same-layout sample to fix. M-012 Q5 acknowledged: the PM accepts the PO ruling (payable 49,547,790, four lines); the honest-verification protocol continues unchanged.
+
+**Conditions (all mandatory):**
+1. **The sample comes from the PO/owner** — the lane does NOT fabricate, synthesize or otherwise substitute a sample, and does NOT reuse any real capture. PM-06/PM-17 unchanged.
+2. **Certification:** real-layout + fictional-content, PO-certified (certified README per PM-17), uploaded by the PO/owner under `samples/real-layout-fictional/` in a NEW folder; same layout family as invoice-34, DISTINCT content.
+3. **Labels:** operator-confirmed quantity AND line-total for EVERY line; **payable stays EXCLUDED from scoring and REPORT** (as the lane proposed).
+4. **Holdout integrity:** invoice 34 remains the ONLY official E-74 scoring source/holdout (the 2026-11-25 ruling and Decision 27 unchanged). Once the sample lands, the EXTRACTED-but-wrong = 0 gate is evaluated on BOTH rasters.
+
+**Until the sample lands on `main`:** the official E-74 score stays 0/9 PARTIAL (NOT-RUN ≠ zero). Per M-011 (agents never idle) the lane does NOT wait: **start Stage 3 (E-70) NOW**, then continue into Stage 4 (E-72 round-3 vector work; the C# verdict INCOMPATIBLE stands). Return to E-74 the moment the sample lands. Option 3's "do not start Stage 3" clause is OVERRIDDEN by M-011.
+
+Recorded as **Decision 28** in R-011 (`docs/messages/MANAGER-TO-PM.md`, `arena/order-15-status` of the C# repo); back-fill into `docs/decisions-made.md` after the PM-23 freeze on C#-`main` writes lifts.
+
 ## Constraints (unchanged)
 PR #16 stays OPEN, create-only. Real customer data NEVER in git/CI/reports (PM-06/PM-17). Workflow-touching PRs declare it in the FIRST body line. Tags `o17-<task>`; never move existing tags.
 
 ---
-**Status:** DISPATCHED (T0 2026-11-25) — E-74 scoring-source ruling added 2026-11-25 (Option 1 confirmed; stage 2 is UNBLOCKED) — start stage 1 (E-73) immediately.
+**Status:** DISPATCHED (T0 2026-11-25) — E-74 scoring-source ruling added 2026-11-25 (Option 1 confirmed; stage 2 is UNBLOCKED) — start stage 1 (E-73) immediately. MANAGER RULING 2 (2026-11-26): training-sample Option 2 approved (Decision 28) — E-74 stays PARTIAL 0/9 until the PO uploads the sample; start Stage 3 (E-70) NOW, then Stage 4; do not idle.
