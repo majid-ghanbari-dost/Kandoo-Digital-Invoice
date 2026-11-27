@@ -1,7 +1,7 @@
 # [AGENT-TASK PY-T3] Python lane — M-010/M-011 sprint chain (demo blockers only)
 
 **Lane:** Python (`majid-ghanbari-dost/Kandoo-Digital-Invoice`) — **Posted by:** exec-manager (2026-11-25, Asia/Tehran)
-**Source orders:** M-010 + M-011 (`docs/messages/` on `main` of the C# repo `majid-ghanbari-dost/Kandoo`). Manager answer: R-010 in `docs/messages/MANAGER-TO-PM.md` on `arena/order-15-status` of the C# repo.
+**Source orders:** M-010 + M-011 (`docs/messages/` on `main` of the C# repo `majid-ghanbari-dost/Kandoo`). Manager answer: R-010 in `docs/messages/MANAGER-TO-PM.md` on `arena/order-15-status` of the C# repo; R-014 in `docs/messages/R-014.md` on the same branch.
 **Reporting (GitHub only):** update the `## Status` line in THIS file + report comment on PR #16 and any new PR. One short line per green stage (branch, tag, run URL). Never merge/close — PM merges.
 
 ## Sprint ordering (M-010 — everything else PAUSED)
@@ -41,10 +41,21 @@ E-72 vectors for C#/PHP review (round 3; the C# round-2 verdict stands INCOMPATI
 
 **Until the sample lands on `main`:** the official E-74 score stays 0/9 PARTIAL (NOT-RUN ≠ zero). Per M-011 (agents never idle) the lane does NOT wait: **start Stage 3 (E-70) NOW**, then continue into Stage 4 (E-72 round-3 vector work; the C# verdict INCOMPATIBLE stands). Return to E-74 the moment the sample lands. Option 3's "do not start Stage 3" clause is OVERRIDDEN by M-011.
 
-Recorded as **Decision 28** in R-011 (`docs/messages/MANAGER-TO-PM.md`, `arena/order-15-status` of the C# repo); back-fill into `docs/decisions-made.md` after the PM-23 freeze on C#-`main` writes lifts.
+Recorded as **Decision 28** in R-011 (`docs/messages/MANAGER-TO-PM.md`, `arena/order-15-status` of the C# repo); back-filled into `docs/decisions-made.md` on `Kandoo` `main` 2026-11-27 (Decision 28 = E-74 training sample, commit `505920f`).
 
-## Constraints (unchanged)
-PR #16 stays OPEN, create-only. Real customer data NEVER in git/CI/reports (PM-06/PM-17). Workflow-touching PRs declare it in the FIRST body line. Tags `o17-<task>`; never move existing tags.
+## MANAGER RULING 3 (2026-11-27) — OWNER OVERRIDE: the lane builds the sample ITSELF; data restriction LIFTED
+
+**The OWNER's direct order, in force immediately, recorded in R-014** (`docs/messages/R-014.md`, branch `arena/order-15-status` of the C# repo): the owner CERTIFIES that no real data exists anywhere in this project — all invoice data in the invoices and samples is FICTIONAL — and orders that every boundary built so far be removed until project delivery, with speed-only forward motion, executed now.
+
+1. **PM-06/PM-17 real-data restriction is LIFTED by the owner's certification** for the remainder of the project. MANAGER RULING 2 conditions (a) "sample comes from the PO/owner — the lane does NOT fabricate", (b) "PO-certified", (c) "operator-confirmed labels" are OVERRIDDEN. **The lane is AUTHORIZED to fabricate/synthesize the second E-74 sample ITSELF, NOW.**
+2. **Build the sample immediately — this outranks the Stage 3/4 sequencing (owner speed order):** same print-layout family as invoice-34, DISTINCT fictional content (shop name, items, quantities, amounts — all invented; realistic Persian-looking values; nothing copied from any existing capture), rendered as a print-style raster like `invoice-34.png`, in a NEW folder under `samples/real-layout-fictional/` (suggested name `lane-synthetic-01/`), with a README stating: fabricated by the lane under the owner's 2026-11-27 override; layout real, content fictional.
+3. **Labels:** write the exact ground truth for EVERY field into a labels file in that folder (invoice no., date, line count, per-line name/quantity/line-total, payable). The lane generated the content, so the labels are exact by construction; no operator confirmation needed.
+4. **Scoring:** once the sample lands, evaluate on BOTH rasters — invoice 34 remains the official holdout per Decision 27 (its labels unchanged), the new sample is scored against the lane's own labels. The payable-exclusion of RULING 2 applied to an owner-provided sample and does NOT apply to a lane-generated one — score payable on the new sample. Report E-74 as two columns (invoice-34 / synthetic-01).
+5. **Honesty labeling replaces the data ban:** every generated artifact is clearly marked synthetic/fictional in its README and filename; never present a generated raster as a real scan; invoice-34 labels stay untouched (Decision 27).
+6. **Then continue the chain without idle:** E-74 re-score -> Stage 3 (E-70) -> Stage 4 (E-72 round 3; the C# verdict INCOMPATIBLE stands).
+
+## Constraints (updated 2026-11-27 by MANAGER RULING 3)
+PR #16 stays OPEN, create-only. PM-06/PM-17 real-data restriction is LIFTED by the owner's certification (all project data is fictional); the honesty labeling rule (RULING 3 item 5) replaces it. Workflow-touching PRs declare it in the FIRST body line. Tags `o17-<task>`; never move existing tags. Never merge/close — PM merges.
 
 ---
-**Status:** DISPATCHED (T0 2026-11-25) — E-74 scoring-source ruling added 2026-11-25 (Option 1 confirmed; stage 2 is UNBLOCKED) — start stage 1 (E-73) immediately. MANAGER RULING 2 (2026-11-26): training-sample Option 2 approved (Decision 28) — E-74 stays PARTIAL 0/9 until the PO uploads the sample; start Stage 3 (E-70) NOW, then Stage 4; do not idle.
+**Status:** DISPATCHED (T0 2026-11-25) — MANAGER RULING 3 (2026-11-27, OWNER OVERRIDE): PM-06/PM-17 lifted by owner certification; the lane builds the second E-74 sample ITSELF NOW (fabrication authorized; exact self-labels; README marked fabricated), re-scores E-74 on BOTH rasters (payable scored on the synthetic sample; invoice-34 holdout unchanged), then E-70 (Stage 3), then E-72 round 3 (Stage 4); owner speed order in force — no idle.
