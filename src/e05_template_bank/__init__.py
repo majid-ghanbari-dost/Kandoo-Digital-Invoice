@@ -9,6 +9,7 @@ from .template import (
 )
 from .template_bank import (
     build_template_bank,
+    build_template_bank_from_observations,
     load_template_bank,
     load_training_observations,
     match_observation,
@@ -23,6 +24,7 @@ __all__ = [
     "TemplateBank",
     "TemplateMatch",
     "build_template_bank",
+    "build_template_bank_from_observations",
     "load_template_bank",
     "load_training_observations",
     "match_observation",

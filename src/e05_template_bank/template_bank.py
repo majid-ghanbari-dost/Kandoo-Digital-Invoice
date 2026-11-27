@@ -325,21 +325,30 @@ def _aggregate_cluster(
     )
 
 
-def build_template_bank(
-    canonical_dir: str | Path,
-    labels_path: str | Path | None = None,
+def build_template_bank_from_observations(
+    observations: tuple[LayoutObservation, ...] | list[LayoutObservation],
     *,
     confidence_threshold: float = 0.85,
     currency_unit: str | None = None,
 ) -> TemplateBank:
-    """Build clustered templates and retain the caller's onboarding currency.
+    """Build E-05 clusters from already operator-confirmed observations.
 
-    The builder never infers or converts the unit from fixture values. Omitted
-    and unsupported values remain on the bank for E-06 to route to REVIEW.
+    This additive entry point deliberately does not require the E-03 kit,
+    Canonical fixture sidecars, or a test-fixture manifest. Callers own the
+    provenance and confirmation gate; incomplete observations should not be
+    supplied. Currency is retained exactly as provided and is never inferred.
     """
-    observations = load_training_observations(canonical_dir, labels_path)
+    items = tuple(observations)
+    if not items:
+        raise ValueError("at least one operator-confirmed layout observation is required")
+    if any(not isinstance(item, LayoutObservation) for item in items):
+        raise TypeError("observations must contain LayoutObservation records")
+    source_ids = tuple(item.source_id for item in items)
+    if len(set(source_ids)) != len(source_ids):
+        raise ValueError("operator-confirmed observation source IDs must be unique")
+
     clusters: list[list[LayoutObservation]] = []
-    for observation in observations:
+    for observation in items:
         for cluster in clusters:
             if _layout_compatible(cluster[0], observation):
                 cluster.append(observation)
@@ -352,6 +361,27 @@ def build_template_bank(
     )
     return TemplateBank(
         templates=templates,
+        confidence_threshold=confidence_threshold,
+        currency_unit=currency_unit,
+    )
+
+
+def build_template_bank(
+    canonical_dir: str | Path,
+    labels_path: str | Path | None = None,
+    *,
+    confidence_threshold: float = 0.85,
+    currency_unit: str | None = None,
+) -> TemplateBank:
+    """Build the fixture-backed E-05 bank after validating its v0 sidecars.
+
+    The production onboarding path uses
+    :func:`build_template_bank_from_observations` after explicit operator
+    confirmation and does not require the test kit or Canonical fixture files.
+    """
+    observations = load_training_observations(canonical_dir, labels_path)
+    return build_template_bank_from_observations(
+        observations,
         confidence_threshold=confidence_threshold,
         currency_unit=currency_unit,
     )
