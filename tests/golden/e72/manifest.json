@@ -1,0 +1,17 @@
+{
+  "schema_version": "e72.golden-manifest.v1",
+  "serialization": "UTF-8 compact JSON, sorted keys, no BOM, no trailing newline",
+  "synthetic_only": true,
+  "vectors": [
+    {
+      "bytes": 1205,
+      "file": "canonical-invoice-v1-2-draft-vector.json",
+      "sha256": "36939192b6d7e5de57c732309272edc5fe6594d79e15b419754eda6afaff14fd"
+    },
+    {
+      "bytes": 1227,
+      "file": "canonical-invoice-v1-2-draft-vector-r3.json",
+      "sha256": "e56b80edeaca5e8630a04b13ca664853e9afaa9656d086c11f6b19b06f17fa86"
+    }
+  ]
+}
