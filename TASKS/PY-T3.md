@@ -2,7 +2,7 @@
 
 **Lane:** Python (`majid-ghanbari-dost/Kandoo-Digital-Invoice`) — **Posted by:** exec-manager (2026-11-25, Asia/Tehran)
 **Source orders:** M-010 + M-011 (`docs/messages/` on `main` of the C# repo `majid-ghanbari-dost/Kandoo`). Manager answer: R-010 in `docs/messages/MANAGER-TO-PM.md` on `arena/order-15-status` of the C# repo; R-014 in `docs/messages/R-014.md` on the same branch.
-**Reporting (GitHub only):** update the `## Status` line in THIS file + report comment on PR #16 and any new PR. One short line per green stage (branch, tag, run URL). Never merge/close — PM merges.
+**Reporting (GitHub only):** per PM-33, status belongs in the PR description, tags, and generated status view; no per-task report/comment is required. PM-31 allows this lane to merge its own PR after merging latest `origin/main` first and confirming required CI is green.
 
 ## Sprint ordering (M-010 — everything else PAUSED)
 The samples HAVE landed — manager-verified on `main` @ `d453225480dd8333c1b832904c53334192137184` ("Add fictional print diagnostic samples"): `samples/real-layout-fictional/README.md` + `samples/real-layout-fictional/DiagnosticResults/` (Job_2, Job_3, Unassigned). BLOCKED-WAITING-FOR-SAMPLES is cleared; no polling needed.
@@ -54,8 +54,8 @@ Recorded as **Decision 28** in R-011 (`docs/messages/MANAGER-TO-PM.md`, `arena/o
 5. **Honesty labeling replaces the data ban:** every generated artifact is clearly marked synthetic/fictional in its README and filename; never present a generated raster as a real scan; invoice-34 labels stay untouched (Decision 27).
 6. **Then continue the chain without idle:** E-74 re-score -> Stage 3 (E-70) -> Stage 4 (E-72 round 3; the C# verdict INCOMPATIBLE stands).
 
-## Constraints (updated 2026-11-27 by MANAGER RULING 3)
-PR #16 stays OPEN, create-only. PM-06/PM-17 real-data restriction is LIFTED by the owner's certification (all project data is fictional); the honesty labeling rule (RULING 3 item 5) replaces it. Workflow-touching PRs declare it in the FIRST body line. Tags `o17-<task>`; never move existing tags. Never merge/close — PM merges.
+## Constraints (updated by MANAGER RULING 3 and PM-31)
+PM-31 (2026-11-27) supersedes earlier create-only/PM-only merge rules: merge latest `origin/main` into this branch first; when required CI is green and GitHub confirms the PR is mergeable, this lane may merge PR #16 (merge commit or squash). Never force-push or rewrite history. PM-06/PM-17 real-data restrictions are lifted by the owner's certification; the honesty-labeling rule (RULING 3 item 5) remains. Workflow-touching PRs may be lane-merged under PM-31 after required CI passes. Tags `o17-<task>`; never move existing tags.
 
 ---
-**Status:** DISPATCHED (T0 2026-11-25) — MANAGER RULING 3 (2026-11-27, OWNER OVERRIDE): PM-06/PM-17 lifted by owner certification; the lane builds the second E-74 sample ITSELF NOW (fabrication authorized; exact self-labels; README marked fabricated), re-scores E-74 on BOTH rasters (payable scored on the synthetic sample; invoice-34 holdout unchanged), then E-70 (Stage 3), then E-72 round 3 (Stage 4); owner speed order in force — no idle.
+**Status:** E-74 re-score is PARTIAL, not a pass: invoice-34 and synthetic-01 each had 9 expected numeric fields, 0 extracted, all 9 `REVIEW`; extracted-but-wrong is 0 only because coverage is zero. Invoice-34 arithmetic gate passed; the synthetic arithmetic gate failed. E-70 tests `3 passed` plus smoke verifier PASS; E-73/local-onboarding `18 passed`; capture-folder/triage `27 passed`; ORDER 16 harness `2,092 passed` (synthetic/regression only). The lane-generated fixture and exact-by-construction labels are in `samples/real-layout-fictional/lane-synthetic-01/`; the earlier right-edge clipping concern remains unresolved and is disclosed, not treated as an accuracy result. PM-31 main-first integration uses a normal merge commit; no force-push/history rewrite. PR #16 is merged only after required CI is green and GitHub confirms mergeability.

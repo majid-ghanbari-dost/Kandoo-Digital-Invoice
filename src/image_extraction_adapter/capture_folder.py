@@ -16,6 +16,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 from typing import Any
 
 from e05_template_bank import (
@@ -33,6 +34,7 @@ from image_extraction_adapter.pipeline_v0 import (
     extract_pipeline_v0,
 )
 from image_extraction_adapter.preprocessing import detect_layout_safe
+from image_extraction_adapter.review_evidence import ReviewPageSource, write_review_evidence
 
 
 RESULT_VERSION = "capture-folder-result-v1"
@@ -115,11 +117,32 @@ class CaptureFolder:
         }
 
 
+@dataclass(frozen=True)
+class CaptureBatchItem:
+    """One safely inspected job directory in a local capture batch."""
+
+    ordinal: int
+    capture: CaptureFolder | None
+    problems: tuple[CaptureProblem, ...] = ()
+
+    @property
+    def status(self) -> str:
+        return "READY" if self.capture is not None and not self.problems else "REVIEW"
+
+
 class CaptureFolderValidationError(ValueError):
     def __init__(self, folder: Path, problems: tuple[CaptureProblem, ...]):
         super().__init__("capture folder failed artifact validation")
         self.folder = folder
         self.problems = problems
+
+
+def _path_is_within(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
 
 
 def _sha256_file(path: Path) -> str:
@@ -342,6 +365,56 @@ def inspect_capture_folder(folder: str | Path) -> CaptureFolder:
     elif len(report_files) > 1:
         problems.append(CaptureProblem("AMBIGUOUS_REPORT", "expected exactly one Report.txt", str(root)))
 
+    # Inspect every SPL candidate before the fail-closed return. In an
+    # ambiguous folder this preserves independent structural findings such as
+    # a zero-byte SPL instead of hiding them behind AMBIGUOUS_SPL.
+    for spl_candidate in spl_files:
+        if not _is_safe_regular_file(spl_candidate, root):
+            problems.append(CaptureProblem(
+                "INVALID_SPL",
+                "SPL must be a regular file directly inside the capture folder",
+                spl_candidate.name,
+            ))
+            continue
+        try:
+            is_empty_spl = spl_candidate.stat().st_size <= 0
+        except OSError:
+            problems.append(CaptureProblem(
+                "INVALID_SPL",
+                "SPL could not be inspected",
+                spl_candidate.name,
+            ))
+            continue
+        if is_empty_spl:
+            problems.append(CaptureProblem("EMPTY_SPL", "SPL file is empty", spl_candidate.name))
+
+    # Capture artifacts belong directly to one job folder. If an operator
+    # supplies the parent or files were nested during handoff, fail closed and
+    # identify the placement error rather than silently treating the job as empty.
+    nested_artifact_found = False
+    for child_dir in children:
+        if child_dir.is_symlink() or not child_dir.is_dir():
+            continue
+        try:
+            nested_children = tuple(child_dir.iterdir())
+        except OSError:
+            continue
+        if any(
+            (entry.is_file() or entry.is_symlink())
+            and (
+                entry.suffix.casefold() in {".spl", ".png"}
+                or entry.name.casefold() == "report.txt"
+            )
+            for entry in nested_children
+        ):
+            nested_artifact_found = True
+            break
+    if nested_artifact_found:
+        problems.append(CaptureProblem(
+            "JOB_IN_WRONG_FOLDER",
+            "Capture artifacts are nested under a child folder; one job's files must be direct children of its capture folder",
+        ))
+
     if problems:
         raise CaptureFolderValidationError(root, tuple(problems))
 
@@ -408,6 +481,109 @@ def inspect_capture_folder(folder: str | Path) -> CaptureFolder:
         report_captured_at=probe_metadata["captured_at"],
         report_page_count=probe_metadata["page_count"] if isinstance(probe_metadata["page_count"], int) else None,
     )
+
+
+def inspect_capture_batch(root: str | Path) -> tuple[CaptureBatchItem, ...]:
+    """Inspect a queue of immediate job folders and hold duplicate IDs for review.
+
+    A batch root contains one directory per capture job. Jobs without a
+    recognized spool-job ID cannot be deduplicated safely and remain REVIEW.
+    Every folder claiming a repeated ID is withheld; this function never
+    silently chooses a winner or deletes a job.
+    """
+    requested = Path(root).expanduser()
+    try:
+        batch_root = requested.resolve(strict=True)
+    except OSError as exc:
+        raise ValueError(f"capture batch root is unavailable: {type(exc).__name__}") from exc
+    if not batch_root.is_dir():
+        raise ValueError("capture batch root must be a directory")
+    try:
+        children = tuple(batch_root.iterdir())
+    except OSError as exc:
+        raise ValueError(f"capture batch root cannot be listed: {type(exc).__name__}") from exc
+
+    direct_artifacts = tuple(
+        entry for entry in children
+        if (entry.is_file() or entry.is_symlink())
+        and (
+            entry.suffix.casefold() in {".spl", ".png"}
+            or entry.name.casefold() == "report.txt"
+        )
+    )
+    job_directories = tuple(sorted(
+        (entry for entry in children if entry.is_dir() and not entry.is_symlink()),
+        key=_natural_sort_key,
+    ))
+    items: list[CaptureBatchItem] = []
+    if direct_artifacts:
+        items.append(CaptureBatchItem(
+            ordinal=0,
+            capture=None,
+            problems=(CaptureProblem(
+                "JOB_IN_WRONG_FOLDER",
+                "Batch-root artifacts must be placed inside one immediate child folder per job",
+            ),),
+        ))
+    if not job_directories:
+        if not items:
+            items.append(CaptureBatchItem(
+                ordinal=1,
+                capture=None,
+                problems=(CaptureProblem("EMPTY_CAPTURE_BATCH", "No capture job directories were found"),),
+            ))
+        return tuple(items)
+
+    for ordinal, folder in enumerate(job_directories, start=1):
+        is_unassigned = folder.name.casefold() == "unassigned"
+        wrong_folder_problem = CaptureProblem(
+            "JOB_IN_WRONG_FOLDER",
+            "Capture artifacts under Unassigned require assignment before processing",
+        )
+        try:
+            capture = inspect_capture_folder(folder)
+        except CaptureFolderValidationError as exc:
+            problems = exc.problems
+            if is_unassigned:
+                problems = (*problems, wrong_folder_problem)
+            items.append(CaptureBatchItem(ordinal, None, problems))
+        else:
+            if is_unassigned:
+                items.append(CaptureBatchItem(ordinal, None, (wrong_folder_problem,)))
+            else:
+                items.append(CaptureBatchItem(ordinal, capture, ()))
+
+    id_to_indexes: dict[str, list[int]] = {}
+    for index, item in enumerate(items):
+        if item.capture is None:
+            continue
+        job_id = item.capture.probe_job_id
+        if job_id is None:
+            items[index] = CaptureBatchItem(
+                item.ordinal,
+                None,
+                (CaptureProblem(
+                    "MISSING_JOB_ID",
+                    "Spool job ID is required for safe batch duplicate detection; held for review",
+                ),),
+            )
+            continue
+        id_to_indexes.setdefault(job_id, []).append(index)
+
+    for indexes in id_to_indexes.values():
+        if len(indexes) < 2:
+            continue
+        for index in indexes:
+            item = items[index]
+            items[index] = CaptureBatchItem(
+                item.ordinal,
+                None,
+                (CaptureProblem(
+                    "DUPLICATE_JOB_ID",
+                    "Multiple capture folders claim the same spool-job ID; all matching jobs are held for review",
+                ),),
+            )
+    return tuple(items)
 
 
 @lru_cache(maxsize=1)
@@ -568,6 +744,57 @@ def _error_result(
     }
 
 
+def _reviewable_png_paths(folder: str | Path) -> tuple[Path, ...]:
+    """Return only safe, directly-contained PNGs usable as blocked evidence."""
+    try:
+        root = Path(folder).expanduser().resolve(strict=True)
+    except (OSError, RuntimeError):
+        return ()
+    if not root.is_dir():
+        return ()
+    try:
+        candidates = tuple(sorted(
+            (path for path in root.iterdir() if path.suffix.casefold() == ".png"),
+            key=_natural_sort_key,
+        ))
+    except OSError:
+        return ()
+
+    reviewable: list[Path] = []
+    for path in candidates:
+        try:
+            _inspect_png(path, root)
+        except (OSError, ValueError):
+            continue
+        reviewable.append(path)
+    return tuple(reviewable)
+
+
+def _write_blocked_review_evidence(
+    output_dir: str | Path,
+    source_folder: str | Path,
+    image_paths: tuple[Path, ...],
+) -> None:
+    """Create a local-only review queue without extracting from blocked input."""
+    target = Path(output_dir).expanduser().resolve(strict=False)
+    source_root = Path(source_folder).expanduser().resolve(strict=False)
+    if _path_is_within(target, source_root):
+        raise ValueError("review evidence directory must be separate from the source capture folder")
+    reason = "Capture-folder validation failed; numeric extraction was not run."
+    pages = tuple(
+        ReviewPageSource(
+            page_index=index,
+            image_path=image_path,
+            pipeline_status="BLOCKED",
+            layout_status="BLOCKED",
+            layout_reason=reason,
+            pipeline_reason=reason,
+        )
+        for index, image_path in enumerate(image_paths, start=1)
+    )
+    write_review_evidence(output_dir, pages)
+
+
 def extract_capture_folder(
     folder: str | Path,
     *,
@@ -575,6 +802,7 @@ def extract_capture_folder(
     e05_bank_path: str | Path | None = None,
     captured_at: str | None = None,
     drift_baseline_path: str | Path | None = None,
+    review_evidence_dir: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run E-02, E-05, and fail-closed E-06 on one capture folder.
 
@@ -584,12 +812,48 @@ def extract_capture_folder(
     context is surfaced as an E-06 REVIEW rather than invented. An optional
     offset-aware ``captured_at`` value is passed to E-02. When Report.txt has
     one recognized ``Timestamp:`` field, that value is used automatically; a
-    conflicting explicit override blocks the folder.
+    conflicting explicit override blocks the folder. Optional E-61 field crops
+    and an offline review queue are written only when ``review_evidence_dir``
+    names a new directory outside the repository. When intake validation blocks
+    extraction, safe directly-contained PNGs can still be shown as BLOCKED
+    picture-only items; no numeric extraction is run on the invalid folder.
     """
+    if review_evidence_dir is not None:
+        evidence_target = Path(review_evidence_dir).expanduser().resolve(strict=False)
+        protected_roots = [REPOSITORY_ROOT.resolve()]
+        if getattr(sys, "frozen", False):
+            protected_roots.append(Path(sys.executable).resolve().parent)
+        if any(
+            _path_is_within(evidence_target, protected_root)
+            for protected_root in protected_roots
+        ):
+            raise ValueError("review evidence directory must be outside the repository/bundle")
+        if evidence_target.exists():
+            raise FileExistsError(f"review evidence directory already exists: {evidence_target}")
+        if not evidence_target.parent.is_dir():
+            raise FileNotFoundError(
+                f"review evidence parent directory does not exist: {evidence_target.parent}"
+            )
+        review_evidence_dir = evidence_target
+
     try:
         capture = inspect_capture_folder(folder)
     except CaptureFolderValidationError as exc:
+        if review_evidence_dir is not None:
+            _write_blocked_review_evidence(
+                review_evidence_dir,
+                exc.folder,
+                _reviewable_png_paths(exc.folder),
+            )
         return _error_result(exc.folder, exc.problems, captured_at=captured_at)
+    if review_evidence_dir is not None:
+        evidence_target = Path(review_evidence_dir).resolve(strict=False)
+        try:
+            evidence_target.relative_to(capture.path.resolve())
+        except ValueError:
+            pass
+        else:
+            raise ValueError("review evidence directory must be separate from the source capture folder")
 
     effective_captured_at = captured_at
     if capture.report_captured_at is not None:
@@ -597,6 +861,12 @@ def extract_capture_folder(
             captured_at is not None
             and not _same_timestamp_instant(capture.report_captured_at, captured_at)
         ):
+            if review_evidence_dir is not None:
+                _write_blocked_review_evidence(
+                    review_evidence_dir,
+                    capture.path,
+                    tuple(page.path for page in capture.pages),
+                )
             return _error_result(
                 capture.path,
                 (CaptureProblem(
@@ -617,6 +887,7 @@ def extract_capture_folder(
 
     training_hashes = _fixture_source_hashes()
     page_results: list[dict[str, Any]] = []
+    evidence_pages: list[ReviewPageSource] = []
     observations: list[LayoutObservation] = []
     blocked_pages: list[int] = []
     for page in capture.pages:
@@ -628,10 +899,20 @@ def extract_capture_folder(
                 drift_baseline_path=drift_baseline_path,
             )
         except Exception as exc:
+            error_message = f"{type(exc).__name__}: {exc}"
+            evidence_pages.append(ReviewPageSource(
+                page_index=page.page_index,
+                image_path=page.path,
+                pipeline_status="REJECT",
+                layout_status="BLOCKED",
+                layout_reason="E-02 pipeline did not produce a page result.",
+                pipeline_reason=error_message,
+                error=error_message,
+            ))
             page_results.append({
                 **page.to_dict(),
                 "status": "BLOCKED",
-                "error": {"code": "E02_PIPELINE_ERROR", "message": f"{type(exc).__name__}: {exc}"},
+                "error": {"code": "E02_PIPELINE_ERROR", "message": error_message},
                 "numeric_candidates": [],
                 "e02": None,
                 "e05": {"status": "NOT_EVALUATED", "reason": "E-02 did not produce a page result"},
@@ -639,6 +920,15 @@ def extract_capture_folder(
             blocked_pages.append(page.page_index)
             continue
 
+        evidence_pages.append(ReviewPageSource(
+            page_index=page.page_index,
+            image_path=page.path,
+            pipeline_status=pipeline.status,
+            layout_status=pipeline.layout_status,
+            layout_reason=pipeline.layout_reason,
+            pipeline_reason=pipeline.reason,
+            cell_results=tuple(pipeline.cell_results),
+        ))
         numeric_candidates = [
             candidate
             for cell in pipeline.cell_results
@@ -697,6 +987,9 @@ def extract_capture_folder(
             "e05": e05_result,
             "numeric_candidates": numeric_candidates,
         })
+
+    if review_evidence_dir is not None:
+        write_review_evidence(review_evidence_dir, evidence_pages)
 
     first_observation = observations[0] if observations else None
     try:

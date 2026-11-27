@@ -1,0 +1,112 @@
+{
+  "address": {
+    "printed": "شهر نمونه، خیابان خیال، پلاک ۱۲"
+  },
+  "currency": "IRR",
+  "customer_name": {
+    "printed": "مشتری آزمایشی"
+  },
+  "evidence_class": "SYNTHETIC_ONLY",
+  "fabrication_authority": "Owner override dated 2026-11-27; Manager Ruling 3",
+  "fabrication_notices": [
+    "SYNTHETIC ONLY • NOT A REAL SCAN",
+    "فاکتور فروش — نمونه ساختگی",
+    "نشانی و همهٔ نام‌ها در این برگه ساختگی‌اند",
+    "این تصویر ساختگی است؛ رسید واقعی نیست.",
+    "FOR TESTING ONLY"
+  ],
+  "footer_message": {
+    "printed": "با سپاس از همراهی شما"
+  },
+  "invoice_date": {
+    "calendar": "Iranian Solar Hijri",
+    "printed": "۱۴۰۵/۰۷/۲۰"
+  },
+  "invoice_number": {
+    "printed": "۵۸۱۷",
+    "value": 5817
+  },
+  "invoice_time": {
+    "printed": "۱۶:۴۲"
+  },
+  "label_status": "EXACT_BY_CONSTRUCTION_NOT_OPERATOR_CONFIRMED",
+  "line_count": 4,
+  "line_items": [
+    {
+      "line_number": 1,
+      "line_total_rial": {
+        "printed": "۳,۱۸۰,۰۰۰",
+        "value": 3180000
+      },
+      "name": "چراغک سپهر",
+      "quantity": {
+        "printed": "۲",
+        "value": 2
+      }
+    },
+    {
+      "line_number": 2,
+      "line_total_rial": {
+        "printed": "۹۸۷,۰۰۰",
+        "value": 987000
+      },
+      "name": "دفترچه باران",
+      "quantity": {
+        "printed": "۳",
+        "value": 3
+      }
+    },
+    {
+      "line_number": 3,
+      "line_total_rial": {
+        "printed": "۱,۴۲۵,۰۰۰",
+        "value": 1425000
+      },
+      "name": "گلدانک نیلو",
+      "quantity": {
+        "printed": "۱",
+        "value": 1
+      }
+    },
+    {
+      "line_number": 4,
+      "line_total_rial": {
+        "printed": "۴,۷۲۰,۰۰۰",
+        "value": 4720000
+      },
+      "name": "سینی برگ‌سپید",
+      "quantity": {
+        "printed": "۴",
+        "value": 4
+      }
+    }
+  ],
+  "line_sum_rial": {
+    "printed": "۱۰,۳۱۲,۰۰۰",
+    "value": 10312000
+  },
+  "order_id": {
+    "printed": "۸۲",
+    "value": 82
+  },
+  "payable_rial": {
+    "printed": "۱۰,۳۱۲,۰۰۰",
+    "value": 10312000
+  },
+  "raster": {
+    "file": "lane-synthetic-01.png",
+    "height": 1296,
+    "mode": "RGB",
+    "sha256": "55acad10c41c9b5e7e4aee89fddedd93083f23e0ffec65eef059b1c452974d61",
+    "width": 576
+  },
+  "sample_id": "lane-synthetic-01",
+  "schema_version": "e74.synthetic-self-labels.v1",
+  "shop_name": "فروشگاه مهتابک",
+  "social_handle": {
+    "printed": "mahtabak.synthetic"
+  },
+  "store_slogan": {
+    "printed": "چیزهای کوچک، روزهای روشن"
+  }
+}

@@ -26,6 +26,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Literal
 
+from .bundle_paths import resource_root
 from .canonical_invoice import validate_canonical_invoice
 from .drift_monitor import (
     DRIFT_REASON,
@@ -56,7 +57,7 @@ DEFAULT_MINIMUM_CONFIDENCE = 60.0
 DEFAULT_DHASH_THRESHOLD = 1
 SUPPORTED_FIXTURE_IDS = ("29", "31", "32", "33")
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+REPOSITORY_ROOT = resource_root()
 DEFAULT_LABELS_PATH = REPOSITORY_ROOT / "tests" / "fixtures" / "real" / "labels.json"
 DEFAULT_TEMPLATE_BANK_PATH = REPOSITORY_ROOT / "src" / "templates_bank_default.json"
 DEFAULT_GLYPH_DRIFT_BASELINE_PATH = REPOSITORY_ROOT / "src" / "glyph_drift_baseline_v1.json"

@@ -1,0 +1,11 @@
+{
+  "customer_name": "Synthetic customer",
+  "payments": [
+    {
+      "type": "cash",
+      "amount": 1080
+    }
+  ],
+  "currency_unit": "rial",
+  "remaining_balance": null
+}

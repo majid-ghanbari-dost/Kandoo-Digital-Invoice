@@ -1,0 +1,33 @@
+# Local Python/build state
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local owner data and review artifacts — never stage or upload these.
+/owner-capture/
+/local-captures/
+/private-extractor-output/
+/.owner-local/
+*.shd
+*.spl
+!tests/fixtures/o15/capture-folder/capture-job.spl
+
+# Local operator labels and review evidence may contain real invoice values.
+/operator-labels.local.json
+**/operator-labels.local.json
+/review-evidence.local.json
+/review-crops.local/
+**/review-evidence/
+**/review-evidence-v1.json
+**/review-queue.html
+
+# E-70 local onboarding baselines may be derived from real invoice evidence.
+/e70-baseline.local/
+**/glyph-templates.local.json
+**/e05-template-bank.local.json
+**/e70-onboarding-summary.local.json
+
+# Owner-side E-70/E-73 evaluation inputs and aggregate output stay local.
+**/expected-fields.local.json
+/.owner-local/local-onboarding-eval-summary.local.json

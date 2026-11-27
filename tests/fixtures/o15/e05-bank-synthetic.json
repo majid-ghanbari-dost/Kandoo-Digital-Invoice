@@ -1,0 +1,27 @@
+{
+  "algorithm_version": "e05-template-bank-v1",
+  "confidence_threshold": 0.85,
+  "currency_unit": null,
+  "templates": [
+    {
+      "template_id": "o15-synthetic-untrained",
+      "source_invoice_ids": ["o15-synthetic"],
+      "row_count_min": 1,
+      "row_count_max": 1,
+      "known_row_counts": [1],
+      "normalized_column_boundaries": [0.05, 0.2, 0.4, 0.8, 0.95],
+      "median_row_height_over_width": 0.05,
+      "median_row_pitch_over_width": 0.05,
+      "median_row_height_cv": 0.0,
+      "table_top_over_width": 0.25,
+      "payable_gap_over_width": 0.1,
+      "payable_bbox_left_over_width": 0.5,
+      "payable_bbox_width_over_width": 0.4,
+      "payable_bbox_height_over_width": 0.02,
+      "field_positions": [],
+      "digit_alphabet": ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"],
+      "amount_thousands_separator": ",",
+      "amount_group_size": 3
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+name: O15 extractor bundle
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "o15-*"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ubuntu-source:
+    name: Ubuntu source CLI / Python 3.11
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src:scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-extractor-dev.txt
+
+      - name: Install pinned extractor and test dependencies
+        run: python -m pip install -r requirements-extractor-dev.txt
+
+      - name: Run ORDER 16 full Python harness and E-74 accuracy gate
+        run: python scripts/run_order16_harness.py --summary-path "$RUNNER_TEMP/order16-harness-summary.json"
+
+      - name: Upload synthetic ORDER 16 harness summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: order16-python-harness-${{ github.sha }}
+          path: ${{ runner.temp }}/order16-harness-summary.json
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-onefolder:
+    name: Windows one-folder executable / Python 3.11
+    runs-on: windows-2025
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: src;scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-extractor-dev.txt
+
+      - name: Install pinned extractor and test dependencies
+        shell: pwsh
+        run: python -m pip install -r requirements-extractor-dev.txt
+
+      - name: Run O15 extractor tests
+        shell: pwsh
+        run: python -m pytest -q tests/test_o15_e60.py tests/test_o15_e61.py tests/test_o15_e62.py
+
+      - name: Build Windows one-folder CLI
+        shell: pwsh
+        run: |
+          python -m PyInstaller --clean --noconfirm --onedir --console `
+            --name kandoo-extract `
+            --distpath dist `
+            --workpath "$env:RUNNER_TEMP/pyinstaller-work" `
+            --specpath "$env:RUNNER_TEMP/pyinstaller-spec" `
+            --paths src `
+            --paths scripts `
+            --collect-all jsonschema `
+            --hidden-import run_name_cluster_experiment `
+            --hidden-import synthetic_thermal_invoice `
+            scripts/windows_cli_entry.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/copy_windows_bundle_data_o15.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify Windows executable, E-61 evidence, and E-62 labels
+        shell: pwsh
+        run: python scripts/verify_o15_e60.py --exe dist/kandoo-extract/kandoo-extract.exe
+
+      - name: Verify E-70 frozen onboarding with synthetic operator labels
+        shell: pwsh
+        run: python scripts/verify_e70_onboard.py --exe dist/kandoo-extract/kandoo-extract.exe
+
+      - name: Verify E-72 additive draft vector
+        shell: pwsh
+        run: python scripts/verify_e72_vectors.py
+
+      - name: Upload Windows one-folder bundle (synthetic smoke only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: kandoo-extract-windows-${{ github.sha }}
+          path: dist/kandoo-extract/
+          if-no-files-found: error
+          retention-days: 14

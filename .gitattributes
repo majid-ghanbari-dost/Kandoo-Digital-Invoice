@@ -1,3 +1,15 @@
+# Deterministic text fixtures and expected JSON bytes across Windows and Ubuntu.
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.spl binary
+*.shd binary
+*.png binary
+*.jpg binary
+
 /src/templates_bank_default.json text eol=lf
 /src/glyph_drift_baseline_v1.json text eol=lf
 /docs/extraction-bridge/**/*.md text eol=lf
@@ -7,7 +19,6 @@
 /docs/extraction-bridge/**/*.spl binary
 /schemas/extraction-bridge/**/*.json text eol=lf
 /schemas/e28/glyph_drift_report_v1.schema.json text eol=lf
-
 /contracts/**/*.json text eol=lf
 /contracts/**/*.md text eol=lf
 /schemas/**/*.json text eol=lf

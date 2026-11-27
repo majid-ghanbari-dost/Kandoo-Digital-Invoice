@@ -1,0 +1,119 @@
+{
+  "result_version": "capture-folder-result-v1",
+  "status": "BLOCKED",
+  "verdict": "REJECT",
+  "verdict_source": "E-06 with E-02 block override",
+  "capture_folder": "tests/fixtures/o15/capture-folder",
+  "captured_at": null,
+  "artifacts": {
+    "spl": {
+      "file": "capture-job.spl",
+      "bytes": 43,
+      "sha256": "2f97d20cf57a268e327f13ef38dc302e3b600bb5c2c4c52ede7a6172d4bbc015"
+    },
+    "report": {
+      "file": "Report.txt",
+      "bytes": 158,
+      "lines": 4,
+      "sha256": "ddf6b27a089d3af724c80ebcebb807070a3ab7448f5dd7bb39de6ddac4cb75c9"
+    },
+    "pages": [
+      {
+        "page_index": 1,
+        "file": "page1.png",
+        "width": 1800,
+        "height": 1450,
+        "sha256": "df0e79c5acef87a6f2bcd3c9d36c6afadfb612a7210afadc0ea717c08856d782"
+      }
+    ],
+    "extra_files": [],
+    "page_order": "natural, case-insensitive filename order",
+    "probe_metadata": {
+      "spool_job_id": "o15-synthetic-001",
+      "captured_at": null,
+      "page_count": 1
+    }
+  },
+  "scoring_fields": [
+    "quantity",
+    "line_total",
+    "payable"
+  ],
+  "accuracy": {
+    "status": "NOT_SCORED",
+    "expected_values_available": false,
+    "fields": [
+      "quantity",
+      "line_total",
+      "payable"
+    ],
+    "reason": "capture folders do not carry expected-value labels"
+  },
+  "invoice_candidates": {
+    "line_items": [],
+    "payable_candidates": [],
+    "note": "Page rows are concatenated in natural page order. Payable is not silently summed or selected across pages."
+  },
+  "numeric_candidates": {
+    "quantity": [],
+    "line_total": [],
+    "payable": []
+  },
+  "pages": [
+    {
+      "page_index": 1,
+      "file": "page1.png",
+      "width": 1800,
+      "height": 1450,
+      "sha256": "df0e79c5acef87a6f2bcd3c9d36c6afadfb612a7210afadc0ea717c08856d782",
+      "status": "BLOCKED",
+      "e02": {
+        "status": "REJECT",
+        "reason": "No table geometry was detected.",
+        "layout_status": "BLOCKED",
+        "layout_reason": "No table geometry was detected.",
+        "row_count": null,
+        "canonical_blockers": [
+          "blocked extraction has no Canonical Invoice candidate"
+        ],
+        "glyph_drift": null
+      },
+      "e05": {
+        "status": "NOT_EVALUATED",
+        "reason": "layout not safe for E-05: BLOCKED: No table geometry was detected."
+      },
+      "numeric_candidates": []
+    }
+  ],
+  "e05_bank": {
+    "status": "AVAILABLE",
+    "currency_unit": null,
+    "currency_unit_status": "UNCONFIRMED",
+    "template_count": 1,
+    "source_invoice_ids": [
+      "o15-synthetic"
+    ],
+    "error": null,
+    "independent_validation": null
+  },
+  "e06": {
+    "verdict": "REVIEW",
+    "reason_codes": [
+      "PARTIAL_MATCH",
+      "NEW_LAYOUT",
+      "CURRENCY_UNIT_UNCONFIRMED"
+    ],
+    "confidence_score": null,
+    "template_match": null,
+    "details": [
+      "Missing fields: human-readable product-name mapping, producer-supplied Canonical Invoice identity and customer context",
+      "Template-bank currency_unit is missing or unsupported; E-06 never guesses or converts amounts."
+    ],
+    "audit_record": null,
+    "owner_acceptance_eligible": false
+  },
+  "blocked_pages": [
+    1
+  ],
+  "errors": []
+}

@@ -1,41 +1,64 @@
-# KANDOO DIGITAL INVOICE — AGENT COORDINATION
+# KANDOO DIGITAL INVOICE — هماهنگی عامل Python برای ORDER 16
 
-## Purpose
+## زمینهٔ اجرای جاری
 
-Operational coordination between Agent 1 and Agent 2.
+- مخزن: `majid-ghanbari-dost/Kandoo-Digital-Invoice`
+- شاخهٔ فعال Arena: `arena/d0587e71-kandoo-digital-invoice`
+- کارهای O15 فقط روی همین شاخه انجام می‌شوند؛ بدون مجوز صریح شاخه را عوض نکنید، با `main` ادغام نکنید، به `main` فشار ندهید و درخواست ادغام باز یا ادغام نکنید.
+- `docs/o15-final-report.md` و `AGENT_HANDOFF.md` شواهد سه‌محوری E-63 و دروازهٔ جاری E-65 را در بر دارند.
 
-## Ownership
+## مسئولیت و وضعیت
 
-| Area | Owner | Status |
+| بستهٔ کاری | مسئول | وضعیت |
 |---|---|---|
-| Active P12 execution stream | Agent 1 | ACTIVE |
-| P12.3 D-07/D-08/DEF2 ratification | Product Owner / G4 | DECISION REQUIRED |
-| WP-11.2 Adapter | NONE | BLOCKED until sufficient contract/PO decisions |
-| Independent new WPs | Agent 2 | CLAIM ONLY AFTER RECON |
-| Repository bootstrap / exact source transfer | Technical Manager / Coordinator | BLOCKED BY CURRENT CONNECTOR CAPABILITY |
+| بستهٔ اجرایی Windows و رابط خط فرمان در E-60 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-60-fix-1`؛ اجرای خودکار شاخه و برچسب موفق |
+| شواهد محلی و صف بازبینیِ بی‌نیاز از شبکه در E-61 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-61`؛ اجرای خودکار شاخه و برچسب موفق |
+| الگوی برچسب‌گذاری اپراتور E-62 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-62`؛ اجرای خودکار شاخه و برچسب موفق |
+| اندازه‌گیری در محیط جداشدهٔ E-63 | عامل پیاده‌سازی Arena | **تحویل شواهد پذیرفته شد، با محدودیت‌ها** — مدیر به نمایندگی از مالک پذیرفت؛ نتیجه `REVIEW`، امتیازدهی `NOT_SCORED` و مبدأ Holoo، بستهٔ ساخت و تنوع `NOT-VERIFIED` می‌مانند؛ این پذیرش کیفیت یا دقت را تأیید نمی‌کند و مجوز امتیازدهی مجدد نیست |
+| سند تحویل و گزارش وضعیت E-64 | عامل پیاده‌سازی Arena | تکمیل‌شده — `o15-E-64`؛ اجرای خودکار شاخه و برچسب موفق |
+| گسترش Holoo v1.2 در E-65 | عامل پیاده‌سازی Arena | پیش‌نویس مستنداتیِ غیرمصوب `docs/e65-holoo-v1-2-proposal.md` طبق مجوز محدود ORDER 16 ساخته شد؛ پیاده‌سازی `NOT STARTED` و بدون آزمون E-65، CI یا tag |
 
-## Rules
+`docs/questions/Q-15-01.md` مسئلهٔ مبنای منبع را که حل شده ثبت می‌کند. `docs/questions/Q-15-02.md` سابقهٔ E-63 و پیش‌نویس قبلی E-65 را نگه می‌دارد؛ تصمیم‌های جاری در `AGENT_HANDOFF.md` ثبت شده‌اند: تحویل شواهد E-63 با محدودیت پذیرفته شد و اجازهٔ تدوین E-65 فقط برای مجموعهٔ مأموریت بعدی داده شد.
 
-1. One WP = one owner.
-2. Do not edit another agent's active WP/files.
-3. Reviews do not transfer ownership.
-4. Use branches for agent work.
-5. Frozen files require explicit evidence before modification.
-6. Update this file and AGENT_HANDOFF.md when ownership or project state changes.
-7. Missions should cover multiple executable WPs where possible.
-8. Stop only at genuine decision/evidence/contract/architecture blockers.
-9. Never claim source integration when the repository does not contain the resulting artifact.
+## قواعد هماهنگی
 
-## Current State
+۱. هر بستهٔ کاری فقط یک مسئول دارد؛ فایل فعال عامل دیگر را ویرایش نکنید.
+۲. قراردادهای تثبیت‌شده و خروجی‌های مرجع را بدون مانع مستند و مجوز صریح تغییر ندهید.
+۳. تصمیم‌های فنی ماهوی را همراه با گزینهٔ انتخاب‌شده، دلیل و گزینهٔ ردشده در `docs/decisions-made.md` ثبت کنید.
+۴. بدون برچسب‌های مستقلِ مقدار موردانتظار، ادعای دقت نکنید. دقت E-63 `NOT_SCORED` و `extracted_but_wrong` همچنان `null` است.
+۵. دادهٔ برداشت، مقدارهای OCR، تصویرها و برش‌ها، JSON خام نتیجه و گزارش‌های خام فقط در فضای موقتِ جداشده نگه داشته شوند. فقط وضعیت‌ها و شمارهای تجمیعی و علت‌های فنیِ پالوده را می‌توان مستند کرد. محتوای برداشت نباید وارد مخزن، ثبت، برچسب، اجرای خودکار یا روندکار شود.
+۶. نتیجهٔ آغازین E-63 با وضعیت `BLOCKED / REJECT` در گزارش و سند تحویل حفظ شده است. اصلاح محدود فقط `get_flattened_data()` را با روش هم‌ارز `getdata()` در Pillow `11.1.0` جایگزین کرد؛ نسخهٔ وابستگی، بانک گلیف، آستانهٔ استخراج، قرارداد خروجی، شِما، روندکار و خروجی مرجع تغییر نکردند.
+۷. آزمون مشخص برابری و بازگشت `test_line_mask_flattened_pixel_count_uses_pillow_11_1_data_api` است؛ شمار حذف موردانتظار، خروجی پاک‌شده و دست‌نخورده‌ماندن تصویر منبع را می‌سنجد. مجموعهٔ کامل محلی و اجرای خودکار در Ubuntu و Windows روی ثبت اصلاح‌شده موفق شدند.
+۸. شناسهٔ بستهٔ ساخت روندکار E-60 برابر `14305290850` است و چکیدهٔ اعلامی آن `sha256:60f9baee9b8910d2817878d9777627b60ae3dde275d74cc8263eb53c9d5be083` است. دریافت مجدد از طریق رابط برنامه‌نویسی احرازشده به EOF و پروندهٔ صفر‌بایتی انجامید؛ هش واقعی بسته تأیید نشده است. E-63 با مجوز صریح مدیر اجرا از کد منبع Linux در برچسب تأییدشدهٔ `o15-E-63-fix-1` استفاده کرد.
+۹. شاخهٔ راه‌دور `o15-e63-transfer` پس از تطبیق دقیق اندازه و SHA برداشت حذف شد. بازسازی نشد؛ ورودی و خروجی خام فقط در محیط جداشده ماندند.
+۱۰. موفقیت بررسی‌های خودکارِ کد یا نتیجهٔ استخراجِ ضعیف یا قوی به‌تنهایی به‌معنای پذیرش خودکار E-63 نیست. سلامت فنی، کیفیت واقعی استخراج و انطباق با چک‌لیست را جداگانه گزارش کنید و خاستگاه یا دقت نامطمئن را صریح نشان دهید.
+۱۱. تحویل شواهد E-63 با محدودیت پذیرفته شده است؛ نتیجه `REVIEW`، امتیازدهی `NOT_SCORED` و موارد مبدأ Holoo، بستهٔ ساخت و تنوع `NOT-VERIFIED` باقی می‌مانند. مجوز تازهٔ ORDER 16 فقط پیش‌نویس مستنداتیِ غیرمصوب E-65 را اجازه می‌دهد؛ پیش‌نویس در `docs/e65-holoo-v1-2-proposal.md` ثبت شده است. پیاده‌سازی E-65 همچنان `NOT STARTED` است؛ آزمون E-65، CI، tag یا تغییر قرارداد انجام نشود.
 
-The repository contains the collaboration/handoff files.
+## خلاصهٔ شواهد E-63
 
-Verified current implementation package:
-- kandoo-current-implementation10.zip
-- ZIP SHA-256: b8cda0290d5811ffd511b7e96b147c917cc2458a9f8faee40c60e46d388bc753
-- 281 project files + embedded manifest
-- 281/281 manifest hashes verified
+- اجرای نخست از کد منبع `o15-E-60-fix-1` / شناسهٔ ثبت `68be0e7c08c264a064bae598b5a3917fe6bf4dd9`: `BLOCKED / REJECT`، کد خروج `20`، یک صفحهٔ مسدود و صفر نامزد عددی. `preprocessing.py:642` متد `Image.get_flattened_data()` را صدا می‌زد که در Pillow قفل‌شدهٔ `11.1.0` وجود نداشت؛ نمونه‌های آزمونیِ پیش‌فرض E-05 نیز در دسترس نبودند.
+- برچسب اصلاح `o15-E-63-fix-1` / شناسهٔ ثبت `89f78b2099d0f15d01bbf84bd68cc1a997c754c2`: تنها یک فراخوانی رابط برنامه‌نویسی جایگزین و آزمون بازگشت ساختگیِ نام‌برده‌شده افزوده شد. مجموعهٔ کامل 1702 آزمون را گذراند و بررسی برابری موفق بود؛ اجرای خودکار شاخه [44080880091](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44080880091) و برچسب [44081030928](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44081030928) در Ubuntu و Windows موفق بود.
+- دو اجرای پس از اصلاح از همان برچسب و کد منبع، شاخص‌های تجمیعی یکسان و JSON معتبر با شِما دادند: یک صورتحساب و یک صفحه، کد خروج `10`، نتیجهٔ `REVIEW`، هر نه نامزد `REVIEW`، و E-06 با `PARTIAL_MATCH` و `NEW_LAYOUT`؛ الگوهای پیش‌فرض گلیف بارگذاری شدند، لغزش گلیف `REVIEW` بود، بانک E-05 در دسترس نبود و دقت `NOT_SCORED` ماند.
+- تعیین وضعیت هر معیار در `docs/o15-final-report.md` آمده است. تحویل شواهد E-63 با محدودیت پذیرفته شد؛ نتیجه `REVIEW` و دقت `NOT_SCORED` باقی می‌مانند و دقیقاً سه مورد مبدأ Holoo، بستهٔ ساخت و تنوع `NOT-VERIFIED` هستند. این تصمیم پذیرش کیفیت یا دقت نیست.
 
-The current GitHub connector has repository write permissions but no bulk local-directory upload/Git-push operation. The implementation tree is therefore not yet claimed as integrated.
+## ۱۲. ORDER 16 — وضعیت جاری Python
 
-Next executable action: transfer the exact 281 files into main, verify against the package manifest, then record the resulting HEAD here and in AGENT_HANDOFF.md.
+- شاخهٔ فعال: `arena/d0587e71-kandoo-digital-invoice`; کارهای E-70 تا E-74 فقط در همین شاخه انجام می‌شوند. مدیر صریحاً شروع فوری را مجاز کرده است؛ شرط انتظار ORDER 15 / ORDER 19 در سفارش، برای این شروع لغو شده است. وضعیت ادغام ORDER 19 در C# بررسی نشده و به‌دلیل این مجوز مانع شروع نیست.
+- E-63: حکم نهایی PM برای این مأموریت `NO GO` است؛ برآورد ۶–۸ ساعت از سقف کمتر از نیم‌روز بیشتر است. کار به سری مأموریت بعدی موکول و در این مأموریت شروع نمی‌شود؛ `BLOCKED / DEFERRED`، `REVIEW` و `NOT_SCORED` حفظ می‌شوند.
+- E-70: آموزش آفلاین و محلی از برچسب اپراتور و بدون test kit پیاده‌سازی شد. آزمون‌های هدفمند `3 passed` و smoke ساختگی source موفق‌اند؛ اعتبارسنجی روی فاکتور واقعی انجام نشده است. دسترسی به نمونهٔ مجاز از PM درخواست شده و در انتظار است؛ دادهٔ غیرمجاز جایگزین نمی‌شود.
+- E-71: سه layout ساختگی و train/holdout مستقل آماده‌اند. سنجهٔ محلی برای هر layout `layout-match=1/1` و `numeric=5/5`، با `EXTRACTED-but-wrong=0` بود؛ نتیجه فقط synthetic است.
+- E-72: addendum افزایشی و بردار ساختگی در فایل‌های جدیدند؛ verifier و 3 آزمون موفق شدند. بردار 1505 بایت است و SHA-256 آن `0885c7571fb3ccc781f1a73e5505cd94805b065fb13e93f35fa4feb12d061d36` است؛ قراردادهای منجمد تغییر نکردند.
+- E-73: منطق fail-closed و ابزار batch افزوده شد؛ آزمون‌های ساختگی `6 passed`. تطبیق با ساختار نمونهٔ واقعیِ مجاز **BLOCKED** است؛ دسترسی از PM درخواست شده و در انتظار است، و دادهٔ غیرمجاز جایگزین نمی‌شود.
+- E-74: `scripts/run_order16_harness.py` یک فرمان کامل است؛ suite محلی `1717 passed`، O15 verifier و E-70 source smoke گذشتند و numeric gate برای هر سه layout `5/5` با `EXTRACTED-but-wrong=0` شد. اجرای راه‌دور [44885771939](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44885771939) برای ثبت `74375ff090b09649414ce4a7eb1fdfc4d15284ca` در هر دو کار Ubuntu و Windows موفق شد؛ Windows bundle و summary artifact بارگذاری شدند.
+- بررسی API: هر دو job/step موفق؛ فقط یک warning از منسوخ‌شدن Node.js 20 در actionها برای هر کار و هیچ annotation خطا. artifact summary 722 بایت و bundle 14,055,998 بایت، هر دو موجود و منقضی‌نشده بودند. دانلود محتوای artifact به EOF رسید و فقط metadata بررسی شد.
+- گزارش‌های فارسی با ثبت `b727ca07b851387a59a5972202ef50ae97711817` پوش شدند. اجرای پس از آن [44886126550](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44886126550) نیز در دو کار موفق شد؛ API وضعیت jobها، annotationهای warning و دو artifact منقضی‌نشده را تأیید کرد. محتوای artifact به‌علت EOF دریافت نشد.
+- E-75: **DEFERRED / BLOCKED** تا تأیید همهٔ MUSTها؛ blocker نمونهٔ واقعی E-73 مانع اندازه‌گیری before/after اندازه و startup است.
+- E-65: فقط پیش‌نویس مستنداتیِ غیرمصوب در `docs/e65-holoo-v1-2-proposal.md` ساخته شد؛ پیاده‌سازی `NOT STARTED` است.
+- Tag: **BLOCKED** — `docs/orders/ORDER-16.md:8,42` tag تازه می‌خواهد؛ `docs/OPERATING-RULES-v2.md:21` ساخت tag توسط عامل را منع می‌کند؛ tag ساخته نشد.
+- PR: یک PR تجمیعی create-only از شاخهٔ جاری به `main` باز شد: [#16](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/pull/16). وضعیت GitHub در زمان بازشدن `CONFLICTING` بود (22 جلو، 118 عقب)؛ هیچ merge/rebase انجام نشود و `main` تغییر نکند.
+- هر push محرک CI باید پس از ارسال با API بررسی شود: وضعیت run، annotationهای job و artifactها؛ سقف ۱۵ push برای هر کار. گزارش‌های فارسی هر task در `docs/reports/` نگهداری شوند.
+- دادهٔ واقعی capture/OCR، فاکتور، تصویر/برش، اندازه/هش دادهٔ واقعی یا credential وارد Git، گزارش، artifact یا CI نشود. از عبارت «فاکتور دیجیتال کندو» استفاده شود و ادعای حقوقی/مالیاتی نوشته نشود.
+
+## کار اجرایی بعدی
+
+در Round 2، harness ساختگی `1717 passed` و آزمون‌های هدفمند E-70 تا E-73 `15 passed` شدند؛ PM کار را پذیرفت. CIهای [44888618455](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44888618455) و [44888797887](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/44888797887) هر دو در Ubuntu/Windows موفق شدند؛ فقط هشدار Node.js 20، بدون خطای کد؛ metadata artifactها بررسی شد. E-70/E-73 فقط synthetic می‌مانند تا درخواست نمونهٔ مجاز از PM پاسخ داده شود؛ دادهٔ غیرمجاز جایگزین نشود. E-63 `NO GO` و موکول به سری بعد است؛ E-75 `BLOCKED / DEFERRED`. PR #16 باید به‌روز بماند، اما merge/rebase نمی‌شود؛ وضعیت `CONFLICTING`، `main` و tagها دست‌نخورده.

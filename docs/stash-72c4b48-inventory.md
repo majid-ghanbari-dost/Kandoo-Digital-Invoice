@@ -124,11 +124,11 @@ index 3986763..ed019b4 100644
 +- update `KANDO_AGENT_COORDINATION.md` when ownership or execution state changes;
  - report the exact repository commit/HEAD in the final report;
  - never claim source integration when only a local/archive artifact was produced.
- 
+
 @@ -93,66 +93,68 @@ Each WP has one owner. Agents must not concurrently modify the same WP/files.
- 
+
  ## 6. Current Verified Project State
- 
+
 -P1–P10: completed/frozen.
 -WP-11.1: implemented, tested, packaged and accepted at implementation level.
 -WP-12.1: implemented and tested.
@@ -199,9 +199,9 @@ index 3986763..ed019b4 100644
 +- **WP-10 (Integration & E2E):** Glyph was integrated into the adapter as the primary numeric-cell engine and the 13-row image was run with the Glyph templates/runtime assets. The arithmetic gate failed, so the adapter returned page-level `ImageExtractionReviewRequired`; the non-issuing submit probe recorded zero calls. The actual issuance service was not attached, so no Digital Invoice could be created and none reached `ISSUED`. Commit: `76a37f0`.
 +- The E2E demonstrates the extraction/review fail-closed path, not production OCR accuracy or owner-confirmed values. WP-09 labels/references remain provisional and the row-level train/evaluation split is within the same invoice, not independent-invoice validation. This adapter-local hold is not a persisted Frozen P5.2 review record; D-01–D-09 remain unchanged.
 +- **Priority for tomorrow:** Discuss the Windows App interface and the Per-Store Calibration process (clustering and operator labeling). The MVP technical control path for dynamic layout plus fail-closed numeric review has been demonstrated; production OCR accuracy/calibration is not yet proven. Keep Synthetic results separate from Holoo evidence.
- 
+
  ## 7. Current Agent Ownership
- 
+
 -Agent 1:
 -- Owns the active P12 execution stream until it reaches its genuine PO/evidence boundary.
 -- Must not assume this new repository already contains the working tree.
@@ -213,9 +213,9 @@ index 3986763..ed019b4 100644
 +- **Product Owner:** Native Checkout Q1–Q4 decisions are recorded; any later change to those decisions or MVP priority remains a PO decision.
 +- **WP-11.2 Holoo DB adapter:** remains a separate deferred scope; the image-extraction adapter does not resolve its source mapping/authority/synchronization decisions.
 +- Preserve unrelated work already present in the working tree; do not absorb the untracked spooler adapter or runner into this image-extraction change.
- 
+
  ## 8. Current Real Boundaries
- 
+
 -1. P12.3: PO/G4 ratification of D-07, D-08 and DEF2.
 -2. WP-11.2: required source mapping/authority/sync/conflict/write-back decisions and sufficient contract before Adapter implementation.
 -3. Repository bootstrap: actual 281-file project tree must still be transferred from the verified local ZIP into `main`.
@@ -233,19 +233,19 @@ index 3986763..ed019b4 100644
 +5. The flat text parser handles tested English/Persian labels. The dynamic projection detector recovered four-column RTL tables in the three supplied images (4, 5, and 13 rows); it has not been validated on other layouts. Projection is primary for crops, with TSV geometry fallback. Ambiguous values remain REVIEW. Jalali-to-Gregorian calendar conversion is not implemented.
 +6. Native Checkout is future architecture only under the recorded Q1–Q4 choices; it is not the current MVP priority and no Native Checkout code was added.
 +7. WP-11.2 (Holoo database adapter/enrichment) remains separate and deferred pending its own decisions/evidence.
- 
+
 -The current GitHub connector has repository write permissions but no bulk local-directory upload/Git-push operation. Therefore the ZIP cannot be truthfully represented as integrated source until the 281 files are actually written to Git.
 +## 9. Repository and EOD Branch Status
- 
+
 -Next bootstrap action:
 -- transfer the exact 281 project files without reconstruction or modification;
 -- preserve the embedded manifest;
 -- verify repository file count/content against the transfer package;
 -- update this handoff with actual repository HEAD and verification results.
 +All task-scoped image-extraction source, tests, Synthetic regression evidence, real-image spatial/preprocessing/Glyph reports, and handoff updates stay on `arena/9dc17500-kandoo-digital-invoice`. WP-05 was pushed as `fbfe7c0`; remote upload commit `ccb9e99` added the supplied `5.png` and `13.png` images before WP-09 work. WP-09 was pushed as `e5ff46d`; WP-10 was pushed as `76a37f0`. No change is to be merged to `main`. Earlier untracked WP-06 classifier artifacts and the unrelated spooler adapter/runner are intentionally left out of task commits. Do not force-push or overwrite remote work if a future non-fast-forward condition occurs; report that blocker instead.
- 
+
  ## 10. Handoff Protocol
- 
+
 @@ -161,7 +163,7 @@ Every agent joining this project must:
  1. Read this file completely.
  2. Inspect current Git HEAD and working tree.

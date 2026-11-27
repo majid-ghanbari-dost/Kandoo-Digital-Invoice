@@ -169,6 +169,24 @@ class CaptureTriageTests(unittest.TestCase):
             self.assertIn("Layout matching (E-05),", report)
             self.assertIn("Final decision (E-06): REVIEW", report)
 
+    def test_duplicate_job_id_explanation_distinguishes_metadata_from_batch_duplicates(self) -> None:
+        metadata = capture_triage._problem_explanation({
+            "code": "DUPLICATE_JOB_ID",
+            "message": "Report.txt contains more than one spool_job_id field",
+            "path": "Report.txt:3",
+        })
+        batch = capture_triage._problem_explanation({
+            "code": "DUPLICATE_JOB_ID",
+            "message": "Multiple capture folders claim the same spool-job ID",
+        })
+
+        self.assertEqual(
+            metadata,
+            "Data problem: Report.txt contains more than one spool-job ID.",
+        )
+        self.assertIn("claimed by multiple folders", batch)
+        self.assertIn("held for review", batch)
+
     def test_e27_data_failures_have_byte_stable_reports(self) -> None:
         with tempfile.TemporaryDirectory(prefix="e35-capture-cases-") as temp_name:
             generated = prepare_e27_capture_folders(REPOSITORY_ROOT, Path(temp_name))

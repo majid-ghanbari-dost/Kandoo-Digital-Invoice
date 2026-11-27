@@ -1,0 +1,17 @@
+{
+  "schema_version": "o15.e60-golden-manifest.v1",
+  "pack_id": "o15.e60.synthetic-capture.v1",
+  "synthetic_only": true,
+  "capture_exit_code": 20,
+  "demo_exit_code": 20,
+  "files": {
+    "tests/fixtures/o15/capture-folder/Report.txt": "ddf6b27a089d3af724c80ebcebb807070a3ab7448f5dd7bb39de6ddac4cb75c9",
+    "tests/fixtures/o15/capture-folder/capture-job.spl": "2f97d20cf57a268e327f13ef38dc302e3b600bb5c2c4c52ede7a6172d4bbc015",
+    "tests/fixtures/o15/capture-folder/page1.png": "df0e79c5acef87a6f2bcd3c9d36c6afadfb612a7210afadc0ea717c08856d782",
+    "tests/fixtures/o15/e05-bank-synthetic.json": "3a7322073e91a13cf18f60b0686458d3eb7ef5d428787a52077564960785a4d4",
+    "tests/fixtures/o15/canonical-context-synthetic.json": "21e894ef7757b9f7a8af7a9ece2b96a243656faadcd0c30258b29f71a0f8f153",
+    "tests/fixtures/o15/issued-invoice-v1-1-fields-synthetic.json": "f4fad578ecbb6535fcd44a4d8edff0d1efd0b0d6e90ff6a6c619df7f2d0cf445",
+    "tests/golden/o15/capture-folder-result-v1.json": "35429c73074f323842c703a3f1392b8677ca297c26095298eb95f7b0643c9725",
+    "tests/golden/o15/demo-output-v1.json": "b795f45f2dc4346b708da7360cb652e1d4b9d05094215060f7c2d5c38564d8f5"
+  }
+}

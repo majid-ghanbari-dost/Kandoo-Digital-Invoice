@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:kandoo:o15:operator-labels:1",
+  "title": "O15 local operator labels v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_evidence_schema",
+    "online_learning",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": { "const": "o15.operator-labels.v1" },
+    "source_evidence_schema": { "const": "o15.review-evidence.v1" },
+    "online_learning": { "const": false },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "page_index",
+        "field_name",
+        "value",
+        "confidence",
+        "reason",
+        "crop_file",
+        "crop_region",
+        "read_correctly",
+        "corrected_value"
+      ],
+      "properties": {
+        "evidence_id": { "type": "string", "minLength": 1 },
+        "page_index": { "type": "integer", "minimum": 1 },
+        "field_name": { "type": "string", "minLength": 1 },
+        "value": { "type": "string" },
+        "confidence": {
+          "oneOf": [
+            { "type": "number", "minimum": 0, "maximum": 100 },
+            { "type": "null" }
+          ]
+        },
+        "reason": { "type": "string", "minLength": 1 },
+        "crop_file": {
+          "type": "string",
+          "pattern": "^crops/[A-Za-z0-9_-]+\\.png$"
+        },
+        "crop_region": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "integer", "minimum": 0 },
+            { "type": "integer", "minimum": 1 },
+            { "type": "integer", "minimum": 1 }
+          ],
+          "items": false
+        },
+        "read_correctly": { "type": ["boolean", "null"] },
+        "corrected_value": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "read_correctly": { "const": true } },
+            "required": ["read_correctly"]
+          },
+          "then": {
+            "properties": { "corrected_value": { "type": "null" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "read_correctly": { "const": false } },
+            "required": ["read_correctly"]
+          },
+          "then": {
+            "properties": { "corrected_value": { "type": "string", "minLength": 1 } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "read_correctly": { "type": "null" } },
+            "required": ["read_correctly"]
+          },
+          "then": {
+            "properties": { "corrected_value": { "type": "null" } }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}
