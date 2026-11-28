@@ -1,0 +1,108 @@
+{
+  "schema_version": "e71.per-layout-numbers.v1",
+  "synthetic_only": true,
+  "honesty_label": "SYNTHETIC/FICTIONAL — generator mechanics only. Every raster is stamped 'SYNTHETIC INVOICE' on-image; these numbers are NOT real-data extraction accuracy and make no claim about real invoices.",
+  "gate": {
+    "name": "EXTRACTED-but-wrong = 0",
+    "extracted_but_wrong_total": 0,
+    "result": "PASS"
+  },
+  "layouts": [
+    {
+      "layout_id": "layout-1",
+      "layout_profile": {
+        "column_boundaries": [
+          50,
+          170,
+          225,
+          480,
+          590
+        ],
+        "logo_size": [
+          52,
+          34
+        ],
+        "currency_label": "RIAL"
+      },
+      "layout_match": {
+        "correct": 1,
+        "total": 1,
+        "accuracy": 1.0,
+        "expected_template_id": "e05-layout-01",
+        "matched_template_id": "e05-layout-01"
+      },
+      "numeric_cell_exact": {
+        "expected_fields": 5,
+        "extracted_fields": 5,
+        "correct_fields": 5,
+        "extracted_but_wrong": 0,
+        "review_or_missing_fields": 0,
+        "accuracy": 1.0
+      }
+    },
+    {
+      "layout_id": "layout-2",
+      "layout_profile": {
+        "column_boundaries": [
+          35,
+          145,
+          275,
+          455,
+          610
+        ],
+        "logo_size": [
+          82,
+          48
+        ],
+        "currency_label": "IRR"
+      },
+      "layout_match": {
+        "correct": 1,
+        "total": 1,
+        "accuracy": 1.0,
+        "expected_template_id": "e05-layout-02",
+        "matched_template_id": "e05-layout-02"
+      },
+      "numeric_cell_exact": {
+        "expected_fields": 5,
+        "extracted_fields": 5,
+        "correct_fields": 5,
+        "extracted_but_wrong": 0,
+        "review_or_missing_fields": 0,
+        "accuracy": 1.0
+      }
+    },
+    {
+      "layout_id": "layout-3",
+      "layout_profile": {
+        "column_boundaries": [
+          72,
+          235,
+          300,
+          465,
+          580
+        ],
+        "logo_size": [
+          30,
+          24
+        ],
+        "currency_label": "TOMAN"
+      },
+      "layout_match": {
+        "correct": 1,
+        "total": 1,
+        "accuracy": 1.0,
+        "expected_template_id": "e05-layout-03",
+        "matched_template_id": "e05-layout-03"
+      },
+      "numeric_cell_exact": {
+        "expected_fields": 5,
+        "extracted_fields": 5,
+        "correct_fields": 5,
+        "extracted_but_wrong": 0,
+        "review_or_missing_fields": 0,
+        "accuracy": 1.0
+      }
+    }
+  ]
+}
