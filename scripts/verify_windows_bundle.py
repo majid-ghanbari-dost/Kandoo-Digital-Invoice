@@ -417,6 +417,40 @@ def _numeric_values_match(actual: dict[str, Any], expected: dict[str, Any]) -> N
             )
 
 
+def _bundle_composition(bundle_dir: Path, bundle_files: list[Path]) -> dict[str, Any]:
+    """E-75 accounting: category totals + largest files in the one-folder bundle."""
+    categories: dict[str, int] = {}
+    largest: list[tuple[int, str]] = []
+    for path in bundle_files:
+        size = path.stat().st_size
+        relative = path.relative_to(bundle_dir).as_posix()
+        largest.append((size, relative))
+        top = relative.split("/", 1)[0]
+        if top in {
+            "PIL", "jsonschema", "referencing", "rpds", "attr", "attrs",
+            "jsonschema_specifications",
+        }:
+            category = f"package:{top}"
+        elif top in {"schemas", "tests", "src"}:
+            category = "app-data"
+        elif relative.endswith((".dll", ".pyd", ".so")):
+            category = "native-libs"
+        elif relative.endswith(".zip"):
+            category = "python-base-zip"
+        elif relative.endswith((".pyc", ".py")):
+            category = "python-code"
+        else:
+            category = f"other:{top}"
+        categories[category] = categories.get(category, 0) + size
+    largest.sort(reverse=True)
+    return {
+        "categories_bytes": dict(sorted(categories.items(), key=lambda item: -item[1])),
+        "largest_files": [
+            {"path": relative, "bytes": size} for size, relative in largest[:20]
+        ],
+    }
+
+
 def _write_reports(
     json_path: Path,
     markdown_path: Path,
@@ -451,6 +485,14 @@ def _write_reports(
         "| Fixture | Exit | State | Rows | Payable | Numeric match | Runtime (s) |",
         "|---|---:|---|---:|---:|---|---:|",
     ]
+    composition = report.get("bundle_composition") or {}
+    if composition:
+        lines.extend(["", "## E-75 bundle composition", "", "| Category | Bytes |", "|---|---:|"])
+        for category, size in composition.get("categories_bytes", {}).items():
+            lines.append(f"| `{category}` | {size} |")
+        lines.extend(["", "Largest files:", ""])
+        for item in composition.get("largest_files", [])[:10]:
+            lines.append(f"- `{item['path']}` — {item['bytes']} bytes")
     for item in report.get("fixtures", []):
         lines.append(
             f"| {item['fixture_id']} | {item.get('exit_code', '—')} | "
@@ -575,6 +617,9 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
         report["bundle_size_bytes"] = bundle_size
         report["bundle_size_mib"] = round(bundle_size / (1024 * 1024), 3)
         report["bundle_file_count"] = len(bundle_files)
+        # E-75: composition accounting so every Windows run is a size/startup
+        # measurement run with an actionable breakdown.
+        report["bundle_composition"] = _bundle_composition(bundle_dir, bundle_files)
 
         with tempfile.TemporaryDirectory(prefix="kandoo-windows-smoke-") as temp_name:
             cwd = Path(temp_name)
@@ -725,6 +770,21 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
         f"tesserocr_present={report.get('tesserocr_importable', 'n/a')}"
     )
     print(f"::notice title=Windows one-folder evidence::{notice}")
+    composition = report.get("bundle_composition") or {}
+    if composition:
+        top = composition.get("largest_files", [])[:5]
+        largest = ", ".join(f"{item['path']}={item['bytes']}" for item in top)
+        categories = "; ".join(
+            f"{category}={size}"
+            for category, size in list(composition.get("categories_bytes", {}).items())[:8]
+        )
+        e75 = (
+            f"exe_bytes={report.get('executable_size_bytes', 'n/a')}; "
+            f"bundle_bytes={report.get('bundle_size_bytes', 'n/a')}; "
+            f"startup_median_s={report.get('startup_median_seconds', 'n/a')}; "
+            f"categories: {categories}; largest: {largest}"
+        )
+        print(f"::notice title=E-75 bundle composition::{e75}")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["status"] == "PASS" else 1
 
