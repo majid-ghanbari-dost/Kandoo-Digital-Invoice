@@ -1,31 +1,42 @@
-# E-74 — ORDER 17 per-layout raster score
+# E-74 — ORDER 17 two-raster score (PY-A re-score)
 
-## Scope and provenance
+**Status: PARTIAL — the accuracy acceptance gate is NOT MET.** This re-score supersedes the earlier one-raster summary in this file. The extraction code evaluated is the unmodified `fc20f5858929f25288f6c8e1ddcf7717b91afd16` baseline on branch `arena/b264b596-kandoo-digital-invoice`.
 
-The user-authorized scoring source is the fictional real-layout raster `samples/real-layout-fictional/invoice-34.png` (SHA-256 `f02033ee8ac274fd54546d4aa63516a99872517684c6904f27f894557c6c8cfb`). The four line quantities/totals and payable labels in PY-T2 were confirmed by the user as operator-verified for this raster. No template was trained or changed on the evaluation image; the existing pipeline ran with its evaluation leakage guard enabled.
+## Scope, provenance, and leakage controls
 
-The approved capture tree contains two byte-identical copies of this raster, so it supplies **one unique raster/layout**, not two independent samples. The other capture folders had no usable raster and remain in the E-73 structural-review outcome. The per-layout score below is therefore limited to this one fictional layout; it is not a multi-layout or real-customer accuracy claim.
+- The scoring rasters are `samples/real-layout-fictional/invoice-34.png` (SHA-256 `f02033ee8ac274fd54546d4aa63516a99872517684c6904f27f894557c6c8cfb`) and `samples/real-layout-fictional/lane-synthetic-01/lane-synthetic-01.png` (SHA-256 `55acad10c41c9b5e7e4aee89fddedd93083f23e0ffec65eef059b1c452974d61`).
+- The pinned `samples/real-layout-fictional/holdout-invoice-34/invoice_34.png` (SHA-256 `b92185fe1f028e215f54dbda25aaee3edfb6613661aaec53f0c1832e55346013`) was used only for an independent visual label check. It was not passed through the extraction pipeline, copied into the template bank, or used for training, fitting, calibration, or threshold changes.
+- Both scoring rasters were run through `extract_pipeline_v0(..., evaluation=True)` against the existing default Glyph bank and drift baseline. The pipeline's source-path/SHA leakage guard remained enabled. Neither scoring raster was added to training data, and neither label source was edited. The synthetic label file remains SHA-256 `695cb4db0f1bf4cebe065460ed308b5ae6aa9074ce8d31d49f0e9186fea42405`.
+- The synthetic labels passed local integrity checks for the fictional-only markers, four-line/nine-field structure, raster hash/dimensions/mode, and line-sum/payable arithmetic. This is not an OCR accuracy result; no formal JSON Schema is defined for this label format.
+- No tag was created, moved, or deleted by this re-score.
 
-## Per-layout numeric metrics
+## Independent invoice-34 reference read and label discrepancy
 
-| Evaluated layout | Detector / rows | Expected fields | EXTRACTED | Correct | EXTRACTED-but-wrong | REVIEW | Missing | Numeric exact accuracy |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Invoice 34 — one unique raster/layout | `OK` / 4 | 9 | 0 | 0 | 0 | 9 | 0 | N/A — no extracted fields |
+The holdout reference visually reads invoice number **34**, date **1405/08/16**, and **four** item rows. Its row values read:
 
-Counts reconcile: `correct + EXTRACTED-but-wrong = EXTRACTED`, and `EXTRACTED + REVIEW + missing = expected`. **The zero `EXTRACTED-but-wrong` count is vacuous:** the glyph-drift monitor returned `REVIEW`, leaving all nine numeric cells in `REVIEW`. Coverage is 0/9, so the required accuracy gate is **NOT MET**; it must not be reported as a 0% accuracy pass or as accepted extraction.
+| Row | Quantity read from reference | Line total read from reference (IRR) |
+|---:|---:|---:|
+| 1 | 2 | 12,626,262 |
+| 2 | 6 | 12,156,156 |
+| 3 | 2 | 12,525,252 |
+| 4 | 7 | 12,743,759 |
+| **Sum** |  | **50,051,429** |
 
-For diagnostic context only, comparing the untrusted raw candidate readings (which all remained `REVIEW`) with the confirmed labels produced 4/9 exact matches: quantity candidates 3/4, line-total candidates 1/4, payable 0/1. These candidates are not `EXTRACTED` and do not contribute to the accepted numeric-accuracy metric. The pipeline arithmetic check returned `passed=true` on its own candidate readings; that does not override the confirmed labels or explain their sum/payable difference.
+The summary box reads total `50,051,429`, an explicit **`تخفیف` (invoice-level discount) of `503,639`**, and payable `49,547,790`. The discount row therefore accounts for the `503,639` difference; this is visible evidence, not an inferred discount. The original image's table and summary evidence is at `holdout-invoice-34/invoice_34.png`, source-pixel region approximately `(x=130..1060, y=900..2060)`; invoice number/date evidence is in `(x=130..1060, y=450..1000)`.
 
-## Confirmed line-sum / payable outcome
+Invoice number, date, row count, row 1–3 quantities, row 3 total, and payable agree with the existing task labels. Four of the nine numeric labels do **not** agree with this independent reference read: row 1 total, row 2 total, row 4 quantity, and row 4 total. Per Decision 27, the existing invoice-34 labels are left untouched. Those four fields are **not scored** pending label reconciliation; they are not silently treated as model errors or as zero-error comparisons. The five uncontested numeric fields remain eligible for the score.
 
-The four confirmed line totals sum to **50,051,429**; confirmed payable is **49,547,790**; the line sum exceeds payable by **503,639**. This scoring run does not establish whether the difference is an invoice-level discount or a raster-reading issue. No discount is inferred. The cause remains **unresolved**.
+## Per-raster pipeline results
 
-## Local checks and CI
+| Scoring raster | Layout / rows | Existing numeric labels | Independently scoreable | EXTRACTED | Correct | EXTRACTED-but-wrong | REVIEW | Missing | Not scored: label conflict | Exact accuracy |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Invoice 34 | `OK` / 4 | 9 | 5 | 0 | 0 | 0 | 5 | 0 | 4 | N/A — no extracted fields |
+| `lane-synthetic-01` | `OK` / 4 | 9 | 9 | 0 | 0 | 0 | 9 | 0 | 0 | N/A — no extracted fields |
 
-- Aggregate local E-70/E-73 evaluator: `NOT_SCORED`; 3 capture folders, 0 READY / 3 REVIEW; jobs 0 evaluated / 3 not evaluated / 0 extraction errors; operator labels valid/missing/invalid `0/0/0`; quantity, line-total, and payable counts each `0/0/0/0/0` (expected/pass/fail/review/missing). E-73 structural issue counts remain `AMBIGUOUS_SPL=1`, `EMPTY_SPL=1`, `JOB_IN_WRONG_FOLDER=1`, `MISSING_PNG=2`, `MISSING_REPORT=1`, `MISSING_SPL=2`.
-- Regression CI on evaluated code SHA `ede16fd472c6a75f84e4b4449b9347ad486646ea`: [Python 45626308071](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45626308071), [Windows 45626308149](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45626308149), and [O15 bundle / ORDER 16 harness 45626308049](https://github.com/majid-ghanbari-dost/Kandoo-Digital-Invoice/actions/runs/45626308049) succeeded. These CI checks and their artifacts are regression/build or synthetic-only evidence; they did **not** score the fictional raster. No raster or label payload was uploaded to CI.
-- `o17-E-74` is an annotated tag on evaluated code SHA `ede16fd472c6a75f84e4b4449b9347ad486646ea`; the tag records this evaluation point and does not signify that the E-74 accuracy gate passed.
+The `EXTRACTED` / `REVIEW` / `Missing` counts above cover only independently scoreable fields; the four disputed invoice-34 fields are shown separately as not scored. All nine invoice-34 cells nevertheless remained `REVIEW` (`onboarding required`). The invoice-34 raw candidates matched 4/5 independently confirmed numeric labels; no candidate contributes to accepted extraction accuracy. The pipeline's internal arithmetic check passed on its own raw invoice-34 candidates, whose line sum and payable were both `49,547,706`; that does not override the reference read or the official labels. For `lane-synthetic-01`, all nine cells remained `REVIEW`; the raw candidates matched 0/9 exact-by-construction labels and the arithmetic check failed.
+
+Across the **14 independently scoreable fields**, extraction coverage is **0/14**. `EXTRACTED-but-wrong = 0` is therefore vacuous, not a pass; the required E-74 accuracy gate is **NOT MET**. Four invoice-34 fields remain unscored due to the label/reference conflict. No automatic correction, threshold tuning, or model retraining was performed.
 
 ## Status
 
-**E-74 PARTIAL — scored, acceptance gate NOT MET.** Only one unique fictional layout was available. All nine values remained `REVIEW`, with no extracted-field accuracy denominator. The 503,639 difference remains unexplained. PR #16 stays open and create-only; no merge, rebase, or close was performed.
+**E-74 PARTIAL — both scoring rasters were evaluated, but acceptance was not achieved.** The invoice-34 reference resolves the subtotal/payable gap as a printed invoice-level discount, while exposing four conflicting line-item labels that remain unchanged under Decision 27. Both scoring rasters have zero extraction coverage. The current report should be read together with the existing labels in `TASKS/PY-T2.md`; it does not replace or edit them.
