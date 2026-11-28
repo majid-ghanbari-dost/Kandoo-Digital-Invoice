@@ -11,16 +11,20 @@ from verify_windows_bundle import _bundle_composition  # noqa: E402
 
 
 def _make_bundle(root: Path) -> tuple[Path, list[Path]]:
+    """Mirror the real PyInstaller 6 one-dir layout (runtime under _internal/)."""
     bundle = root / "kandoo-extract"
     files = {
         "kandoo-extract.exe": 4_000_000,
-        "python311.dll": 5_000_000,
-        "base_library.zip": 2_000_000,
-        "PIL/_imaging.pyd": 3_000_000,
-        "PIL/Image.py": 150_000,
-        "jsonschema/validators.py": 60_000,
-        "jsonschema/tests/test_validators.py": 20_000,
-        "rpds/rpds.pyd": 2_500_000,
+        "_internal/python311.dll": 5_000_000,
+        "_internal/libcrypto-3.dll": 5_191_960,
+        "_internal/base_library.zip": 2_000_000,
+        "_internal/PIL/_imaging.cp311-win_amd64.pyd": 2_662_400,
+        "_internal/PIL/_avif.cp311-win_amd64.pyd": 7_888_896,
+        "_internal/PIL/Image.py": 150_000,
+        "_internal/jsonschema/validators.py": 60_000,
+        "_internal/jsonschema/tests/test_validators.py": 20_000,
+        "_internal/rpds/rpds.pyd": 2_500_000,
+        "_internal/python-code.pyc": 346_362,
         "schemas/canonical_invoice_v0.json": 15_000,
         "tests/fixtures/real/29.png": 24_000,
         "README.txt": 100,
@@ -36,18 +40,22 @@ def test_composition_categorizes_and_ranks(tmp_path: Path):
     bundle, files = _make_bundle(tmp_path)
     composition = _bundle_composition(bundle, files)
     categories = composition["categories_bytes"]
-    assert categories["package:PIL"] == 3_150_000
+    assert categories["package:PIL"] == 7_888_896 + 2_662_400 + 150_000
     assert categories["package:jsonschema"] == 80_000
     assert categories["package:rpds"] == 2_500_000
     assert categories["app-data"] == 39_000
     assert categories["python-base-zip"] == 2_000_000
-    assert categories["native-libs"] == 5_000_000
+    assert categories["python-code"] == 346_362
+    assert categories["native-libs"] == 5_000_000 + 5_191_960
+    assert categories["other"] == 4_000_000 + 100
     largest = composition["largest_files"]
-    assert largest[0] == {"path": "python311.dll", "bytes": 5_000_000}
-    assert largest[1] == {"path": "kandoo-extract.exe", "bytes": 4_000_000}
-    assert largest[2] == {"path": "PIL/_imaging.pyd", "bytes": 3_000_000}
-    assert largest[3] == {"path": "rpds/rpds.pyd", "bytes": 2_500_000}
-    assert len(largest) == 20 or len(largest) == len(files)
+    assert largest[0] == {
+        "path": "_internal/PIL/_avif.cp311-win_amd64.pyd",
+        "bytes": 7_888_896,
+    }
+    assert largest[1] == {"path": "_internal/libcrypto-3.dll", "bytes": 5_191_960}
+    assert largest[2] == {"path": "_internal/python311.dll", "bytes": 5_000_000}
+    assert len(largest) == len(files)
 
 
 def test_composition_totals_reconcile_with_bundle_size(tmp_path: Path):

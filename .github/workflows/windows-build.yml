@@ -175,6 +175,13 @@ jobs:
             --paths src `
             --paths scripts `
             --collect-all jsonschema `
+            --exclude-module PIL.AvifImagePlugin `
+            --exclude-module PIL._avif `
+            --exclude-module PIL.ImageQt `
+            --exclude-module PIL.ImageWin `
+            --exclude-module _hashlib `
+            --exclude-module _ssl `
+            --exclude-module ssl `
             --hidden-import run_name_cluster_experiment `
             --hidden-import synthetic_thermal_invoice `
             scripts/windows_cli_entry.py

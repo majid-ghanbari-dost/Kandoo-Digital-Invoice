@@ -418,29 +418,39 @@ def _numeric_values_match(actual: dict[str, Any], expected: dict[str, Any]) -> N
 
 
 def _bundle_composition(bundle_dir: Path, bundle_files: list[Path]) -> dict[str, Any]:
-    """E-75 accounting: category totals + largest files in the one-folder bundle."""
+    """E-75 accounting: category totals + largest files in the one-folder bundle.
+
+    PyInstaller 6 one-dir builds nest runtime files under ``_internal/``; the
+    classifier therefore matches known package directories at any depth and
+    classifies native libraries by file extension regardless of nesting.
+    """
+    packages = {
+        "PIL", "jsonschema", "referencing", "rpds", "attr", "attrs",
+        "jsonschema_specifications",
+    }
     categories: dict[str, int] = {}
     largest: list[tuple[int, str]] = []
     for path in bundle_files:
         size = path.stat().st_size
         relative = path.relative_to(bundle_dir).as_posix()
         largest.append((size, relative))
-        top = relative.split("/", 1)[0]
-        if top in {
-            "PIL", "jsonschema", "referencing", "rpds", "attr", "attrs",
-            "jsonschema_specifications",
-        }:
-            category = f"package:{top}"
-        elif top in {"schemas", "tests", "src"}:
+        parts = relative.split("/")
+        package = next((part for part in parts[:-1] if part in packages), None)
+        suffix = path.suffix.lower()
+        if package is not None:
+            category = f"package:{package}"
+        elif parts[0] in {"schemas", "tests", "src"} or (
+            len(parts) > 1 and parts[1] in {"schemas", "tests", "src"}
+        ):
             category = "app-data"
-        elif relative.endswith((".dll", ".pyd", ".so")):
+        elif suffix in {".dll", ".pyd", ".so"}:
             category = "native-libs"
-        elif relative.endswith(".zip"):
+        elif suffix == ".zip":
             category = "python-base-zip"
-        elif relative.endswith((".pyc", ".py")):
+        elif suffix in {".pyc", ".py"}:
             category = "python-code"
         else:
-            category = f"other:{top}"
+            category = "other"
         categories[category] = categories.get(category, 0) + size
     largest.sort(reverse=True)
     return {
@@ -772,11 +782,11 @@ def run(exe: Path, repo_root: Path, report_json: Path, report_md: Path) -> int:
     print(f"::notice title=Windows one-folder evidence::{notice}")
     composition = report.get("bundle_composition") or {}
     if composition:
-        top = composition.get("largest_files", [])[:5]
+        top = composition.get("largest_files", [])[:10]
         largest = ", ".join(f"{item['path']}={item['bytes']}" for item in top)
         categories = "; ".join(
             f"{category}={size}"
-            for category, size in list(composition.get("categories_bytes", {}).items())[:8]
+            for category, size in composition.get("categories_bytes", {}).items()
         )
         e75 = (
             f"exe_bytes={report.get('executable_size_bytes', 'n/a')}; "
