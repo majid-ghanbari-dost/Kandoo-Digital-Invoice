@@ -1,0 +1,162 @@
+{
+  "schema_version": "e72.cross-lane-acceptance.v1",
+  "task": "E-72 vectors accepted by C# and PHP (docs/BACKLOG.md PY-A/PY-B item 3, TASKS/PY-B.md item 1)",
+  "recorded_by": "PY-B agent session (arena/b8ba8d2e-kandoo-digital-invoice)",
+  "recorded_at": "2026-11-28",
+  "synthetic_only": true,
+  "verdict": "ACCEPT",
+  "verdict_scope": "shared contract fixtures for cross-lane consumption: the flat-root vectors pass every validation step of the frozen C# CanonicalInvoiceConsumer and serialize byte-identically under the pinned U7-v1 canonical profile shared with the PHP Parser/Writer family. NOT a Cloud store/API ingest mapping (ids are synthetic non-UUID fixtures), NOT runtime/migration approval, NOT a lane countersignature (C#/PHP lanes may add theirs independently).",
+  "frozen_sources": {
+    "csharp_consumer": {
+      "repo": "majid-ghanbari-dost/Kandoo",
+      "path": "src/Kandoo.Core/CanonicalInvoiceConsumer.cs",
+      "main_commit": "45d5fba6f8b7cfcac2900919f7eef685782e26d4",
+      "blob": "5f06ec05318c2932c5114d0078b335df29b50b0b"
+    },
+    "e11_schema": {
+      "path": "contracts/canonical_invoice_v0.schema.json",
+      "sha256": "bd917eb0d0b66f2c260d181a5058e5a44eb9d749ab99c015352e914caf891e88"
+    },
+    "u7_profile_vectors": {
+      "repo": "majid-ghanbari-dost/Kandoo",
+      "path": "docs/vectors/canonical-vectors-v1.json",
+      "blob": "b6c1698d363f5df0262c08a2da0d2caf43f98da5",
+      "pinned_copy": "tests/golden/e72/u7-canonical-vectors-v1.json"
+    }
+  },
+  "decision_29_fix_categories": {
+    "a_wrapper_base_invoice": "FIXED — invoice flattened to root",
+    "b_missing_16_root_required": "FIXED — all 16 RootRequired fields present at root",
+    "c_unknown_root_fields": "FIXED — base_invoice, synthetic_only, v1_2_draft_addendum, vector_id absent"
+  },
+  "vectors": [
+    {
+      "file": "canonical-invoice-v1-2-draft-vector.json",
+      "bytes": 1205,
+      "sha256": "36939192b6d7e5de57c732309272edc5fe6594d79e15b419754eda6afaff14fd",
+      "u7_profile_match": true,
+      "consumer_rules": {
+        "json_tree": "PASS",
+        "root_shape": "PASS",
+        "schema_version": "PASS",
+        "mode": "PASS",
+        "identifiers": "PASS",
+        "public_token": "PASS",
+        "state": "PASS",
+        "customer": "PASS",
+        "state_history": "PASS",
+        "line_items": "PASS",
+        "summary": "PASS",
+        "attention_cells": "PASS",
+        "header": "PASS",
+        "provenance": "PASS",
+        "lifecycle": "PASS"
+      },
+      "review_projection": {
+        "queue_status": "REVIEW",
+        "invoice_id": "synthetic-e72-invoice-001",
+        "store_id": "synthetic-store-e72",
+        "source_state": "DRAFT",
+        "display_number": null,
+        "payable": 1000,
+        "line_item_count": 1
+      }
+    },
+    {
+      "file": "canonical-invoice-v1-2-draft-vector-r3.json",
+      "bytes": 1227,
+      "sha256": "e56b80edeaca5e8630a04b13ca664853e9afaa9656d086c11f6b19b06f17fa86",
+      "u7_profile_match": true,
+      "consumer_rules": {
+        "json_tree": "PASS",
+        "root_shape": "PASS",
+        "schema_version": "PASS",
+        "mode": "PASS",
+        "identifiers": "PASS",
+        "public_token": "PASS",
+        "state": "PASS",
+        "customer": "PASS",
+        "state_history": "PASS",
+        "line_items": "PASS",
+        "summary": "PASS",
+        "attention_cells": "PASS",
+        "header": "PASS",
+        "provenance": "PASS",
+        "lifecycle": "PASS"
+      },
+      "review_projection": {
+        "queue_status": "REVIEW",
+        "invoice_id": "synthetic-e72-r3-invoice-001",
+        "store_id": "synthetic-store-e72-r3",
+        "source_state": "DRAFT",
+        "display_number": null,
+        "payable": 1400,
+        "line_item_count": 1
+      }
+    }
+  ],
+  "u7_profile_replay": {
+    "pinned_vectors_total": 57,
+    "matched": 57,
+    "mismatches": [],
+    "rules": "U7-v1: compact UTF-8; keys sorted by code point; arrays in order; int64 only; non-ASCII literal; C0 controls and DEL escaped as \\u00XX uppercase; quote/backslash escaped; slash literal"
+  },
+  "negative_probes": [
+    {
+      "probe": "wrapper_root_base_invoice",
+      "expected_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_message": "Unexpected field: base_invoice.",
+      "result": "REJECTED_AS_FROZEN"
+    },
+    {
+      "probe": "empty_root_missing_fields",
+      "expected_error_code": "REQUIRED_FIELD_MISSING",
+      "observed_error_code": "REQUIRED_FIELD_MISSING",
+      "observed_message": "Required field is missing: schema_version.",
+      "result": "REJECTED_AS_FROZEN"
+    },
+    {
+      "probe": "line_item_quantity_alias",
+      "expected_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_message": "Unexpected field: quantity.",
+      "result": "REJECTED_AS_FROZEN"
+    },
+    {
+      "probe": "display_number_before_issue",
+      "expected_error_code": "DISPLAY_NUMBER_BEFORE_ISSUE",
+      "observed_error_code": "DISPLAY_NUMBER_BEFORE_ISSUE",
+      "observed_message": "display_number is unavailable before ISSUE.",
+      "result": "REJECTED_AS_FROZEN"
+    },
+    {
+      "probe": "issued_hash_on_draft",
+      "expected_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_message": "Pre-ISSUE records cannot carry an issued-content hash.",
+      "result": "REJECTED_AS_FROZEN"
+    },
+    {
+      "probe": "float_subtotal",
+      "expected_error_code": "AMOUNT_NOT_INTEGER",
+      "observed_error_code": "AMOUNT_NOT_INTEGER",
+      "observed_message": "Only base-10 JSON integer number tokens are accepted.",
+      "result": "REJECTED_AS_FROZEN"
+    },
+    {
+      "probe": "short_public_token",
+      "expected_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_error_code": "SCHEMA_VALIDATION_FAILED",
+      "observed_message": "public_token must be an unpadded base64url token of at least 22 characters.",
+      "result": "REJECTED_AS_FROZEN"
+    }
+  ],
+  "addendum_disposition": "v1.2-draft addendum fields (currency_unit, invoice_discount, payments, walk_in_customer) stay OUT of frozen Canonical Invoice v0 per the PM-30 contract decision recorded in docs/decisions-made.md (Kandoo main); the addendum remains a separate unapproved proposal schema bound by invoice_id.",
+  "php_conditions_addressed": {
+    "unified_byte_profile": "U7-v1 replayed byte-for-byte in the Python lane (57/57 pinned vectors) and matched by the E-72 vectors",
+    "control_del_persian_zwnj_vectors": "pinned family V1-V12, C00-C1F, X1-X13 replayed (Persian, ZWNJ, controls, DEL, escapes, key order, int64 extremes)",
+    "addendum_pm_decision": "recorded (PM-30) — see addendum_disposition",
+    "cloud_ingest_mapping": "out of scope for contract fixtures; requires the Hub gateway contract, not vector changes"
+  }
+}
